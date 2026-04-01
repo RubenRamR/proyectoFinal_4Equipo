@@ -6,5 +6,6 @@ Esta aplicación permite al usuario gestionar su clóset digitalizando sus prend
 
 \-Equipo-
 
-Rubén Ramírez Robles - CU\_###
-Chris Fitch Lopez - 252379
+Rubén Ramírez Robles/247617 - CU\_RegistrarPrenda
+Chris Fitch Lopez/252379 - CU\_
+
