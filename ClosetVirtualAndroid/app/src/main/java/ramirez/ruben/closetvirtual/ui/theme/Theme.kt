@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
+// Tema oscuro
 private val DarkColorScheme = darkColorScheme(
     background = DarkBackground,
     surface = DarkSurface,
@@ -24,6 +25,7 @@ private val DarkColorScheme = darkColorScheme(
     onTertiary = Color.White
 )
 
+// Tema claro
 private val LightColorScheme = lightColorScheme(
     background = LightBackground,
     surface = LightSurface,

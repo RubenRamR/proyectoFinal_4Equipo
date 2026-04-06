@@ -17,9 +17,7 @@ import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         enableEdgeToEdge()
-
         setContent {
             ClosetVirtualTheme {
                 GestionPrendaScreen(

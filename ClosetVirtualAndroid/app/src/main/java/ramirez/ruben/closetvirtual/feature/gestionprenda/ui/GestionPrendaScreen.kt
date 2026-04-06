@@ -148,7 +148,7 @@ fun GestionPrendaScreen(onNavigateBack: () -> Unit = {}) {
             )
 
             Button(
-                onClick = { /* Registrar click*/ },
+                onClick = {},
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
                     .height(50.dp),
@@ -258,7 +258,7 @@ private fun SeccionAtributos(
 
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
-        // Fila 1: Estampada | Categoría
+        // Primera fila, estampada y categoria
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -290,7 +290,7 @@ private fun SeccionAtributos(
             }
         }
 
-        // Fila 2: Color | Temporada
+        // Segunda fila, color y temporada
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -311,7 +311,7 @@ private fun SeccionAtributos(
             }
         }
 
-        // Fila 3: Talla | Formalidad
+        // Tercera fila, talla y formalidad
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)

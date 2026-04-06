@@ -10,13 +10,13 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-// Fondos y Superficies
+// colores de fondo
 val LightBackground = Color(0xFFF8F9FA)
 val DarkBackground = Color(0xFF121212)
 val LightSurface = Color(0xFFFFFFFF)
 val DarkSurface = Color(0xFF2C2C2C)
 
-// Elementos Específicos
+// colores de otros elementos
 val LightImagePlaceholder = Color(0xFFEBE6F3)
 val DarkImagePlaceholder = Color(0xFF3B2F46)
 val PrimaryButton = Color(0xFF264653)
