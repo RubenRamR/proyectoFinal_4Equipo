@@ -33,7 +33,73 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
     // Estado para guardar las prendas (mock) que el usuario seleccione
     val prendasSeleccionadas = remember { mutableStateListOf<Int>() }
 
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = 24.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    Icons.Filled.ArrowBack,
+                    contentDescription = "Regresar",
+                    tint = Color(0xFF26657A)
+                )
+            }
+        }
+
+        Text(
+            text = "Registro Diario",
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        // Rachita
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(bottom = 8.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.mipmap.streak_icon),
+                contentDescription = "Racha activa",
+                modifier = Modifier.size(40.dp)
+            )
+            Image(
+                painter = painterResource(id = R.mipmap.coldstreak_icon),
+                contentDescription = "Racha inactiva",
+                modifier = Modifier.size(40.dp)
+            )
+            Image(
+                painter = painterResource(id = R.mipmap.coldstreak_icon),
+                contentDescription = "Racha inactiva",
+                modifier = Modifier.size(40.dp)
+            )
+            Image(
+                painter = painterResource(id = R.mipmap.coldstreak_icon),
+                contentDescription = "Racha inactiva",
+                modifier = Modifier.size(40.dp)
+            )
+            Image(
+                painter = painterResource(id = R.mipmap.coldstreak_icon),
+                contentDescription = "Racha inactiva",
+                modifier = Modifier.size(40.dp)
+            )
+        }
+
+
+    }
 }
+
 
 
 @Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)

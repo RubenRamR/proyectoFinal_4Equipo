@@ -4,7 +4,7 @@ Esta aplicación permite al usuario gestionar su clóset digitalizando sus prend
 
 
 
-\-Equipo-
+Caso de Uso Individual - Registro Diario
 
-Rubén Ramírez Robles - CU\_###
 Chris Fitch Lopez - 252379
+
