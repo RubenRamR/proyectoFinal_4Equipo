@@ -96,10 +96,66 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
             )
         }
 
+        Text(
+            text = "¡Registra tu outfit dirariamente para continuar con tu racha!",
+            fontSize = 14.sp,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
+        Image(
+            painter = painterResource(id = R.mipmap.dress_icon),
+            contentDescription = "Icono de vestido",
+            modifier = Modifier
+                .size(64.dp)
+                .padding(bottom = 16.dp)
+        )
+
+        // Prendas
+        Surface(
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+            color = MaterialTheme.colorScheme.surface,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "SELECCIONA TUS PRENDAS",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Boton para guardar el outfit/prendas del dia (mock)
+        Button(
+            onClick = {},
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF264653)
+            ),
+            shape = RoundedCornerShape(24.dp)
+        ) {
+            Text(
+                "GUARDAR REGISTRO",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
-
 
 
 @Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
