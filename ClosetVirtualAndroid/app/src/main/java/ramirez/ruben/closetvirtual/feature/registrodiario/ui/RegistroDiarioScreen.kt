@@ -207,6 +207,9 @@ fun PrendaMockItem(
     val bgColor = if (isSelected) Color(0xFFE8F5E9) else MaterialTheme.colorScheme.surfaceVariant
     val borderColor = if (isSelected) Color(0xFF4CAF50) else Color.Transparent
 
+    // Coso mock para tener prendas favoritas
+    var isFavorite by remember { mutableStateOf(false) }
+
     Box(
         modifier = modifier
             .background(bgColor, RoundedCornerShape(12.dp))
@@ -221,6 +224,7 @@ fun PrendaMockItem(
             modifier = Modifier.fillMaxWidth()
         ) {
 
+            // Textos superiores
             Text(
                 text = prenda.nombre,
                 fontSize = 12.sp,
@@ -239,7 +243,6 @@ fun PrendaMockItem(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Por ahora uso no_image porque no tenemos las prendas (aun)
             Image(
                 painter = painterResource(id = R.mipmap.no_image),
                 contentDescription = "Imagen de la prenda",
@@ -250,19 +253,39 @@ fun PrendaMockItem(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = prenda.temporada,
-                fontSize = 10.sp,
-                maxLines = 1,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
 
-            Text(
-                text = prenda.categoria,
-                fontSize = 10.sp,
-                maxLines = 1,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = prenda.temporada,
+                        fontSize = 10.sp,
+                        maxLines = 1,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Text(
+                        text = prenda.categoria,
+                        fontSize = 10.sp,
+                        maxLines = 1,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                // EL favorito mock
+                Image(
+                    painter = painterResource(
+                        id = if (isFavorite) R.mipmap.favorite_icon else R.mipmap.unfavorite_icon
+                    ),
+                    contentDescription = "Favorito",
+                    modifier = Modifier
+                        .size(22.dp)
+                        .clickable { isFavorite = !isFavorite }
+                )
+            }
         }
 
         // Checkbox para seleccionar prendas (mock)
