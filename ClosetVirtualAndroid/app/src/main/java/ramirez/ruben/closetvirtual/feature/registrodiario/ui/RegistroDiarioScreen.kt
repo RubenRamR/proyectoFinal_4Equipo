@@ -129,6 +129,45 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
+
+                // Mostrar las prendas en dos columnas
+                val filas = prendasMock.chunked(2)
+                filas.forEach { fila ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        fila.forEach { prenda ->
+                            PrendaMockItem(
+                                prenda = prenda,
+                                isSelected = prendasSeleccionadas.contains(prenda.id),
+                                onClick = {
+                                    if (prendasSeleccionadas.contains(prenda.id)) {
+                                        prendasSeleccionadas.remove(prenda.id)
+                                    } else {
+                                        prendasSeleccionadas.add(prenda.id)
+                                    }
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        if (fila.size == 1) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Agregar prendas que no esten en el closet (mock?)
+                Text(
+                    text = "+",
+                    color = Color(0xFF26657A),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    modifier = Modifier.clickable {}
+                )
             }
         }
 
@@ -154,6 +193,88 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
         }
 
         Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+// Componentes visuales de las prendas en columnas
+@Composable
+fun PrendaMockItem(
+    prenda: PrendaMock,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val bgColor = if (isSelected) Color(0xFFE8F5E9) else MaterialTheme.colorScheme.surfaceVariant
+    val borderColor = if (isSelected) Color(0xFF4CAF50) else Color.Transparent
+
+    Box(
+        modifier = modifier
+            .background(bgColor, RoundedCornerShape(12.dp))
+            .border(2.dp, borderColor, RoundedCornerShape(12.dp))
+            .clickable { onClick() }
+            .padding(12.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+            Text(
+                text = prenda.nombre,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Text(
+                text = prenda.marca,
+                fontSize = 10.sp,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .background(Color(prenda.color), RoundedCornerShape(8.dp))
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = prenda.temporada,
+                fontSize = 10.sp,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Text(
+                text = prenda.categoria,
+                fontSize = 10.sp,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset(x = 7.dp, y = (-8).dp)
+        ) {
+            Checkbox(
+                checked = isSelected,
+                onCheckedChange = { onClick() },
+                modifier = Modifier.size(18.dp)
+            )
+        }
     }
 }
 
