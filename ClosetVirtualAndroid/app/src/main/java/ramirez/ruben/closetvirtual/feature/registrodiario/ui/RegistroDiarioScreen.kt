@@ -213,10 +213,11 @@ fun PrendaMockItem(
             .border(2.dp, borderColor, RoundedCornerShape(12.dp))
             .clickable { onClick() }
             .padding(12.dp),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.TopStart
     ) {
+
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.Start,
             modifier = Modifier.fillMaxWidth()
         ) {
 
@@ -224,25 +225,27 @@ fun PrendaMockItem(
                 text = prenda.nombre,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
                 maxLines = 1,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(end = 24.dp)
             )
 
             Text(
                 text = prenda.marca,
                 fontSize = 10.sp,
-                textAlign = TextAlign.Center,
                 maxLines = 1,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Box(
+            // Por ahora uso no_image porque no tenemos las prendas (aun)
+            Image(
+                painter = painterResource(id = R.mipmap.no_image),
+                contentDescription = "Imagen de la prenda",
                 modifier = Modifier
-                    .size(56.dp)
-                    .background(Color(prenda.color), RoundedCornerShape(8.dp))
+                    .size(48.dp)
+                    .align(Alignment.CenterHorizontally)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -250,7 +253,6 @@ fun PrendaMockItem(
             Text(
                 text = prenda.temporada,
                 fontSize = 10.sp,
-                textAlign = TextAlign.Center,
                 maxLines = 1,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -258,12 +260,12 @@ fun PrendaMockItem(
             Text(
                 text = prenda.categoria,
                 fontSize = 10.sp,
-                textAlign = TextAlign.Center,
                 maxLines = 1,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
+        // Checkbox para seleccionar prendas (mock)
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -275,6 +277,7 @@ fun PrendaMockItem(
                 modifier = Modifier.size(18.dp)
             )
         }
+
     }
 }
 
