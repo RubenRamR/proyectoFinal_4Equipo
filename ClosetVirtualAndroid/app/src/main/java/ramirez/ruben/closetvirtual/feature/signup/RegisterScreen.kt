@@ -29,7 +29,7 @@ import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(){
+fun RegisterScreen( onNavigateToLogin: () -> Unit = {} ){
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -283,14 +283,14 @@ fun RegisterScreen(){
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { println("Iniciar sesion con: Email=$email, Password=$password") },
+            onClick = { println("Registrar cuenta con: Email=$email, Password=$password") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors
                 (containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                text = "Login",
+                text = "Sign up",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -308,14 +308,14 @@ fun RegisterScreen(){
         Spacer(modifier = Modifier.height(10.dp))
 
         Button(
-            onClick = { println("Redireccionar al usuario a RegisterScreen") },
+            onClick = { onNavigateToLogin() }, // Aca manda al usuario al login
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors
                 (containerColor = MaterialTheme.colorScheme.tertiary)
         ) {
             Text(
-                text = "Sign up",
+                text = "Login",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onTertiary

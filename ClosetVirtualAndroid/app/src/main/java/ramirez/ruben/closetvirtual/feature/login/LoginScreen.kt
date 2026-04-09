@@ -27,7 +27,7 @@ import ramirez.ruben.closetvirtual.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(){
+fun LoginScreen( onNavigateToRegister: () -> Unit = {} ){
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     // Esto es para poder mostrar y ocultar la contrasena a gusto
@@ -168,7 +168,7 @@ fun LoginScreen(){
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { println("Redireccionar al usuario a RegisterScreen") },
+            onClick = { onNavigateToRegister() }, // Aca manda al usuario a que se registre
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors
