@@ -42,6 +42,8 @@ fun LoginScreen(){
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
+        Spacer(modifier = Modifier.height(35.dp))
+
         Text(
             text = "Login",
             fontSize = 32.sp,
