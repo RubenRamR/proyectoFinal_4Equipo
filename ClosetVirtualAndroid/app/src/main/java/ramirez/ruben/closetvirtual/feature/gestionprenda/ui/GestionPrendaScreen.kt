@@ -21,7 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.draw.clip
-import androidx.compose.material.icons.outlined.AddCircle
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,39 +34,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
-
-data class OpcionColor(val nombre: String, val valor: Color)
-
-val coloresPrenda = listOf(
-    OpcionColor("Blanco", Color(0xFFFFFFFF)),
-    OpcionColor("Negro", Color(0xFF000000)),
-    OpcionColor("Gris", Color(0xFF808080)),
-    OpcionColor("Gris Claro", Color(0xFFD3D3D3)),
-    OpcionColor("Azul Marino", Color(0xFF000080)),
-    OpcionColor("Azul", Color(0xFF0000FF)),
-    OpcionColor("Azul Claro", Color(0xFFADD8E6)),
-    OpcionColor("Turquesa", Color(0xFF40E0D0)),
-    OpcionColor("Verde Oscuro", Color(0xFF006400)),
-    OpcionColor("Verde", Color(0xFF228B22)),
-    OpcionColor("Verde Lima", Color(0xFF32CD32)),
-    OpcionColor("Amarillo", Color(0xFFFFD700)),
-    OpcionColor("Naranja", Color(0xFFFF8C00)),
-    OpcionColor("Rojo", Color(0xFFFF0000)),
-    OpcionColor("Burdeos", Color(0xFF800000)),
-    OpcionColor("Rosa", Color(0xFFFFC0CB)),
-    OpcionColor("Fucsia", Color(0xFFFF00FF)),
-    OpcionColor("Morado", Color(0xFF800080)),
-    OpcionColor("Lila", Color(0xFFE6E6FA)),
-    OpcionColor("Café", Color(0xFF8B4513)),
-    OpcionColor("Marrón", Color(0xFFA52A2A)),
-    OpcionColor("Beige", Color(0xFFF5F5DC)),
-    OpcionColor("Crema", Color(0xFFFFFDD0)),
-    OpcionColor("Caqui", Color(0xFFF0E68C))
-)
+import ramirez.ruben.closetvirtual.utils.OpcionColor
+import ramirez.ruben.closetvirtual.utils.PrendaConstants
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GestionPrendaScreen(onNavigateBack: () -> Unit = {}) {
+fun GestionPrendaScreen(
+    isEditMode: Boolean = false,
+    onNavigateBack: () -> Unit = {}
+) {
     var nombre by remember { mutableStateOf("") }
     var marca by remember { mutableStateOf("") }
     var esEstampada by remember { mutableStateOf(false) }
@@ -104,8 +80,9 @@ fun GestionPrendaScreen(onNavigateBack: () -> Unit = {}) {
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // 1. Título dinámico
             Text(
-                text = "Registrar prenda",
+                text = if (isEditMode) "Editar prenda" else "Registrar prenda",
                 fontSize = 32.sp,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
@@ -118,7 +95,8 @@ fun GestionPrendaScreen(onNavigateBack: () -> Unit = {}) {
             SeccionFotoYTextos(
                 nombre = nombre, onNombreChange = { nombre = it },
                 marca = marca, onMarcaChange = { marca = it },
-                imageUri = imageUri, onImageSelected = { imageUri = it }
+                imageUri = imageUri, onImageSelected = { imageUri = it },
+                isEditMode = isEditMode // Le pasamos el modo a la foto
             )
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 24.dp),
@@ -147,21 +125,40 @@ fun GestionPrendaScreen(onNavigateBack: () -> Unit = {}) {
                 color = MaterialTheme.colorScheme.outlineVariant
             )
 
-            Button(
-                onClick = { /* Registrar click*/ },
-                modifier = Modifier
-                    .fillMaxWidth(0.6f)
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(
-                    "Registrar prenda",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+            // 2. Botones dinámicos
+            if (isEditMode) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Button(
+                        onClick = { /* Guardar cambios */ },
+                        modifier = Modifier.weight(1f).height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Guardar", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    }
+                    Button(
+                        onClick = { /* Eliminar prenda */ },
+                        modifier = Modifier.weight(1f).height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Eliminar", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    }
+                }
+            } else {
+                Button(
+                    onClick = { /* Registrar click*/ },
+                    modifier = Modifier.fillMaxWidth(0.6f).height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Registrar prenda", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                }
             }
+
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
@@ -171,7 +168,8 @@ fun GestionPrendaScreen(onNavigateBack: () -> Unit = {}) {
 private fun SeccionFotoYTextos(
     nombre: String, onNombreChange: (String) -> Unit,
     marca: String, onMarcaChange: (String) -> Unit,
-    imageUri: Uri?, onImageSelected: (Uri?) -> Unit
+    imageUri: Uri?, onImageSelected: (Uri?) -> Unit,
+    isEditMode: Boolean
 ) {
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -197,15 +195,13 @@ private fun SeccionFotoYTextos(
                 AsyncImage(
                     model = imageUri,
                     contentDescription = "Foto de la prenda",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(8.dp)),
+                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
                 )
             } else {
                 Icon(
-                    Icons.Outlined.AddCircle,
-                    contentDescription = "Añadir Foto",
+                    imageVector = Icons.Outlined.Add,
+                    contentDescription = if (isEditMode) "Editar Foto" else "Añadir Foto",
                     modifier = Modifier.size(32.dp),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
@@ -213,24 +209,18 @@ private fun SeccionFotoYTextos(
         }
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedTextField(
-                value = nombre,
-                onValueChange = onNombreChange,
+                value = nombre, onValueChange = onNombreChange,
                 placeholder = { Text("Nombre de la prenda") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                singleLine = true,
+                modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp), singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                     focusedContainerColor = MaterialTheme.colorScheme.surface
                 )
             )
             OutlinedTextField(
-                value = marca,
-                onValueChange = onMarcaChange,
+                value = marca, onValueChange = onMarcaChange,
                 placeholder = { Text("Marca") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                singleLine = true,
+                modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp), singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                     focusedContainerColor = MaterialTheme.colorScheme.surface
@@ -258,7 +248,7 @@ private fun SeccionAtributos(
 
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
-        // Fila 1: Estampada | Categoría
+        // 1. Estampada y categoria
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -290,14 +280,14 @@ private fun SeccionAtributos(
             }
         }
 
-        // Fila 2: Color | Temporada
+        // 2. Color y temporada
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Box(modifier = Modifier.weight(1f)) {
                 ColorPaletteDropdown(
-                    opciones = coloresPrenda,
+                    opciones = PrendaConstants.coloresPrenda,
                     seleccionActual = colorActual,
                     onSeleccionChange = onColorChange
                 )
@@ -311,7 +301,7 @@ private fun SeccionAtributos(
             }
         }
 
-        // Fila 3: Talla | Formalidad
+        // 3. Talla y formalidad
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -546,23 +536,35 @@ fun InteractiveDropdown(
     }
 }
 
-@Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
+// PREVIEWS
+@Preview(name = "1. Registrar (Claro)", showBackground = true, showSystemUi = true)
 @Composable
-private fun PreviewModoClaro() {
+private fun PreviewRegistrarClaro() {
     ClosetVirtualTheme(darkTheme = false) {
-        GestionPrendaScreen()
+        GestionPrendaScreen(isEditMode = false)
     }
 }
 
-@Preview(
-    name = "Modo Oscuro",
-    showBackground = true,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
+@Preview(name = "2. Registrar (Oscuro)", showBackground = true, showSystemUi = true)
 @Composable
-private fun PreviewModoOscuro() {
+private fun PreviewRegistrarOscuro() {
     ClosetVirtualTheme(darkTheme = true) {
-        GestionPrendaScreen()
+        GestionPrendaScreen(isEditMode = false)
+    }
+}
+
+@Preview(name = "3. Editar (Claro)", showBackground = true, showSystemUi = true)
+@Composable
+private fun PreviewEditarClaro() {
+    ClosetVirtualTheme(darkTheme = false) {
+        GestionPrendaScreen(isEditMode = true)
+    }
+}
+
+@Preview(name = "4. Editar (Oscuro)", showBackground = true, showSystemUi = true)
+@Composable
+private fun PreviewEditarOscuro() {
+    ClosetVirtualTheme(darkTheme = true) {
+        GestionPrendaScreen(isEditMode = true)
     }
 }
