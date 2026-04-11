@@ -29,10 +29,11 @@ import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 @Composable
 fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
-    var busqueda by remember { mutableStateOf("") }
-    // Estado para guardar las prendas (mock) que el usuario seleccione
+
+    // Usare prendasSeleccionadas para guardar las prendas como mock (duh) que el usuario seleccione
     val prendasSeleccionadas = remember { mutableStateListOf<Int>() }
 
+    // Estructura principal de registro
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -47,6 +48,7 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterStart
         ) {
+
             IconButton(onClick = onNavigateBack) {
                 Icon(
                     Icons.Filled.ArrowBack,
@@ -64,7 +66,7 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Rachita
+        // Rachita, la del inicio esta "encendida" como ejemplo (mockeado)
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(bottom = 8.dp)
@@ -112,7 +114,7 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
                 .padding(bottom = 16.dp)
         )
 
-        // Prendas
+        // Prendas de PrendaMock
         Surface(
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
             color = MaterialTheme.colorScheme.surface,
@@ -130,13 +132,14 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Mostrar las prendas en dos columnas
+                // Mostrar las prendas en dos columnas juntas cuadricula
                 val filas = prendasMock.chunked(2)
                 filas.forEach { fila ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
+                        // Llama a la prendamockitem que es la que dibuja los cuadritos/tarjetitas de las prendas
                         fila.forEach { prenda ->
                             PrendaMockItem(
                                 prenda = prenda,
@@ -160,13 +163,13 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Agregar prendas que no esten en el closet (mock?)
+                // Boton para agregar prendas que no esten en el closet (mock)
                 Text(
                     text = "+",
                     color = Color(0xFF26657A),
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    modifier = Modifier.clickable {}
+                    modifier = Modifier.clickable {} // no sirve (aun)
                 )
             }
         }
@@ -196,7 +199,7 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
     }
 }
 
-// Componentes visuales de las prendas en columnas
+// Componentes visuales de las prendas en columnas (Crea las tarjetitas de las prendas)
 @Composable
 fun PrendaMockItem(
     prenda: PrendaMock,
@@ -207,7 +210,7 @@ fun PrendaMockItem(
     val bgColor = if (isSelected) Color(0xFFE8F5E9) else MaterialTheme.colorScheme.surfaceVariant
     val borderColor = if (isSelected) Color(0xFF4CAF50) else Color.Transparent
 
-    // Coso mock para tener prendas favoritas
+    // Mock de prendas favoritas
     var isFavorite by remember { mutableStateOf(false) }
 
     Box(
@@ -275,7 +278,7 @@ fun PrendaMockItem(
                     )
                 }
 
-                // EL favorito mock
+                // Boton de fav (mock)
                 Image(
                     painter = painterResource(
                         id = if (isFavorite) R.mipmap.favorite_icon else R.mipmap.unfavorite_icon
@@ -288,7 +291,7 @@ fun PrendaMockItem(
             }
         }
 
-        // Checkbox para seleccionar prendas (mock)
+        // Checkbox para seleccionar tus prendas (mock)
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
