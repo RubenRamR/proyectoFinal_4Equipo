@@ -263,9 +263,8 @@ private fun SeccionAtributos(
                     checked = esEstampada,
                     onCheckedChange = onEstampadaChange,
                     colors = CheckboxDefaults.colors(
-                        checkedColor = if (isDark) Color.White else MaterialTheme.colorScheme.primary,
-                        checkmarkColor = if (isDark) Color(0xFF5E9C94) else MaterialTheme.colorScheme.onPrimary,
-
+                        checkedColor = if (isDark) Color.White else Color(0xFF6750A4),
+                        checkmarkColor = if (isDark) Color(0xFF5E9C94) else Color.White,
                         uncheckedColor = MaterialTheme.colorScheme.onBackground
                     )
                 )
@@ -332,6 +331,10 @@ private fun SeccionTags(
     onRemoveTag: (String) -> Unit
 ) {
     var tagInput by remember { mutableStateOf("") }
+
+    val filaSuperior = tagsList.filterIndexed { index, _ -> index % 2 == 0 }
+    val filaInferior = tagsList.filterIndexed { index, _ -> index % 2 != 0 }
+
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -370,35 +373,67 @@ private fun SeccionTags(
                 )
             }
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .horizontalScroll(rememberScrollState())
         ) {
-            tagsList.forEach { tag ->
-                Surface(
-                    color = MaterialTheme.colorScheme.tertiary,
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .clickable { onRemoveTag(tag) }
-                            .padding(horizontal = 12.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(tag, color = MaterialTheme.colorScheme.onTertiary)
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
-                        Icon(
-                            Icons.Filled.Close,
-                            contentDescription = "Eliminar tag",
-                            modifier = Modifier
-                                .size(16.dp)
-                                .padding(start = 4.dp),
-                            tint = MaterialTheme.colorScheme.onTertiary
-                        )
+                // FILA 1
+                if (filaSuperior.isNotEmpty()) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        filaSuperior.forEach { tag ->
+                            Surface(
+                                color = MaterialTheme.colorScheme.tertiary,
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .clickable { onRemoveTag(tag) }
+                                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(tag, color = MaterialTheme.colorScheme.onTertiary)
+                                    Icon(
+                                        Icons.Filled.Close,
+                                        contentDescription = "Eliminar tag",
+                                        modifier = Modifier.size(16.dp).padding(start = 4.dp),
+                                        tint = MaterialTheme.colorScheme.onTertiary
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // FILA 2
+                if (filaInferior.isNotEmpty()) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        filaInferior.forEach { tag ->
+                            Surface(
+                                color = MaterialTheme.colorScheme.tertiary,
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .clickable { onRemoveTag(tag) }
+                                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(tag, color = MaterialTheme.colorScheme.onTertiary)
+                                    Icon(
+                                        Icons.Filled.Close,
+                                        contentDescription = "Eliminar tag",
+                                        modifier = Modifier.size(16.dp).padding(start = 4.dp),
+                                        tint = MaterialTheme.colorScheme.onTertiary
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
