@@ -30,7 +30,6 @@ import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 @Composable
 fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
-
     // Usare prendasSeleccionadas para guardar las prendas como mock (duh) que el usuario seleccione
     val prendasSeleccionadas = remember { mutableStateListOf<Int>() }
 
