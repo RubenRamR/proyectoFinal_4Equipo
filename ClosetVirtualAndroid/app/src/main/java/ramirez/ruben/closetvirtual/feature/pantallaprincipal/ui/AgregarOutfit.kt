@@ -37,12 +37,9 @@ fun AgregarOutfitScreen() {
     var tagText by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
     
-    // Lista de etiquetas fija para la GUI
     val tags = remember { mutableStateListOf("Casual", "Verano", "Favorito") }
 
-    // Obtener las prendas reales del repositorio
-    val repository = remember { PrendaRepository() }
-    val todasLasPrendas = remember { repository.obtenerPrendas() }
+    val todasLasPrendas = PrendaRepository.todasLasPrendas
 
     Column(
         modifier = Modifier
@@ -50,7 +47,6 @@ fun AgregarOutfitScreen() {
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
-        // Barra superior manual
         Row(
             modifier = Modifier
                 .fillMaxWidth()

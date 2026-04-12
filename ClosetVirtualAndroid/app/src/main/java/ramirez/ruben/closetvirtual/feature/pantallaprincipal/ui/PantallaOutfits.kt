@@ -27,8 +27,7 @@ import ramirez.ruben.closetvirtual.data.Prenda
 @Preview(showBackground = true)
 @Composable
 fun OutfitsScreen() {
-    val repository = remember { OutfitRepository() }
-    val outfits = remember { repository.obtenerOutfits() }
+    val outfits = OutfitRepository.todosLosOutfits
 
     Scaffold(
         bottomBar = { BottomNavBar() },
