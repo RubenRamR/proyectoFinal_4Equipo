@@ -4,7 +4,11 @@ Esta aplicación permite al usuario gestionar su clóset digitalizando sus prend
 
 
 
-Caso de Uso Individual - Registro Diario
+\-Equipo-
+
+
+
+Caso de Uso Individual - Calendario
 
 Chris Fitch Lopez - 252379
 
