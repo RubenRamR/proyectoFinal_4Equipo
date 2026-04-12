@@ -11,7 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import ramirez.ruben.closetvirtual.feature.gestionprenda.ui.GestionPrendaScreen
+// 1. Cambiamos la importación a tu nueva pantalla de Perfil
+import ramirez.ruben.closetvirtual.feature.perfilusuario.ui.PerfilScreen
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,8 +21,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ClosetVirtualTheme {
-                GestionPrendaScreen(
+                PerfilScreen(
                     onNavigateBack = {
+                    },
+                    onLogoutClick = {
                     }
                 )
             }
