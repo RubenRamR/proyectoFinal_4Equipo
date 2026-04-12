@@ -3,8 +3,6 @@
 Esta aplicación permite al usuario gestionar su clóset digitalizando sus prendas mediante fotografías y organizándolas en categorías predefinidas. Además, el usuario puede registrar los outfits diarios, visualizar el uso de cada prenda y acceder a un calendario visual.
 
 
+-Equipo-
 
-\-Equipo-
-
-Rubén Ramírez Robles - CU\_###
-Chris Fitch Lopez - 252379
+Rubén Ramírez Robles/247617 - CU_RegistrarPrenda Chris Fitch Lopez/252379 - CU_RegistroDiario & CU_Calendario
