@@ -39,7 +39,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,138 +48,104 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ramirez.ruben.closetvirtual.data.Prenda
 
-//@Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun ClosetScreen() {
     Scaffold(
-        bottomBar = { BottomNavBar() },
-        floatingActionButton = { AddFab() }
+        bottomBar = { BottomNavBar() }, 
+        floatingActionButton = { AddFab() },
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-        ) {
-            SearchBar()
-            FilterChips()
-            ClothesGrid()
+        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+            BarraDeBusqueda()
+            Filtros()
+            PrendasGrid()
         }
     }
 }
 
 //@Preview(showBackground = true)
 @Composable
-fun SearchBar() {
-    OutlinedTextField(
-        value = "",
-        onValueChange = {},
-        placeholder = { Text("Hinted search text") },
-        leadingIcon = {
+fun BarraDeBusqueda() {
+    OutlinedTextField(value = "", onValueChange = {}, placeholder = { Text("Busqueda de prendas") }, leadingIcon = {
             Icon(Icons.Default.Menu, contentDescription = null)
         },
         trailingIcon = {
             Icon(Icons.Default.Search, contentDescription = null)
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(12.dp),
-        shape = RoundedCornerShape(24.dp)
-    )
+        modifier = Modifier.fillMaxWidth().padding(12.dp), shape = RoundedCornerShape(24.dp))
 }
 
 //@Preview(showBackground = true)
 @Composable
-fun FilterChips() {
+fun Filtros() {
     val filters = listOf("Marca", "Categoria", "Temporada", "Usos", "Label")
-
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+    LazyRow(contentPadding = PaddingValues(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         item {
             Icon(Icons.Default.Tune, contentDescription = null)
         }
         items(filters) { text ->
-            AssistChip(
-                onClick = {},
-                label = { Text(text) }
-            )
+            AssistChip(onClick = {}, label = { Text(text) })
         }
     }
 }
-
-data class ClothingItem(
-    val title: String,
-    val brand: String,
-    val season: String,
-    val type: String
-)
 
 @Preview(showBackground = true)
 @Composable
-fun ClothesGrid() {
-    val items = List(6) {
-        ClothingItem("Venum top", "Nike", "Otoño", "Tops")
+fun PrendasGrid() {
+    // prendas de prueba para renderizar en el preview
+    val Prendas = List(6) {
+        Prenda(nombre = "Venum top", marca ="Nike", temporada = "Otoño", categoria = "Tops", imagenUri = "nadaxd", color = "ningunoxd", formalidad = "ningunoxd")
     }
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(items) { item ->
-            ClothingCard(item)
+    // grid para ejecutar le card d cada prenda
+    LazyVerticalGrid(columns = GridCells.Fixed(2), contentPadding = PaddingValues(12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        items(Prendas) { item ->
+            PrendasCard(item)
         }
     }
 }
 
 @Composable
-fun ClothingCard(item: ClothingItem) {
+fun PrendasCard(prenda: Prenda) {
+    // Card usa por defecto MaterialTheme.colorScheme.surface
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(16.dp), 
         modifier = Modifier.fillMaxWidth()
     ) {
         Column {
             // Header
             Column(modifier = Modifier.padding(8.dp)) {
-                Text(item.title, fontWeight = FontWeight.Bold)
-                Text(item.brand, style = MaterialTheme.typography.bodySmall)
+                Text(prenda.nombre, fontWeight = FontWeight.Bold)
+                Text(prenda.marca ?: "nada", style = MaterialTheme.typography.bodySmall)
             }
 
-            // Imagen placeholder
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-                    .background(Color.LightGray),
-                contentAlignment = Alignment.Center
-            ) {
+            // Imagen de la prenda
+            Box(modifier = Modifier.fillMaxWidth().height(120.dp).background(Color.LightGray), contentAlignment = Alignment.Center) {
                 Icon(Icons.Default.Image, contentDescription = null)
             }
 
-            // Info
+            // Info temporada y categoria
             Column(modifier = Modifier.padding(8.dp)) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     Column {
-                        Text(item.season)
-                        Text(item.type, style = MaterialTheme.typography.bodySmall)
+                        Text(prenda.temporada)
+                        Text(prenda.categoria, style = MaterialTheme.typography.bodySmall)
                     }
+                    //Icono de corazon
                     Icon(Icons.Default.FavoriteBorder, contentDescription = null)
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick = {}) {
-                        Text("Hoy la usé")
+                // botones
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    OutlinedButton(onClick = {}, modifier = Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 4.dp)) {
+                        Text("Hoy la usé", fontSize = 11.sp, maxLines = 1)
                     }
-                    Button(onClick = {}) {
-                        Text(text = "Detalle", fontSize = 12.sp)
+                    Button(onClick = {}, modifier = Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 4.dp)) {
+                        Text(text = "Detalle", fontSize = 11.sp, maxLines = 1)
                     }
                 }
             }
@@ -188,9 +153,10 @@ fun ClothingCard(item: ClothingItem) {
     }
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
+
 @Composable
-fun AddFab() {
+fun AddFab() { //botoncito de + para agregar prendas
     FloatingActionButton(onClick = {}) {
         Icon(Icons.Default.Add, contentDescription = null)
     }
