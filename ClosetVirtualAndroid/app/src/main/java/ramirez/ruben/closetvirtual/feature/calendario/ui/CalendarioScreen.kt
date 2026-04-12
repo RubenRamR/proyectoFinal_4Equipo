@@ -24,6 +24,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.unit.sp
+import ramirez.ruben.closetvirtual.components.CategoryMenu
+import ramirez.ruben.closetvirtual.data.Outfit
+import ramirez.ruben.closetvirtual.data.mockOutfits
 import ramirez.ruben.closetvirtual.feature.registrodiario.ui.RegistroDiarioScreen
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import java.time.DayOfWeek
@@ -106,6 +109,21 @@ fun CalendarioScreen(onNavigateBack: () -> Unit = {}) {
                 )
             }
         }
+
+        // categorias
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // llamamos al componente CategoryMenu
+        CategoryMenu(
+            modifier = Modifier.padding(bottom = 32.dp)
+        )
+
+        // outfits mock
+        mockOutfits.forEach { outfit ->
+            OutfitCard(outfit = outfit)
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
@@ -323,6 +341,80 @@ fun CalendarioGrid(
                             )
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+// componente visual para las tarjetitas de los outfits de la fecha (mock)
+@Composable
+fun OutfitCard(outfit: Outfit) {
+    val isDark = isSystemInDarkTheme()
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.size(80.dp)
+            ) {
+                androidx.compose.foundation.Image(
+                    painter = androidx.compose.ui.res.painterResource(id = outfit.imagenRes),
+                    contentDescription = "Imagen del outfit",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = "Outfit ${outfit.nombre}",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Text(
+                    text = outfit.descripcion,
+                    fontSize = 14.sp,
+                    color = if (isDark) Color(0xFFD3D3D3) else Color(0xFF808080),
+                    maxLines = 2
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        painter = androidx.compose.ui.res.painterResource(id = ramirez.ruben.closetvirtual.R.mipmap.calendario_icon),
+                        contentDescription = null,
+                        modifier = Modifier.size(12.dp),
+                        tint = if (isDark) Color(0x4DFFFFFF) else Color(0x4D808080)
+                    )
+                    Text(
+                        text = outfit.fecha,
+                        fontSize = 11.sp,
+                        color = if (isDark) Color(0x33FFFFFF) else Color(0x33000000)
+                    )
                 }
             }
         }
