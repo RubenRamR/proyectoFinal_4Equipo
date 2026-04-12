@@ -48,19 +48,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.remember
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import ramirez.ruben.closetvirtual.data.Prenda
 
 @Preview(showBackground = true)
 @Composable
 fun ClosetScreen() {
+    val repository = remember { PrendaRepository() }
+    val prendas = remember { repository.obtenerPrendas() }
+
     Scaffold(
-        bottomBar = { BottomNavBar() }, 
+        bottomBar = { BottomNavBar() },
         floatingActionButton = { AddFab() },
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
             BarraDeBusqueda()
             Filtros()
-            PrendasGrid()
+            PrendasGrid(prendas)
         }
     }
 }
@@ -91,17 +97,16 @@ fun Filtros() {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun PrendasGrid() {
-    // prendas de prueba para renderizar en el preview
-    val Prendas = List(6) {
-        Prenda(nombre = "Venum top", marca ="Nike", temporada = "Otoño", categoria = "Tops", imagenUri = "nadaxd", color = "ningunoxd", formalidad = "ningunoxd")
-    }
-
+fun PrendasGrid(prendas: List<Prenda>) {
     // grid para ejecutar le card d cada prenda
-    LazyVerticalGrid(columns = GridCells.Fixed(2), contentPadding = PaddingValues(12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        items(Prendas) { item ->
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(prendas) { item ->
             PrendasCard(item)
         }
     }
@@ -122,8 +127,20 @@ fun PrendasCard(prenda: Prenda) {
             }
 
             // Imagen de la prenda
-            Box(modifier = Modifier.fillMaxWidth().height(120.dp).background(Color.LightGray), contentAlignment = Alignment.Center) {
-                Icon(Icons.Default.Image, contentDescription = null)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .background(Color.LightGray),
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = prenda.imagenUri,
+                    contentDescription = prenda.nombre,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    error = null // Aquí podrías poner un icono de error si gustas
+                )
             }
 
             // Info temporada y categoria
