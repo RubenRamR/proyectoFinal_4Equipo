@@ -7,5 +7,5 @@ Esta aplicación permite al usuario gestionar su clóset digitalizando sus prend
 \-Equipo-
 
 Rubén Ramírez Robles/247617 - CU\_RegistrarPrenda
-Chris Fitch Lopez/252379 - CU\_RegistroDiario
+Chris Fitch Lopez/252379 - CU\_RegistroDiario & CU\_Calendario
 
