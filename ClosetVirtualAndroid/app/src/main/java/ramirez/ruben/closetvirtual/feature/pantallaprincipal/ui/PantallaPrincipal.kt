@@ -52,14 +52,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import ramirez.ruben.closetvirtual.data.Prenda
+import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 @Preview(showBackground = true)
+@Composable
+fun ClosetScreenPreview() {
+    ClosetVirtualTheme {
+        ClosetScreen()
+    }
+}
+
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun ClosetScreenDarkPreview() {
+    ClosetVirtualTheme {
+        ClosetScreen()
+    }
+}
+
 @Composable
 fun ClosetScreen() {
     val prendas = PrendaRepository.todasLasPrendas
 
     Scaffold(
-        bottomBar = { BottomNavBar() },
+        bottomBar = { },  //AQUI PUEDES PONER LA BARRA DE NAVEGACION CHRIS adentro de estos corchetes
         floatingActionButton = { AddFab() },
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
@@ -130,7 +146,7 @@ fun PrendasCard(prenda: Prenda) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
-                    .background(Color.LightGray),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
@@ -178,28 +194,4 @@ fun AddFab() { //botoncito de + para agregar prendas
     }
 }
 
-@Composable
-fun BottomNavBar() {
-    NavigationBar {
-        NavigationBarItem(
-            selected = true,
-            onClick = {},
-            icon = { Icon(Icons.Default.Checkroom, null) }
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = {},
-            icon = { Icon(Icons.Default.AutoAwesome, null) }
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = {},
-            icon = { Icon(Icons.Default.CalendarMonth, null) }
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = {},
-            icon = { Icon(Icons.Default.Person, null) }
-        )
-    }
-}
+

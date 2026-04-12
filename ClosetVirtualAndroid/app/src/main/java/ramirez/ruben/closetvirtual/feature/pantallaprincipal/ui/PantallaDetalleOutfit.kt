@@ -33,6 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -48,36 +49,69 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import ramirez.ruben.closetvirtual.data.Prenda
+import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light Mode")
+@Composable
+fun PantallaDetalleOutfitPreview() {
+    ClosetVirtualTheme {
+        PantallaDetalleOutfit()
+    }
+}
+
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+fun PantallaDetalleOutfitDarkPreview() {
+    ClosetVirtualTheme {
+        PantallaDetalleOutfit()
+    }
+}
+
 @Composable
 fun PantallaDetalleOutfit() {
     val outfit = OutfitRepository.todosLosOutfits.firstOrNull()
     val prendas = outfit?.prendas ?: emptyList()
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-                IconButton(onClick = { }) {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
+    ClosetVirtualTheme {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = MaterialTheme.colorScheme.background
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    IconButton(onClick = { }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Atrás"
+                        )
+                    }
+                    Text(
+                        text = outfit?.nombre ?: "Detalle de Outfit",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
                 }
-                Text(
-                    text = outfit?.nombre ?: "Detalle de Outfit",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 8.dp)
+
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant
                 )
-            }
-            
-            HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
 
-            Box(modifier = Modifier.weight(1f)) {
-                PrendasGridOutfit(prendas)
+                Box(modifier = Modifier.weight(1f)) {
+                    PrendasGridOutfit(prendas)
+                }
             }
-            
         }
-        
-
     }
 }
 
@@ -113,7 +147,7 @@ fun PrendaOutfitCard(prenda: Prenda) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
-                    .background(Color.LightGray),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(

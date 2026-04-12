@@ -23,14 +23,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import ramirez.ruben.closetvirtual.data.Prenda
+import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light Mode")
+@Composable
+fun OutfitsScreenPreview() {
+    ClosetVirtualTheme {
+        OutfitsScreen()
+    }
+}
+
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+fun OutfitsScreenDarkPreview() {
+    ClosetVirtualTheme {
+        OutfitsScreen()
+    }
+}
+
 @Composable
 fun OutfitsScreen() {
     val outfits = OutfitRepository.todosLosOutfits
 
     Scaffold(
-        bottomBar = { BottomNavBar() },
+        bottomBar = { }, //adentro de estos corchetes puedes poner la barra de navegacion chris
         floatingActionButton = { AddFab() }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
@@ -116,10 +132,10 @@ fun OutfitCard(outfit: Outfit) {
 @Composable
 fun OutfitImage(prendas: List<Prenda>) {
     Box(
-        modifier = Modifier.fillMaxWidth().height(140.dp).background(Color.LightGray), contentAlignment = Alignment.Center) {
+        modifier = Modifier.fillMaxWidth().height(140.dp).background(MaterialTheme.colorScheme.surfaceVariant), contentAlignment = Alignment.Center) {
         when (prendas.size) {
             0 -> {
-                Icon(Icons.Default.Image, contentDescription = null, tint = Color.Gray)
+                Icon(Icons.Default.Image, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             1 -> {
                 PrendaItemImage(prendas[0], Modifier.fillMaxSize())
@@ -127,7 +143,7 @@ fun OutfitImage(prendas: List<Prenda>) {
             2 -> {
                 Row(Modifier.fillMaxSize()) {
                     PrendaItemImage(prendas[0], Modifier.weight(1f).fillMaxHeight())
-                    VerticalDivider(color = Color.White, thickness = 1.dp)
+                    VerticalDivider(color = MaterialTheme.colorScheme.surface, thickness = 1.dp)
                     PrendaItemImage(prendas[1], Modifier.weight(1f).fillMaxHeight())
                 }
             }
@@ -135,10 +151,10 @@ fun OutfitImage(prendas: List<Prenda>) {
                 Column(Modifier.fillMaxSize()) {
                     Row(Modifier.weight(1f)) {
                         PrendaItemImage(prendas[0], Modifier.weight(1f).fillMaxHeight())
-                        VerticalDivider(color = Color.White, thickness = 1.dp)
+                        VerticalDivider(color = MaterialTheme.colorScheme.surface, thickness = 1.dp)
                         PrendaItemImage(prendas[1], Modifier.weight(1f).fillMaxHeight())
                     }
-                    HorizontalDivider(color = Color.White, thickness = 1.dp)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.surface, thickness = 1.dp)
                     Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
                         PrendaItemImage(prendas[2], Modifier.fillMaxWidth(0.5f).fillMaxHeight())
                     }
@@ -148,13 +164,13 @@ fun OutfitImage(prendas: List<Prenda>) {
                 Column(Modifier.fillMaxSize()) {
                     Row(Modifier.weight(1f)) {
                         PrendaItemImage(prendas[0], Modifier.weight(1f).fillMaxHeight())
-                        VerticalDivider(color = Color.White, thickness = 1.dp)
+                        VerticalDivider(color = MaterialTheme.colorScheme.surface, thickness = 1.dp)
                         PrendaItemImage(prendas[1], Modifier.weight(1f).fillMaxHeight())
                     }
-                    HorizontalDivider(color = Color.White, thickness = 1.dp)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.surface, thickness = 1.dp)
                     Row(Modifier.weight(1f)) {
                         PrendaItemImage(prendas[2], Modifier.weight(1f).fillMaxHeight())
-                        VerticalDivider(color = Color.White, thickness = 1.dp)
+                        VerticalDivider(color = MaterialTheme.colorScheme.surface, thickness = 1.dp)
                         PrendaItemImage(prendas[3], Modifier.weight(1f).fillMaxHeight())
                     }
                 }
@@ -163,15 +179,15 @@ fun OutfitImage(prendas: List<Prenda>) {
                 Column(Modifier.fillMaxSize()) {
                     Row(Modifier.weight(1f)) {
                         PrendaItemImage(prendas[0], Modifier.weight(1f).fillMaxHeight())
-                        VerticalDivider(color = Color.White, thickness = 1.dp)
+                        VerticalDivider(color = MaterialTheme.colorScheme.surface, thickness = 1.dp)
                         PrendaItemImage(prendas[1], Modifier.weight(1f).fillMaxHeight())
                     }
-                    HorizontalDivider(color = Color.White, thickness = 1.dp)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.surface, thickness = 1.dp)
                     Row(Modifier.weight(1f)) {
                         PrendaItemImage(prendas[2], Modifier.weight(1f).fillMaxHeight())
-                        VerticalDivider(color = Color.White, thickness = 1.dp)
+                        VerticalDivider(color = MaterialTheme.colorScheme.surface, thickness = 1.dp)
                         PrendaItemImage(prendas[3], Modifier.weight(1f).fillMaxHeight())
-                        VerticalDivider(color = Color.White, thickness = 1.dp)
+                        VerticalDivider(color = MaterialTheme.colorScheme.surface, thickness = 1.dp)
                         PrendaItemImage(prendas[4], Modifier.weight(1f).fillMaxHeight())
                     }
                 }

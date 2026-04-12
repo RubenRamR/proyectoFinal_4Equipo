@@ -27,9 +27,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import ramirez.ruben.closetvirtual.data.Prenda
+import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light Mode")
+@Composable
+fun AgregarOutfitScreenPreview() {
+    ClosetVirtualTheme {
+        AgregarOutfitScreen()
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+fun AgregarOutfitScreenDarkPreview() {
+    ClosetVirtualTheme {
+        AgregarOutfitScreen()
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AgregarOutfitScreen() {
     var nombre by remember { mutableStateOf("") }
@@ -174,7 +192,7 @@ fun AgregarOutfitScreen() {
 
             // seleccion prendas
             Text(text = "Seleccionar Prendas", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            Text(text = "Elige la ropa para este outfit", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            Text(text = "Elige la ropa para este outfit", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = searchQuery,
