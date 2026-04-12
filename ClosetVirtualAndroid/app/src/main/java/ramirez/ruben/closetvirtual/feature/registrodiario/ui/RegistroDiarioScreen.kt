@@ -295,7 +295,7 @@ fun PrendaMockItem(
             }
         }
 
-        // Checkbox para seleccionar tus prendas (mock)
+        // checkbox para seleccionar tus prendas (mock)
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
