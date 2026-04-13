@@ -24,7 +24,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.unit.sp
-import ramirez.ruben.closetvirtual.components.CategoryMenu
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Tune
 import ramirez.ruben.closetvirtual.data.Outfit
 import ramirez.ruben.closetvirtual.data.mockOutfits
 import ramirez.ruben.closetvirtual.feature.registrodiario.ui.RegistroDiarioScreen
@@ -113,9 +115,10 @@ fun CalendarioScreen(onNavigateBack: () -> Unit = {}) {
         // categorias
         Spacer(modifier = Modifier.height(24.dp))
 
-        // llamamos al componente CategoryMenu
-        CategoryMenu(
-            modifier = Modifier.padding(bottom = 32.dp)
+        FiltrosCalendario(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 32.dp)
         )
 
         // outfits mock
@@ -236,6 +239,33 @@ fun CalendarioDaysOfWeek() {
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+fun FiltrosCalendario(
+    modifier: Modifier = Modifier
+) {
+    val filters = listOf("Estilo", "Formalidad", "Temporada", "Color")
+    LazyRow(
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        item {
+            Icon(
+                Icons.Default.Tune,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+        items(filters) { text ->
+            AssistChip(
+                onClick = {},
+                label = { Text(text) }
             )
         }
     }
