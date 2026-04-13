@@ -24,9 +24,6 @@ fun NavigationBottomPanel(navController: NavController) {
                 Icon(painterResource(id = R.mipmap.closet_icon), contentDescription = "Clóset")
                    },
 
-            label = {
-                Text("Clóset")
-                    },
             selected =
                 currentRoute == "closet_route",
 
@@ -39,10 +36,6 @@ fun NavigationBottomPanel(navController: NavController) {
             icon = {
                 Icon(painterResource(id = R.mipmap.main_icon), contentDescription = "Principal")
                    },
-
-            label = {
-                Text("Inicio")
-                    },
 
             selected =
                 currentRoute == "main_route",
@@ -57,10 +50,6 @@ fun NavigationBottomPanel(navController: NavController) {
                 Icon(painterResource(id = R.mipmap.calendario_icon), contentDescription = "Calendario")
                    },
 
-            label = {
-                Text("Calendario")
-                    },
-
             selected =
                 currentRoute == "calendario_route",
 
@@ -74,10 +63,6 @@ fun NavigationBottomPanel(navController: NavController) {
                 Icon(painterResource(id = R.mipmap.profile_icon), contentDescription = "Perfil"
                 ) },
 
-            label = {
-                Text("Perfil")
-                    },
-
             selected =
                 currentRoute == "profile_route",
 
@@ -87,3 +72,4 @@ fun NavigationBottomPanel(navController: NavController) {
         )
     }
 }
+
