@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.navigation.NavController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,7 +28,10 @@ import ramirez.ruben.closetvirtual.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen( onNavigateToRegister: () -> Unit = {} ){
+fun LoginScreen(
+    onNavigateToRegister: () -> Unit = {},
+    onLoginSuccess: () -> Unit = {}
+){
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     // Esto es para poder mostrar y ocultar la contrasena a gusto
@@ -143,7 +147,9 @@ fun LoginScreen( onNavigateToRegister: () -> Unit = {} ){
         Spacer(modifier = Modifier.height(48.dp))
 
         Button(
-            onClick = { println("Iniciar sesion con: Email=$email, Password=$password") },
+            onClick = {
+                onLoginSuccess()
+            },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors

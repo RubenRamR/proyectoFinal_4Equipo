@@ -7,7 +7,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import ramirez.ruben.closetvirtual.R
 
-//esta clase luego la tengo que poner en el main activity con un scaffold y asi para que se vea en todas las pantallas, lo hare cuando ya juntemos todo
 
 @Composable
 fun NavigationBottomPanel(navController: NavController) {
@@ -83,7 +82,7 @@ fun NavigationBottomPanel(navController: NavController) {
                 currentRoute == "profile_route",
 
             onClick = {
-                navController.navigate("profile_route")
+                navController.navigate("perfil_route")
             }
         )
     }

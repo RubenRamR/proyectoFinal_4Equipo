@@ -21,9 +21,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.remember
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import ramirez.ruben.closetvirtual.data.Prenda
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
+import androidx.compose.material3.FabPosition
+import androidx.compose.ui.res.painterResource
+import ramirez.ruben.closetvirtual.R
 
 @Preview(showBackground = true, name = "Light Mode")
 @Composable
@@ -42,17 +46,39 @@ fun OutfitsScreenDarkPreview() {
 }
 
 @Composable
-fun OutfitsScreen() {
+fun OutfitsScreen(
+    onNavigateToRegistroDiario: () -> Unit = {}
+) {
     val outfits = OutfitRepository.todosLosOutfits
 
     Scaffold(
-        bottomBar = { }, //adentro de estos corchetes puedes poner la barra de navegacion chris
-        floatingActionButton = { AddFab() }
+        bottomBar = { },
+        floatingActionButton = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                FloatingActionButton(onClick = { onNavigateToRegistroDiario() }) {
+                    Icon(
+                        painter = painterResource(id = R.mipmap.streak_icon),
+                        contentDescription = "Registro Diario",
+                        tint = Color.Unspecified
+                    )
+                }
+
+                AddFab()
+            }
+        }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
             BarraDeBusquedaOutfits()
             FiltrosOutfits()
-            OutfitsGrid(outfits)
+
+            Box(modifier = Modifier.weight(1f)) {
+                OutfitsGrid(outfits)
+            }
         }
     }
 }

@@ -53,6 +53,9 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import ramirez.ruben.closetvirtual.data.Prenda
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
+import androidx.compose.material3.FabPosition
+import androidx.compose.ui.res.painterResource
+import ramirez.ruben.closetvirtual.R
 
 @Preview(showBackground = true)
 @Composable
@@ -71,17 +74,40 @@ fun ClosetScreenDarkPreview() {
 }
 
 @Composable
-fun ClosetScreen() {
+fun ClosetScreen(
+    onNavigateToRegistroDiario: () -> Unit = {}
+) {
     val prendas = PrendaRepository.todasLasPrendas
 
     Scaffold(
-        bottomBar = { },  //AQUI PUEDES PONER LA BARRA DE NAVEGACION CHRIS adentro de estos corchetes
-        floatingActionButton = { AddFab() },
+        bottomBar = { },
+        floatingActionButtonPosition = FabPosition.Center,
+        floatingActionButton = {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                FloatingActionButton(onClick = { onNavigateToRegistroDiario() }) {
+                    Icon(
+                        painter = painterResource(id = R.mipmap.streak_icon),
+                        contentDescription = "Registro Diario",
+                        tint = Color.Unspecified
+                    )
+                }
+
+                AddFab()
+            }
+        },
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
             BarraDeBusqueda()
             Filtros()
-            PrendasGrid(prendas)
+            Box(modifier = Modifier.weight(1f)) {
+                PrendasGrid(prendas)
+            }
         }
     }
 }

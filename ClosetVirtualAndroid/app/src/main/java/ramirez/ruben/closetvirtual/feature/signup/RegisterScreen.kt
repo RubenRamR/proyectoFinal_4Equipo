@@ -29,7 +29,11 @@ import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen( onNavigateToLogin: () -> Unit = {} ){
+fun RegisterScreen(
+    onNavigateToLogin: () -> Unit = {},
+    onRegisterSuccess: () -> Unit = {}
+){
+
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -283,7 +287,7 @@ fun RegisterScreen( onNavigateToLogin: () -> Unit = {} ){
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { println("Registrar cuenta con: Email=$email, Password=$password") },
+            onClick = { onRegisterSuccess() },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors
