@@ -6,7 +6,7 @@ Esta aplicación permite al usuario gestionar su clóset digitalizando sus prend
 
 \-Equipo-
 
-Rubén Ramírez Robles/247617 - CU\_RegistrarPrenda
+Rubén Ramírez Robles/247617 - CU\_GestionPrenda & CU_PerfilUsuario
 Chris Fitch Lopez/252379 - CU\_RegistroDiario & CU\_Calendario
 David Campa / 245178 - CU Ver prendas & Ver outfits & Agregar outfit
 
