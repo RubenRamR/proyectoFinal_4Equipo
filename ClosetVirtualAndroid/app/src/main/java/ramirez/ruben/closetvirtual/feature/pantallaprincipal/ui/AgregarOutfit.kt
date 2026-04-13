@@ -15,6 +15,7 @@ import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
+import androidx.compose.material3.Label
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,24 +29,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import ramirez.ruben.closetvirtual.data.Prenda
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
-
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
-@Preview(showBackground = true, name = "Light Mode")
-@Composable
-fun AgregarOutfitScreenPreview() {
-    ClosetVirtualTheme {
-        AgregarOutfitScreen()
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
-@Composable
-fun AgregarOutfitScreenDarkPreview() {
-    ClosetVirtualTheme {
-        AgregarOutfitScreen()
-    }
-}
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -338,3 +321,20 @@ fun PrendaSelectionCard(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, name = "Light Mode")
+@Composable
+fun AgregarOutfitScreenPreview() {
+    ClosetVirtualTheme {
+        AgregarOutfitScreen()
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+fun AgregarOutfitScreenDarkPreview() {
+    ClosetVirtualTheme {
+        AgregarOutfitScreen()
+    }
+}
