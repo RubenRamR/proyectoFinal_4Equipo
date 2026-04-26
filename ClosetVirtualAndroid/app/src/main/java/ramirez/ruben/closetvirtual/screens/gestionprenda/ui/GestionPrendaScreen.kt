@@ -1,6 +1,5 @@
-package ramirez.ruben.closetvirtual.feature.gestionprenda.ui
+package ramirez.ruben.closetvirtual.screens.gestionprenda.ui
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

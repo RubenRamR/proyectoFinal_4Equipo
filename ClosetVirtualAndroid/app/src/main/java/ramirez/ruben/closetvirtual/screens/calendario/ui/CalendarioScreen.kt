@@ -1,4 +1,4 @@
-package ramirez.ruben.closetvirtual.feature.calendario.ui
+package ramirez.ruben.closetvirtual.screens.calendario.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -27,16 +27,16 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.Tune
-import ramirez.ruben.closetvirtual.data.Outfit
+import androidx.compose.ui.res.painterResource
+import ramirez.ruben.closetvirtual.R
 import ramirez.ruben.closetvirtual.data.mockOutfits
-import ramirez.ruben.closetvirtual.feature.registrodiario.ui.RegistroDiarioScreen
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
-import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
+import ramirez.ruben.closetvirtual.data.Outfit
 
 @Composable
 fun CalendarioScreen(onNavigateBack: () -> Unit = {}) {
@@ -60,11 +60,15 @@ fun CalendarioScreen(onNavigateBack: () -> Unit = {}) {
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterStart
         ) {
-            IconButton(onClick = onNavigateBack) {
+            IconButton(
+                onClick = onNavigateBack,
+                modifier = Modifier.offset(x = (-24).dp)
+            ) {
                 Icon(
-                    Icons.Filled.ArrowBack,
-                    contentDescription = "Regresar",
-                    tint = Color(0xFF26657A)
+                    painter = painterResource(id = R.mipmap.arrow_back),
+                    contentDescription = "Icono de atrás",
+                    tint = Color(0xFF26657A),
+                    modifier = Modifier.size(22.dp)
                 )
             }
         }
@@ -381,13 +385,14 @@ fun CalendarioGrid(
 @Composable
 fun OutfitCard(outfit: Outfit) {
     val isDark = isSystemInDarkTheme()
+    val cardBackgroundColor = if (isDark) Color(0xFF44344E) else Color(0xFFECE6F0)
 
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surface,
+        color = cardBackgroundColor,
         shadowElevation = 2.dp
     ) {
         Row(

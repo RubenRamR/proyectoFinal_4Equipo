@@ -1,9 +1,8 @@
-package ramirez.ruben.closetvirtual.feature.passwordrecovery
+package ramirez.ruben.closetvirtual.screens.passwordrecovery
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -16,13 +15,10 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ramirez.ruben.closetvirtual.feature.gestionprenda.ui.GestionPrendaScreen
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.R
 
@@ -65,7 +61,7 @@ fun PasswordRecoveryScreen(){
         TextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email", color = Color.Gray) },
+            label = { Text("Correo Electrónico", color = Color.Gray) },
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.mipmap.email_icon),
@@ -75,7 +71,7 @@ fun PasswordRecoveryScreen(){
                 )
             },
 
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.width(270.dp),
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             colors = TextFieldDefaults.colors(
@@ -90,7 +86,7 @@ fun PasswordRecoveryScreen(){
 
         Button(
             onClick = { println("Correo a enviar el enlace: Email=$email") },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.width(270.dp),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors
                 (containerColor = MaterialTheme.colorScheme.primary)

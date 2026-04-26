@@ -1,4 +1,4 @@
-package ramirez.ruben.closetvirtual.feature.registrodiario.ui
+package ramirez.ruben.closetvirtual.screens.registrodiario.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
@@ -49,11 +49,15 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
             contentAlignment = Alignment.CenterStart
         ) {
 
-            IconButton(onClick = onNavigateBack) {
+            IconButton(
+                onClick = onNavigateBack,
+                modifier = Modifier.offset(x = (-24).dp)
+            ) {
                 Icon(
-                    Icons.Filled.ArrowBack,
-                    contentDescription = "Regresar",
-                    tint = Color(0xFF26657A)
+                    painter = painterResource(id = R.mipmap.arrow_back),
+                    contentDescription = "Icono de atrás",
+                    tint = Color(0xFF26657A),
+                    modifier = Modifier.size(22.dp)
                 )
             }
         }
@@ -166,15 +170,6 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // Boton para agregar prendas que no esten en el closet (mock)
-                Text(
-                    text = "+",
-                    color = Color(0xFF26657A),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    modifier = Modifier.clickable {} // no sirve (aun)
-                )
             }
         }
 
@@ -211,8 +206,11 @@ fun PrendaMockItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val bgColor = if (isSelected) Color(0xFFE8F5E9) else MaterialTheme.colorScheme.surfaceVariant
-    val borderColor = if (isSelected) Color(0xFF4CAF50) else Color.Transparent
+
+    // Colorsitos
+    val highlightColor = Color(0xFF26657A)
+    val bgColor = if (isSelected) highlightColor.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant
+    val borderColor = if (isSelected) highlightColor else Color.Transparent
 
     // Mock de prendas favoritas
     var isFavorite by remember { mutableStateOf(false) }
@@ -289,25 +287,11 @@ fun PrendaMockItem(
                     ),
                     contentDescription = "Favorito",
                     modifier = Modifier
-                        .size(22.dp)
+                        .size(12.dp)
                         .clickable { isFavorite = !isFavorite }
                 )
             }
         }
-
-        // checkbox para seleccionar tus prendas (mock)
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .offset(x = 7.dp, y = (-8).dp)
-        ) {
-            Checkbox(
-                checked = isSelected,
-                onCheckedChange = { onClick() },
-                modifier = Modifier.size(18.dp)
-            )
-        }
-
     }
 }
 

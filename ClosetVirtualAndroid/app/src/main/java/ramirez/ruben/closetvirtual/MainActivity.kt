@@ -15,17 +15,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ramirez.ruben.closetvirtual.components.NavigationBottomPanel
-import ramirez.ruben.closetvirtual.feature.calendario.ui.CalendarioScreen
-import ramirez.ruben.closetvirtual.feature.detalleprenda.ui.DetallePrendaScreen
-import ramirez.ruben.closetvirtual.feature.gestionprenda.ui.GestionPrendaScreen
-import ramirez.ruben.closetvirtual.feature.login.LoginScreen
-import ramirez.ruben.closetvirtual.feature.pantallaprincipal.ui.AgregarOutfitScreen
-import ramirez.ruben.closetvirtual.feature.pantallaprincipal.ui.ClosetScreen
-import ramirez.ruben.closetvirtual.feature.pantallaprincipal.ui.OutfitsScreen
-import ramirez.ruben.closetvirtual.feature.passwordrecovery.PasswordRecoveryScreen
-import ramirez.ruben.closetvirtual.feature.perfilusuario.ui.PerfilScreen
-import ramirez.ruben.closetvirtual.feature.registrodiario.ui.RegistroDiarioScreen
-import ramirez.ruben.closetvirtual.feature.signup.RegisterScreen
+import ramirez.ruben.closetvirtual.screens.calendario.ui.CalendarioScreen
+import ramirez.ruben.closetvirtual.screens.detalleprenda.ui.DetallePrendaScreen
+import ramirez.ruben.closetvirtual.screens.gestionprenda.ui.GestionPrendaScreen
+import ramirez.ruben.closetvirtual.screens.login.LoginScreen
+import ramirez.ruben.closetvirtual.screens.pantallaprincipal.ui.AgregarOutfitScreen
+import ramirez.ruben.closetvirtual.screens.pantallaprincipal.ui.ClosetScreen
+import ramirez.ruben.closetvirtual.screens.pantallaprincipal.ui.OutfitsScreen
+import ramirez.ruben.closetvirtual.screens.passwordrecovery.PasswordRecoveryScreen
+import ramirez.ruben.closetvirtual.screens.perfilusuario.ui.PerfilScreen
+import ramirez.ruben.closetvirtual.screens.registrodiario.ui.RegistroDiarioScreen
+import ramirez.ruben.closetvirtual.screens.signup.RegisterScreen
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 class MainActivity : ComponentActivity() {

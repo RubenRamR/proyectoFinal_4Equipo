@@ -1,9 +1,8 @@
-package ramirez.ruben.closetvirtual.feature.signup
+package ramirez.ruben.closetvirtual.screens.signup
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ramirez.ruben.closetvirtual.R
 import androidx.compose.foundation.verticalScroll
-import ramirez.ruben.closetvirtual.feature.login.LoginScreen
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +60,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(35.dp))
 
         Text(
-            text = "Sign Up",
+            text = "Registrarse",
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -75,7 +73,7 @@ fun RegisterScreen(
         TextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Name", color = Color.Gray) },
+            label = { Text("Nombre", color = Color.Gray) },
             leadingIcon = {
                 Image(
                     painter = painterResource(id = ramirez.ruben.closetvirtual.R.mipmap.user_icon),
@@ -85,7 +83,7 @@ fun RegisterScreen(
                 )
             },
 
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.width(270.dp),
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             colors = TextFieldDefaults.colors(
@@ -101,7 +99,7 @@ fun RegisterScreen(
         TextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email", color = Color.Gray) },
+            label = { Text("Correo Electrónico", color = Color.Gray) },
             leadingIcon = {
                 Image(
                     painter = painterResource(id = ramirez.ruben.closetvirtual.R.mipmap.email_icon),
@@ -111,7 +109,7 @@ fun RegisterScreen(
                 )
             },
 
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.width(270.dp),
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             colors = TextFieldDefaults.colors(
@@ -127,7 +125,7 @@ fun RegisterScreen(
         TextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password", color = Color.Gray) },
+            label = { Text("Contraseña", color = Color.Gray) },
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.mipmap.password_icon),
@@ -152,7 +150,7 @@ fun RegisterScreen(
                     )
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.width(270.dp),
             singleLine = true,
             visualTransformation =
                 if (isPasswordVisible) VisualTransformation.None
@@ -172,7 +170,7 @@ fun RegisterScreen(
         TextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = { Text("Confirm Password", color = Color.Gray) },
+            label = { Text("Confirmar Contraseña", color = Color.Gray) },
             isError = showPasswordError,
             supportingText = {
                 if (showPasswordError) {
@@ -203,7 +201,7 @@ fun RegisterScreen(
                     )
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.width(270.dp),
             singleLine = true,
             visualTransformation =
                 if (isConfirmPasswordVisible) VisualTransformation.None
@@ -224,7 +222,7 @@ fun RegisterScreen(
         TextField(
             value = dateOfBirth,
             onValueChange = { dateOfBirth = it },
-            label = { Text("(DD/MM/YYYY)", color = Color.Gray) },
+            label = { Text("(DD/MM/AAAA)", color = Color.Gray) },
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.mipmap.calendar_icon),
@@ -233,7 +231,7 @@ fun RegisterScreen(
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
                 )
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.width(270.dp),
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             colors = TextFieldDefaults.colors(
@@ -255,11 +253,11 @@ fun RegisterScreen(
                 value = selectedGender,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Gender", color = Color.Gray) },
+                label = { Text("Genero", color = Color.Gray) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedGender) }, // La flechita que gira
                 modifier = Modifier
                     .menuAnchor()
-                    .fillMaxWidth(),
+                    .width(270.dp),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
@@ -288,13 +286,13 @@ fun RegisterScreen(
 
         Button(
             onClick = { onRegisterSuccess() },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.width(270.dp),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors
                 (containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                text = "Sign up",
+                text = "Registrarse",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -313,13 +311,13 @@ fun RegisterScreen(
 
         Button(
             onClick = { onNavigateToLogin() }, // Aca manda al usuario al login
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.width(270.dp),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors
                 (containerColor = MaterialTheme.colorScheme.tertiary)
         ) {
             Text(
-                text = "Login",
+                text = "Iniciar Sesión",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onTertiary

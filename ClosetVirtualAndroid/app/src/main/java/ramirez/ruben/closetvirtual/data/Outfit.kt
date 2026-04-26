@@ -1,5 +1,8 @@
 package ramirez.ruben.closetvirtual.data
 
+import ramirez.ruben.closetvirtual.R
+import ramirez.ruben.closetvirtual.components.Outfit
+
 // mock para los Outfits
 data class Outfit(
     val id: Int,
@@ -16,19 +19,22 @@ val mockOutfits = listOf(
         "Noche de Gala",
         "Vestido largo seda, tacones plata, collar perlas",
         "11/04/26",
-        ramirez.ruben.closetvirtual.R.mipmap.no_image),
+        R.mipmap.no_image
+    ),
 
     Outfit(
         2,
         "Gym Flow",
         "Leggings negros, top deportivo, tenis running",
         "10/04/26",
-        ramirez.ruben.closetvirtual.R.mipmap.no_image),
+        R.mipmap.no_image
+    ),
 
     Outfit(
         3,
         "Casual Friday",
         "Jeans claros, playera blanca, chamarra mezclilla",
         "09/04/26",
-        ramirez.ruben.closetvirtual.R.mipmap.no_image)
+        R.mipmap.no_image
+    )
 )

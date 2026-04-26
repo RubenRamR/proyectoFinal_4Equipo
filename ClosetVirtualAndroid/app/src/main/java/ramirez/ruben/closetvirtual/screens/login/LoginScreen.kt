@@ -1,4 +1,4 @@
-package ramirez.ruben.closetvirtual.feature.login
+package ramirez.ruben.closetvirtual.screens.login
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
@@ -18,11 +18,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.navigation.NavController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ramirez.ruben.closetvirtual.feature.gestionprenda.ui.GestionPrendaScreen
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.R
 
@@ -49,7 +47,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(35.dp))
 
         Text(
-            text = "Login",
+            text = "Inicio de Sesión",
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -62,7 +60,7 @@ fun LoginScreen(
         TextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email", color = Color.Gray) },
+            label = { Text("Correo Electrónico", color = Color.Gray) },
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.mipmap.email_icon),
@@ -72,7 +70,7 @@ fun LoginScreen(
                 )
             },
 
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.width(270.dp),
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             colors = TextFieldDefaults.colors(
@@ -88,7 +86,7 @@ fun LoginScreen(
         TextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password", color = Color.Gray) },
+            label = { Text("Contraseña", color = Color.Gray) },
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.mipmap.password_icon),
@@ -116,7 +114,7 @@ fun LoginScreen(
                 }
             },
 
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.width(270.dp),
             singleLine = true,
             visualTransformation =
                 if (isPasswordVisible) VisualTransformation.None
@@ -135,12 +133,13 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Forgot password?",
-            color = Color(0xFF1E88E5),
+            text = "¿Olvidaste tu contraseña?",
+            color = Color(0xFF4F46E5),
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .align(Alignment.End)
+                .padding(end = 40.dp)
                 .clickable { println("Usuario Contraseña olvidada") }
         )
 
@@ -150,38 +149,38 @@ fun LoginScreen(
             onClick = {
                 onLoginSuccess()
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.width(270.dp),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors
                 (containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                text = "Login",
+                text = "Iniciar Sesión",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "--------------------------- or ---------------------------",
+            text = "-------------------------- or --------------------------",
             color = Color.Gray,
             fontSize = 16.sp
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Button(
             onClick = { onNavigateToRegister() }, // Aca manda al usuario a que se registre
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.width(270.dp),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors
                 (containerColor = MaterialTheme.colorScheme.tertiary)
         ) {
             Text(
-                text = "Sign up",
+                text = "Registrarse",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onTertiary
@@ -190,10 +189,13 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(90.dp))
 
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center) {
             Image(
                 painter = painterResource(id = R.mipmap.fingerprint),
                 contentDescription = "Iniciar sesión con huella",
+                alpha = 0.5f,
                 modifier = Modifier
                     .size(100.dp)
                     .clickable { println("Inicio de sesion fon Fingerprint") }

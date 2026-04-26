@@ -1,4 +1,4 @@
-package ramirez.ruben.closetvirtual.feature.pantallaprincipal.ui
+package ramirez.ruben.closetvirtual.data
 
 import ramirez.ruben.closetvirtual.R
 import ramirez.ruben.closetvirtual.data.Prenda
