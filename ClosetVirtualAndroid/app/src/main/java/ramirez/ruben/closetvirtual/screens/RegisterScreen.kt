@@ -1,4 +1,4 @@
-package ramirez.ruben.closetvirtual.screens.signup
+package ramirez.ruben.closetvirtual.screens
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
@@ -76,7 +76,7 @@ fun RegisterScreen(
             label = { Text("Nombre", color = Color.Gray) },
             leadingIcon = {
                 Image(
-                    painter = painterResource(id = ramirez.ruben.closetvirtual.R.mipmap.user_icon),
+                    painter = painterResource(id = R.mipmap.user_icon),
                     contentDescription = "Icono de usuario",
                     modifier = Modifier.size(20.dp),
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
@@ -102,7 +102,7 @@ fun RegisterScreen(
             label = { Text("Correo Electrónico", color = Color.Gray) },
             leadingIcon = {
                 Image(
-                    painter = painterResource(id = ramirez.ruben.closetvirtual.R.mipmap.email_icon),
+                    painter = painterResource(id = R.mipmap.email_icon),
                     contentDescription = "Icono de email",
                     modifier = Modifier.size(20.dp),
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)

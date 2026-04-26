@@ -1,5 +1,6 @@
-package ramirez.ruben.closetvirtual.screens.pantallaprincipal.ui
+package ramirez.ruben.closetvirtual.screens
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -329,7 +330,7 @@ fun AgregarOutfitScreenPreview() {
 }
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 fun AgregarOutfitScreenDarkPreview() {
     ClosetVirtualTheme {

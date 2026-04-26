@@ -1,5 +1,6 @@
-package ramirez.ruben.closetvirtual.screens.pantallaprincipal.ui
+package ramirez.ruben.closetvirtual.screens
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,7 +48,7 @@ fun PantallaDetalleOutfitPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
 fun PantallaDetalleOutfitDarkPreview() {
     ClosetVirtualTheme {

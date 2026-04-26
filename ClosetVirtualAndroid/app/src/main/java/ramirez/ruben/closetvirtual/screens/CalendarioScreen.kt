@@ -1,6 +1,7 @@
-package ramirez.ruben.closetvirtual.screens.calendario.ui
+package ramirez.ruben.closetvirtual.screens
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import ramirez.ruben.closetvirtual.R
 import ramirez.ruben.closetvirtual.data.mockOutfits
@@ -405,11 +406,11 @@ fun OutfitCard(outfit: Outfit) {
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.size(80.dp)
             ) {
-                androidx.compose.foundation.Image(
-                    painter = androidx.compose.ui.res.painterResource(id = outfit.imagenRes),
+                Image(
+                    painter = painterResource(id = outfit.imagenRes),
                     contentDescription = "Imagen del outfit",
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                    contentScale = ContentScale.Crop
                 )
             }
 
@@ -440,7 +441,7 @@ fun OutfitCard(outfit: Outfit) {
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Icon(
-                        painter = androidx.compose.ui.res.painterResource(id = ramirez.ruben.closetvirtual.R.mipmap.calendario_icon),
+                        painter = painterResource(id = R.mipmap.calendario_icon),
                         contentDescription = null,
                         modifier = Modifier.size(12.dp),
                         tint = if (isDark) Color(0x4DFFFFFF) else Color(0x4D808080)

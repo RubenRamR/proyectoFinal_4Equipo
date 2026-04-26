@@ -1,4 +1,4 @@
-package ramirez.ruben.closetvirtual.screens.gestionprenda.ui
+package ramirez.ruben.closetvirtual.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

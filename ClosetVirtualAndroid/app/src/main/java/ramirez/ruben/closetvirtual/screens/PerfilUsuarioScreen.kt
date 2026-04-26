@@ -1,4 +1,4 @@
-package ramirez.ruben.closetvirtual.screens.perfilusuario.ui
+package ramirez.ruben.closetvirtual.screens
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState

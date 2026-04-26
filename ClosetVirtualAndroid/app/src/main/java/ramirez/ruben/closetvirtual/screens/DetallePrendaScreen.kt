@@ -1,4 +1,4 @@
-package ramirez.ruben.closetvirtual.screens.detalleprenda.ui
+package ramirez.ruben.closetvirtual.screens
 
 import android.content.res.Configuration
 import android.net.Uri

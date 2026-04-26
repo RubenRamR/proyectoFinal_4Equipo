@@ -15,17 +15,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ramirez.ruben.closetvirtual.components.NavigationBottomPanel
-import ramirez.ruben.closetvirtual.screens.calendario.ui.CalendarioScreen
-import ramirez.ruben.closetvirtual.screens.detalleprenda.ui.DetallePrendaScreen
-import ramirez.ruben.closetvirtual.screens.gestionprenda.ui.GestionPrendaScreen
-import ramirez.ruben.closetvirtual.screens.login.LoginScreen
-import ramirez.ruben.closetvirtual.screens.pantallaprincipal.ui.AgregarOutfitScreen
-import ramirez.ruben.closetvirtual.screens.pantallaprincipal.ui.ClosetScreen
-import ramirez.ruben.closetvirtual.screens.pantallaprincipal.ui.OutfitsScreen
-import ramirez.ruben.closetvirtual.screens.passwordrecovery.PasswordRecoveryScreen
-import ramirez.ruben.closetvirtual.screens.perfilusuario.ui.PerfilScreen
-import ramirez.ruben.closetvirtual.screens.registrodiario.ui.RegistroDiarioScreen
-import ramirez.ruben.closetvirtual.screens.signup.RegisterScreen
+import ramirez.ruben.closetvirtual.screens.CalendarioScreen
+import ramirez.ruben.closetvirtual.screens.DetallePrendaScreen
+import ramirez.ruben.closetvirtual.screens.GestionPrendaScreen
+import ramirez.ruben.closetvirtual.screens.LoginScreen
+import ramirez.ruben.closetvirtual.screens.AgregarOutfitScreen
+import ramirez.ruben.closetvirtual.screens.ClosetScreen
+import ramirez.ruben.closetvirtual.screens.OutfitsScreen
+import ramirez.ruben.closetvirtual.screens.PasswordRecoveryScreen
+import ramirez.ruben.closetvirtual.screens.PerfilScreen
+import ramirez.ruben.closetvirtual.screens.RegistroDiarioScreen
+import ramirez.ruben.closetvirtual.screens.RegisterScreen
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 class MainActivity : ComponentActivity() {
