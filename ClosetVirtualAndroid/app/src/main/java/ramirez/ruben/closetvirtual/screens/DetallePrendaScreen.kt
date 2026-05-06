@@ -6,12 +6,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.magnifier
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -238,16 +240,21 @@ private fun SeccionEstadisticas(state: PrendaDetalleUiState) {
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Estampada", fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground)
+            Text(
+                text = "Estampada",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
             Spacer(modifier = Modifier.width(8.dp))
-            Checkbox(
-                checked = state.esEstampada,
-                onCheckedChange = {},
-                colors = CheckboxDefaults.colors(
-                    checkedColor = if (isDark) Color.White else Color(0xFF6750A4),
-                    checkmarkColor = if (isDark) Color(0xFF5E9C94) else Color.White,
-                    uncheckedColor = MaterialTheme.colorScheme.onBackground
-                )
+
+            Icon(
+                imageVector = if (state.esEstampada) Icons.Default.Check else Icons.Default.Close,
+                contentDescription = if (state.esEstampada) "Es estampada" else "No es estampada",
+                tint = if (state.esEstampada) {
+                    if (isDark) Color(0xFF5E9C94) else Color(0xFF2D4B55)
+                } else {
+                    MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+                }
             )
         }
     }
@@ -258,16 +265,16 @@ private fun SeccionAtributosEstaticos(state: PrendaDetalleUiState) {
     Row(
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                "Categoria",
+                "Categoría",
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(state.categoria, fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground)
         }
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 "Temporada",
                 fontWeight = FontWeight.Bold,

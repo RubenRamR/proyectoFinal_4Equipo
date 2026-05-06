@@ -1,3 +1,30 @@
 <resources>
-    <string name="app_name">ClosetVirtual</string>
+    <string name="app_name">Closet Virtual</string>
+
+    //GestionPrenda
+    <string name="cd_back">Regresar</string>
+    <string name="cd_prenda_photo">Foto de la prenda</string>
+    <string name="cd_edit_photo">Editar Foto</string>
+    <string name="cd_add_photo">Añadir Foto</string>
+    <string name="cd_add_tag">Añadir</string>
+    <string name="cd_remove_tag">Eliminar tag</string>
+
+    <string name="title_edit_prenda">Editar prenda</string>
+    <string name="title_register_prenda">Registrar prenda</string>
+    <string name="label_printed">Estampada</string>
+    <string name="label_tag_vintage">Vintage</string>
+    <string name="label_tag_favorite">Favorito</string>
+
+    <string name="hint_name">Nombre de la prenda</string>
+    <string name="hint_brand">Marca</string>
+    <string name="hint_category">Categoría</string>
+    <string name="hint_color">Color</string>
+    <string name="hint_season">Temporada</string>
+    <string name="hint_size">Talla</string>
+    <string name="hint_formality">Formalidad</string>
+    <string name="hint_add_tag">Añadir tag</string>
+
+    <string name="btn_save">Guardar</string>
+    <string name="btn_delete">Eliminar</string>
+    <string name="btn_register">Registrar prenda</string>
 </resources>

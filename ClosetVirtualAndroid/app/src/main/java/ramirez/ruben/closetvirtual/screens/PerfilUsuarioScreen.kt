@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,7 +46,7 @@ fun PerfilScreen(
     var dateOfBirth by remember { mutableStateOf("15/08/2000") }
 
     var expandedGender by remember { mutableStateOf(false) }
-    var selectedGender by remember { mutableStateOf("Hombre") }
+    var selectedGender by remember { mutableStateOf("Masculino") }
     val genderOptions = listOf("Mujer", "Hombre", "Personalizado")
 
     var isBiometricsEnabled by remember { mutableStateOf(true) }
@@ -145,7 +146,7 @@ fun PerfilScreen(
             TextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Name", color = Color.Gray) },
+                label = { Text("Nombre", color = Color.Gray) },
                 leadingIcon = {
                     Image(
                         painter = painterResource(id = R.mipmap.user_icon),
@@ -178,7 +179,7 @@ fun PerfilScreen(
                 value = email,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Email", color = Color.Gray) },
+                label = { Text("Correo electrónico", color = Color.Gray) },
                 leadingIcon = {
                     Image(
                         painter = painterResource(id = R.mipmap.email_icon),
@@ -190,12 +191,15 @@ fun PerfilScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color.Gray,
+                    unfocusedTextColor = Color.Gray,
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.LightGray,
-                    focusedIndicatorColor = Color.LightGray,
-                    focusedTextColor = Color.Gray,
-                    unfocusedTextColor = Color.Gray
+                    disabledContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent,
                 )
             )
 
@@ -318,19 +322,21 @@ fun PerfilScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
+            TextButton(
                 onClick = onLogoutClick,
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(50.dp),
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = Color(0xFFD32F2F)
+                )
             ) {
                 Text(
-                    "Cerrar sesión",
+                    text = "Cerrar sesión",
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    fontWeight = FontWeight.Medium,
+                    textDecoration = TextDecoration.Underline
                 )
             }
 

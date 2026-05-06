@@ -1,5 +1,9 @@
 package ramirez.ruben.closetvirtual.screens
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,24 +18,22 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource // IMPORTANTE
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import ramirez.ruben.closetvirtual.R // ASEGÚRATE DE ESTA IMPORTACIÓN
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.utils.OpcionColor
 import ramirez.ruben.closetvirtual.utils.PrendaConstants
@@ -45,13 +47,18 @@ fun GestionPrendaScreen(
     var nombre by remember { mutableStateOf("") }
     var marca by remember { mutableStateOf("") }
     var esEstampada by remember { mutableStateOf(false) }
-    var tagsList by remember { mutableStateOf(listOf("Vintage", "Favorito")) }
 
-    var categoria by remember { mutableStateOf("Categoría") }
-    var colorPrenda by remember { mutableStateOf("Color") }
-    var temporada by remember { mutableStateOf("Temporada") }
-    var talla by remember { mutableStateOf("Talla") }
-    var formalidad by remember { mutableStateOf("Formalidad") }
+    // Usamos stringResource para los tags por defecto
+    val tagVintage = stringResource(R.string.label_tag_vintage)
+    val tagFavorito = stringResource(R.string.label_tag_favorite)
+    var tagsList by remember { mutableStateOf(listOf(tagVintage, tagFavorito)) }
+
+    // Usamos los strings de values para los estados iniciales
+    var categoria by remember { mutableStateOf("") } // Mejor inicializar vacío
+    var colorPrenda by remember { mutableStateOf("") }
+    var temporada by remember { mutableStateOf("") }
+    var talla by remember { mutableStateOf("") }
+    var formalidad by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
     Scaffold(
@@ -62,7 +69,7 @@ fun GestionPrendaScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             Icons.Filled.ArrowBack,
-                            contentDescription = "Regresar",
+                            contentDescription = stringResource(R.string.cd_back),
                             tint = Color(0xFF26657A)
                         )
                     }
@@ -79,9 +86,9 @@ fun GestionPrendaScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 1. Título dinámico
             Text(
-                text = if (isEditMode) "Editar prenda" else "Registrar prenda",
+                text = if (isEditMode) stringResource(R.string.title_edit_prenda)
+                else stringResource(R.string.title_register_prenda),
                 fontSize = 32.sp,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
@@ -95,8 +102,9 @@ fun GestionPrendaScreen(
                 nombre = nombre, onNombreChange = { nombre = it },
                 marca = marca, onMarcaChange = { marca = it },
                 imageUri = imageUri, onImageSelected = { imageUri = it },
-                isEditMode = isEditMode // Le pasamos el modo a la foto
+                isEditMode = isEditMode
             )
+
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 24.dp),
                 color = MaterialTheme.colorScheme.outlineVariant
@@ -124,37 +132,36 @@ fun GestionPrendaScreen(
                 color = MaterialTheme.colorScheme.outlineVariant
             )
 
-            // 2. Botones dinámicos
             if (isEditMode) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Button(
-                        onClick = { /* Guardar cambios */ },
+                        onClick = { /* Guardar */ },
                         modifier = Modifier.weight(1f).height(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Guardar", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(stringResource(R.string.btn_save), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     }
                     Button(
-                        onClick = { /* Eliminar prenda */ },
+                        onClick = { /* Eliminar */ },
                         modifier = Modifier.weight(1f).height(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Eliminar", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(stringResource(R.string.btn_delete), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     }
                 }
             } else {
                 Button(
-                    onClick = { /* Registrar click*/ },
+                    onClick = { /* Registrar */ },
                     modifier = Modifier.fillMaxWidth(0.6f).height(50.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Registrar prenda", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    Text(stringResource(R.string.btn_register), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
                 }
             }
 
@@ -179,28 +186,24 @@ private fun SeccionFotoYTextos(
         Box(
             modifier = Modifier
                 .size(120.dp)
-                .background(
-                    MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(8.dp)
-                )
+                .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(8.dp))
                 .clickable {
-                    photoPickerLauncher.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
+                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
             contentAlignment = Alignment.Center
         ) {
             if (imageUri != null) {
                 AsyncImage(
                     model = imageUri,
-                    contentDescription = "Foto de la prenda",
+                    contentDescription = stringResource(R.string.cd_prenda_photo),
                     modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
                 )
             } else {
                 Icon(
                     imageVector = Icons.Outlined.Add,
-                    contentDescription = if (isEditMode) "Editar Foto" else "Añadir Foto",
+                    contentDescription = if (isEditMode) stringResource(R.string.cd_edit_photo)
+                    else stringResource(R.string.cd_add_photo),
                     modifier = Modifier.size(32.dp),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
@@ -209,21 +212,13 @@ private fun SeccionFotoYTextos(
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedTextField(
                 value = nombre, onValueChange = onNombreChange,
-                placeholder = { Text("Nombre de la prenda") },
-                modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp), singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                    focusedContainerColor = MaterialTheme.colorScheme.surface
-                )
+                placeholder = { Text(stringResource(R.string.hint_name)) },
+                modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp), singleLine = true
             )
             OutlinedTextField(
                 value = marca, onValueChange = onMarcaChange,
-                placeholder = { Text("Marca") },
-                modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp), singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                    focusedContainerColor = MaterialTheme.colorScheme.surface
-                )
+                placeholder = { Text(stringResource(R.string.hint_brand)) },
+                modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp), singleLine = true
             )
         }
     }
@@ -238,6 +233,7 @@ private fun SeccionAtributos(
     tallaActual: String, onTallaChange: (String) -> Unit,
     formalidadActual: String, onFormalidadChange: (String) -> Unit
 ) {
+    // Estas listas pueden quedarse así o moverse a arrays en XML si quieres traducir los items
     val categorias = listOf("Top", "Bottom", "Outerwear", "Zapatos", "Accesorios")
     val temporadas = listOf("Primavera", "Verano", "Otoño", "Invierno", "Todas")
     val tallas = listOf("XS", "S", "M", "L", "XL", "Unitalla")
@@ -246,25 +242,20 @@ private fun SeccionAtributos(
     val isDark = isSystemInDarkTheme()
 
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-
-        // 1. Estampada y categoria
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-                Text("Estampada", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
-
+                Text(stringResource(R.string.label_printed), fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
                 Spacer(modifier = Modifier.width(12.dp))
-
                 Checkbox(
                     checked = esEstampada,
                     onCheckedChange = onEstampadaChange,
                     colors = CheckboxDefaults.colors(
                         checkedColor = if (isDark) Color.White else Color(0xFF6750A4),
-                        checkmarkColor = if (isDark) Color(0xFF5E9C94) else Color.White,
-                        uncheckedColor = MaterialTheme.colorScheme.onBackground
+                        checkmarkColor = if (isDark) Color(0xFF5E9C94) else Color.White
                     )
                 )
             }
@@ -272,42 +263,34 @@ private fun SeccionAtributos(
             Box(modifier = Modifier.weight(1f)) {
                 InteractiveDropdown(
                     opciones = categorias,
-                    seleccionActual = categoriaActual,
+                    seleccionActual = categoriaActual.ifEmpty { stringResource(R.string.hint_category) },
                     onSeleccionChange = onCategoriaChange
                 )
             }
         }
 
-        // 2. Color y temporada
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Box(modifier = Modifier.weight(1f)) {
                 ColorPaletteDropdown(
                     opciones = PrendaConstants.coloresPrenda,
-                    seleccionActual = colorActual,
+                    seleccionActual = colorActual.ifEmpty { stringResource(R.string.hint_color) },
                     onSeleccionChange = onColorChange
                 )
             }
             Box(modifier = Modifier.weight(1f)) {
                 InteractiveDropdown(
                     opciones = temporadas,
-                    seleccionActual = temporadaActual,
+                    seleccionActual = temporadaActual.ifEmpty { stringResource(R.string.hint_season) },
                     onSeleccionChange = onTemporadaChange
                 )
             }
         }
 
-        // 3. Talla y formalidad
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Box(modifier = Modifier.weight(1f)) {
                 InteractiveDropdown(
                     opciones = tallas,
-                    seleccionActual = tallaActual,
+                    seleccionActual = tallaActual.ifEmpty { stringResource(R.string.hint_size) },
                     onSeleccionChange = onTallaChange,
                     isEditable = true
                 )
@@ -315,7 +298,7 @@ private fun SeccionAtributos(
             Box(modifier = Modifier.weight(1f)) {
                 InteractiveDropdown(
                     opciones = formalidades,
-                    seleccionActual = formalidadActual,
+                    seleccionActual = formalidadActual.ifEmpty { stringResource(R.string.hint_formality) },
                     onSeleccionChange = onFormalidadChange
                 )
             }
@@ -330,7 +313,6 @@ private fun SeccionTags(
     onRemoveTag: (String) -> Unit
 ) {
     var tagInput by remember { mutableStateOf("") }
-
     val filaSuperior = tagsList.filterIndexed { index, _ -> index % 2 == 0 }
     val filaInferior = tagsList.filterIndexed { index, _ -> index % 2 != 0 }
 
@@ -343,14 +325,10 @@ private fun SeccionTags(
             OutlinedTextField(
                 value = tagInput,
                 onValueChange = { tagInput = it },
-                placeholder = { Text("Añadir tag") },
+                placeholder = { Text(stringResource(R.string.hint_add_tag)) },
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(8.dp),
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                    focusedContainerColor = MaterialTheme.colorScheme.surface
-                )
+                singleLine = true
             )
             IconButton(
                 onClick = {
@@ -359,15 +337,12 @@ private fun SeccionTags(
                     }
                 },
                 modifier = Modifier
-                    .background(
-                        MaterialTheme.colorScheme.tertiary,
-                        shape = RoundedCornerShape(8.dp)
-                    )
+                    .background(MaterialTheme.colorScheme.tertiary, shape = RoundedCornerShape(8.dp))
                     .size(56.dp)
             ) {
                 Icon(
                     Icons.Filled.Add,
-                    contentDescription = "Añadir",
+                    contentDescription = stringResource(R.string.cd_add_tag),
                     tint = MaterialTheme.colorScheme.onTertiary
                 )
             }
@@ -375,61 +350,25 @@ private fun SeccionTags(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
-        ) {
+        Row(modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-
-                // FILA 1
-                if (filaSuperior.isNotEmpty()) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        filaSuperior.forEach { tag ->
-                            Surface(
-                                color = MaterialTheme.colorScheme.tertiary,
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .clickable { onRemoveTag(tag) }
-                                        .padding(horizontal = 12.dp, vertical = 6.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(tag, color = MaterialTheme.colorScheme.onTertiary)
-                                    Icon(
-                                        Icons.Filled.Close,
-                                        contentDescription = "Eliminar tag",
-                                        modifier = Modifier.size(16.dp).padding(start = 4.dp),
-                                        tint = MaterialTheme.colorScheme.onTertiary
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // FILA 2
-                if (filaInferior.isNotEmpty()) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        filaInferior.forEach { tag ->
-                            Surface(
-                                color = MaterialTheme.colorScheme.tertiary,
-                                shape = RoundedCornerShape(8.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .clickable { onRemoveTag(tag) }
-                                        .padding(horizontal = 12.dp, vertical = 6.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(tag, color = MaterialTheme.colorScheme.onTertiary)
-                                    Icon(
-                                        Icons.Filled.Close,
-                                        contentDescription = "Eliminar tag",
-                                        modifier = Modifier.size(16.dp).padding(start = 4.dp),
-                                        tint = MaterialTheme.colorScheme.onTertiary
-                                    )
+                listOf(filaSuperior, filaInferior).forEach { fila ->
+                    if (fila.isNotEmpty()) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            fila.forEach { tag ->
+                                Surface(color = MaterialTheme.colorScheme.tertiary, shape = RoundedCornerShape(8.dp)) {
+                                    Row(
+                                        modifier = Modifier.clickable { onRemoveTag(tag) }.padding(horizontal = 12.dp, vertical = 6.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(tag, color = MaterialTheme.colorScheme.onTertiary)
+                                        Icon(
+                                            Icons.Filled.Close,
+                                            contentDescription = stringResource(R.string.cd_remove_tag),
+                                            modifier = Modifier.size(16.dp).padding(start = 4.dp),
+                                            tint = MaterialTheme.colorScheme.onTertiary
+                                        )
+                                    }
                                 }
                             }
                         }

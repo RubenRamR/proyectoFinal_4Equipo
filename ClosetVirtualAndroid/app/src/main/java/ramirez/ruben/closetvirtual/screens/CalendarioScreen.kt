@@ -26,6 +26,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -66,7 +67,7 @@ fun CalendarioScreen(onNavigateBack: () -> Unit = {}) {
                 modifier = Modifier.offset(x = (-24).dp)
             ) {
                 Icon(
-                    painter = painterResource(id = R.mipmap.arrow_back),
+                    imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Icono de atrás",
                     tint = Color(0xFF26657A),
                     modifier = Modifier.size(22.dp)
