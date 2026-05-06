@@ -26,14 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource // IMPORTANTE
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import ramirez.ruben.closetvirtual.R // ASEGÚRATE DE ESTA IMPORTACIÓN
+import ramirez.ruben.closetvirtual.R
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.utils.OpcionColor
 import ramirez.ruben.closetvirtual.utils.PrendaConstants
@@ -48,13 +46,11 @@ fun GestionPrendaScreen(
     var marca by remember { mutableStateOf("") }
     var esEstampada by remember { mutableStateOf(false) }
 
-    // Usamos stringResource para los tags por defecto
     val tagVintage = stringResource(R.string.label_tag_vintage)
     val tagFavorito = stringResource(R.string.label_tag_favorite)
     var tagsList by remember { mutableStateOf(listOf(tagVintage, tagFavorito)) }
 
-    // Usamos los strings de values para los estados iniciales
-    var categoria by remember { mutableStateOf("") } // Mejor inicializar vacío
+    var categoria by remember { mutableStateOf("") }
     var colorPrenda by remember { mutableStateOf("") }
     var temporada by remember { mutableStateOf("") }
     var talla by remember { mutableStateOf("") }
@@ -89,9 +85,8 @@ fun GestionPrendaScreen(
             Text(
                 text = if (isEditMode) stringResource(R.string.title_edit_prenda)
                 else stringResource(R.string.title_register_prenda),
-                fontSize = 32.sp,
+                style = MaterialTheme.typography.headlineLarge, // Montserrat 32sp Bold desde Type.kt
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -143,7 +138,11 @@ fun GestionPrendaScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text(stringResource(R.string.btn_save), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(
+                            text = stringResource(R.string.btn_save),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.White
+                        )
                     }
                     Button(
                         onClick = { /* Eliminar */ },
@@ -151,7 +150,11 @@ fun GestionPrendaScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text(stringResource(R.string.btn_delete), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(
+                            text = stringResource(R.string.btn_delete),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.White
+                        )
                     }
                 }
             } else {
@@ -161,10 +164,13 @@ fun GestionPrendaScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text(stringResource(R.string.btn_register), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    Text(
+                        text = stringResource(R.string.btn_register),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.White
+                    )
                 }
             }
-
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
@@ -213,12 +219,14 @@ private fun SeccionFotoYTextos(
             OutlinedTextField(
                 value = nombre, onValueChange = onNombreChange,
                 placeholder = { Text(stringResource(R.string.hint_name)) },
-                modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp), singleLine = true
+                modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp), singleLine = true,
+                textStyle = MaterialTheme.typography.bodyLarge
             )
             OutlinedTextField(
                 value = marca, onValueChange = onMarcaChange,
                 placeholder = { Text(stringResource(R.string.hint_brand)) },
-                modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp), singleLine = true
+                modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(8.dp), singleLine = true,
+                textStyle = MaterialTheme.typography.bodyLarge
             )
         }
     }
@@ -233,7 +241,6 @@ private fun SeccionAtributos(
     tallaActual: String, onTallaChange: (String) -> Unit,
     formalidadActual: String, onFormalidadChange: (String) -> Unit
 ) {
-    // Estas listas pueden quedarse así o moverse a arrays en XML si quieres traducir los items
     val categorias = listOf("Top", "Bottom", "Outerwear", "Zapatos", "Accesorios")
     val temporadas = listOf("Primavera", "Verano", "Otoño", "Invierno", "Todas")
     val tallas = listOf("XS", "S", "M", "L", "XL", "Unitalla")
@@ -248,7 +255,11 @@ private fun SeccionAtributos(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.label_printed), fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
+                Text(
+                    text = stringResource(R.string.label_printed),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
                 Spacer(modifier = Modifier.width(12.dp))
                 Checkbox(
                     checked = esEstampada,
@@ -328,7 +339,8 @@ private fun SeccionTags(
                 placeholder = { Text(stringResource(R.string.hint_add_tag)) },
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(8.dp),
-                singleLine = true
+                singleLine = true,
+                textStyle = MaterialTheme.typography.bodyMedium
             )
             IconButton(
                 onClick = {
@@ -361,7 +373,7 @@ private fun SeccionTags(
                                         modifier = Modifier.clickable { onRemoveTag(tag) }.padding(horizontal = 12.dp, vertical = 6.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Text(tag, color = MaterialTheme.colorScheme.onTertiary)
+                                        Text(tag, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onTertiary)
                                         Icon(
                                             Icons.Filled.Close,
                                             contentDescription = stringResource(R.string.cd_remove_tag),
@@ -416,7 +428,7 @@ fun ColorPaletteDropdown(
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 focusedContainerColor = MaterialTheme.colorScheme.surface
             ),
-            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
+            textStyle = MaterialTheme.typography.bodyMedium
         )
 
         ExposedDropdownMenu(
@@ -459,7 +471,6 @@ fun ColorPaletteDropdown(
                                     }
                             )
                         }
-
                         repeat(columnas - coloresEnFila.size) {
                             Spacer(modifier = Modifier.size(40.dp))
                         }
@@ -492,7 +503,7 @@ fun InteractiveDropdown(
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 focusedContainerColor = MaterialTheme.colorScheme.surface
             ),
-            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
+            textStyle = MaterialTheme.typography.bodyMedium
         )
         ExposedDropdownMenu(
             expanded = expandido,
@@ -501,7 +512,13 @@ fun InteractiveDropdown(
         ) {
             opciones.forEach { opcion ->
                 DropdownMenuItem(
-                    text = { Text(opcion, color = MaterialTheme.colorScheme.onSurface) },
+                    text = {
+                        Text(
+                            text = opcion,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    },
                     onClick = { onSeleccionChange(opcion); expandido = false }
                 )
             }

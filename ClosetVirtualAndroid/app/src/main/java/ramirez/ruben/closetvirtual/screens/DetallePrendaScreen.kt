@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.magnifier
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -22,15 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import ramirez.ruben.closetvirtual.R
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
-
-// Modelo de dotos
+// Modelo de datos (Se mantiene igual, la lógica cambia en el receptor)
 data class PrendaDetalleUiState(
     val nombre: String = "Oblivius Topless",
     val marca: String = "Nike",
@@ -39,21 +37,10 @@ data class PrendaDetalleUiState(
     val esEstampada: Boolean = true,
     val categoria: String = "Top",
     val temporada: String = "Otoño",
-    val tags: List<String> = listOf(
-        "Tag 1",
-        "Tag 2",
-        "Tag 3",
-        "Tag 4",
-        "Tag 5",
-        "Tag 6",
-        "Tag 6",
-        "Tag 6",
-        "Tag 6"
-    ),
+    val tags: List<String> = listOf("Vintage", "Favorito", "Casual"),
     val imageUri: Uri? = null
 )
 
-// PANTALLA PRINCIPAL
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetallePrendaScreen(
@@ -70,7 +57,7 @@ fun DetallePrendaScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             Icons.Filled.ArrowBack,
-                            contentDescription = "Regresar",
+                            contentDescription = stringResource(R.string.cd_back),
                             tint = Color(0xFF26657A)
                         )
                     }
@@ -86,8 +73,6 @@ fun DetallePrendaScreen(
                 .padding(horizontal = 24.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
-
-            // 1. Foto, Nombre y Marca
             SeccionCabeceraDetalle(state)
 
             HorizontalDivider(
@@ -95,7 +80,6 @@ fun DetallePrendaScreen(
                 color = MaterialTheme.colorScheme.outlineVariant
             )
 
-            // 2. Estadísticas y Estampado
             SeccionEstadisticas(state)
 
             HorizontalDivider(
@@ -103,7 +87,6 @@ fun DetallePrendaScreen(
                 color = MaterialTheme.colorScheme.outlineVariant
             )
 
-            // 3. Atributos: Categoría y Temporada
             SeccionAtributosEstaticos(state)
 
             HorizontalDivider(
@@ -111,7 +94,6 @@ fun DetallePrendaScreen(
                 color = MaterialTheme.colorScheme.outlineVariant
             )
 
-            // 4. Tags
             SeccionTagsLectura(state.tags)
 
             HorizontalDivider(
@@ -119,7 +101,7 @@ fun DetallePrendaScreen(
                 color = MaterialTheme.colorScheme.outlineVariant
             )
 
-            // 5. Botones
+            // Botones con Estilos Globales
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -133,9 +115,8 @@ fun DetallePrendaScreen(
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        "Editar",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
+                        text = stringResource(R.string.btn_edit),
+                        style = MaterialTheme.typography.labelLarge,
                         color = Color.White
                     )
                 }
@@ -148,14 +129,12 @@ fun DetallePrendaScreen(
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        "Eliminar",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
+                        text = stringResource(R.string.btn_delete),
+                        style = MaterialTheme.typography.labelLarge,
                         color = Color.White
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
@@ -180,7 +159,7 @@ private fun SeccionCabeceraDetalle(state: PrendaDetalleUiState) {
             if (state.imageUri != null) {
                 AsyncImage(
                     model = state.imageUri,
-                    contentDescription = "Foto de la prenda",
+                    contentDescription = stringResource(R.string.cd_prenda_photo),
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(8.dp)),
@@ -189,23 +168,22 @@ private fun SeccionCabeceraDetalle(state: PrendaDetalleUiState) {
             } else {
                 Icon(
                     imageVector = Icons.Outlined.Add,
-                    contentDescription = "Sin Foto",
+                    contentDescription = stringResource(R.string.cd_no_photo),
                     modifier = Modifier.size(32.dp),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
 
-        // Textos
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(
                 text = state.nombre,
-                fontSize = 20.sp,
+                style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = state.marca,
-                fontSize = 18.sp,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
         }
@@ -220,36 +198,37 @@ private fun SeccionEstadisticas(state: PrendaDetalleUiState) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
-                "Usos",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                text = stringResource(R.string.label_uses),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            // Uso de strings con formato dinámico
+            Text(
+                text = stringResource(R.string.uses_total_count, state.usosTotales),
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                "${state.usosTotales} usos totales",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                "${state.usosPorMes} x mes, apróx.",
-                fontSize = 14.sp,
+                text = stringResource(R.string.uses_per_month_approx, state.usosPorMes),
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "Estampada",
-                fontSize = 14.sp,
+                text = stringResource(R.string.label_printed),
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.width(8.dp))
 
             Icon(
                 imageVector = if (state.esEstampada) Icons.Default.Check else Icons.Default.Close,
-                contentDescription = if (state.esEstampada) "Es estampada" else "No es estampada",
+                contentDescription = if (state.esEstampada) stringResource(R.string.cd_is_printed)
+                else stringResource(R.string.cd_not_printed),
                 tint = if (state.esEstampada) {
                     if (isDark) Color(0xFF5E9C94) else Color(0xFF2D4B55)
                 } else {
@@ -262,26 +241,22 @@ private fun SeccionEstadisticas(state: PrendaDetalleUiState) {
 
 @Composable
 private fun SeccionAtributosEstaticos(state: PrendaDetalleUiState) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                "Categoría",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                text = stringResource(R.string.hint_category),
+                style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Text(state.categoria, fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground)
+            Text(text = state.categoria, style = MaterialTheme.typography.bodyMedium)
         }
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                "Temporada",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                text = stringResource(R.string.hint_season),
+                style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Text(state.temporada, fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground)
+            Text(text = state.temporada, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
@@ -291,67 +266,38 @@ private fun SeccionTagsLectura(tags: List<String>) {
     val filaSuperior = tags.filterIndexed { index, _ -> index % 2 == 0 }
     val filaInferior = tags.filterIndexed { index, _ -> index % 2 != 0 }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-    ) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .horizontalScroll(rememberScrollState())) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-
-            // FILA 1
-            if (filaSuperior.isNotEmpty()) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    filaSuperior.forEach { tag ->
-                        Surface(
-                            color = MaterialTheme.colorScheme.tertiary,
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically
+            listOf(filaSuperior, filaInferior).forEach { fila ->
+                if (fila.isNotEmpty()) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        fila.forEach { tag ->
+                            Surface(
+                                color = MaterialTheme.colorScheme.tertiary,
+                                shape = RoundedCornerShape(8.dp)
                             ) {
-                                Icon(
-                                    Icons.Filled.Check,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp),
-                                    tint = MaterialTheme.colorScheme.onTertiary
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    tag,
-                                    color = MaterialTheme.colorScheme.onTertiary,
-                                    fontSize = 14.sp
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            // FILA 2
-            if (filaInferior.isNotEmpty()) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    filaInferior.forEach { tag ->
-                        Surface(
-                            color = MaterialTheme.colorScheme.tertiary,
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    Icons.Filled.Check,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp),
-                                    tint = MaterialTheme.colorScheme.onTertiary
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    tag,
-                                    color = MaterialTheme.colorScheme.onTertiary,
-                                    fontSize = 14.sp
-                                )
+                                Row(
+                                    modifier = Modifier.padding(
+                                        horizontal = 12.dp,
+                                        vertical = 6.dp
+                                    ),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        Icons.Filled.Check,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colorScheme.onTertiary
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = tag,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onTertiary
+                                    )
+                                }
                             }
                         }
                     }
