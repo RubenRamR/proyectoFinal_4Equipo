@@ -27,23 +27,33 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import ramirez.ruben.closetvirtual.R
-import ramirez.ruben.closetvirtual.data.mockOutfits
+import ramirez.ruben.closetvirtual.datastore.mockOutfits
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
-import ramirez.ruben.closetvirtual.data.Outfit
+import ramirez.ruben.closetvirtual.datastore.Outfit
 
 @Composable
 fun CalendarioScreen(onNavigateBack: () -> Unit = {}) {
     // para tener el mes y el anio del calendario y la seleccion
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+
+    // Fuente montserrat
+    val Montserrat = FontFamily(
+        Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
 
     // estructura principal
     Column(
@@ -77,6 +87,7 @@ fun CalendarioScreen(onNavigateBack: () -> Unit = {}) {
         Text(
             text = "Calendario",
             fontSize = 32.sp,
+            fontFamily = Montserrat,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 24.dp)
@@ -148,6 +159,12 @@ fun CalendarioHeader(
     // detectar si el dispositivo esta modo darks o no
     val isDarkTheme = isSystemInDarkTheme()
 
+    // Fuente montserrat
+    val Montserrat = FontFamily(
+        Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -180,8 +197,9 @@ fun CalendarioHeader(
 
                     Text(
                         text = monthName,
+                        fontFamily = Montserrat,
                         color = if (isDarkTheme) Color(0xFFB1DCDF) else Color(0xFF2F7D9B),
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.W600
                     )
 
                     Icon(
@@ -206,9 +224,10 @@ fun CalendarioHeader(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
+                        fontFamily = Montserrat,
                         text = currentMonth.year.toString(),
                         color = if (isDarkTheme) Color(0xFFB1DCDF) else Color(0xFF2F7D9B),
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.W600
                     )
 
                     Icon(
@@ -231,6 +250,13 @@ fun CalendarioHeader(
 fun CalendarioDaysOfWeek() {
     // dias de la semana
     val days = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
+
+    // Fuente montserrat
+    val Montserrat = FontFamily(
+        Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
@@ -241,6 +267,7 @@ fun CalendarioDaysOfWeek() {
                 text = day,
                 color = Color(0xFF81B2B4),
                 fontSize = 12.sp,
+                fontFamily = Montserrat,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center
@@ -254,6 +281,13 @@ fun FiltrosCalendario(
     modifier: Modifier = Modifier
 ) {
     val filters = listOf("Estilo", "Formalidad", "Temporada", "Color")
+
+    // Fuente montserrat
+    val Montserrat = FontFamily(
+        Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
+
     LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = 12.dp),
@@ -270,7 +304,12 @@ fun FiltrosCalendario(
         items(filters) { text ->
             AssistChip(
                 onClick = {},
-                label = { Text(text) }
+                label = {
+                    Text(
+                        text,
+                        fontFamily = Montserrat,
+                        fontWeight = FontWeight.W600
+                    )}
             )
         }
     }
@@ -299,6 +338,12 @@ fun CalendarioGrid(
 
     // detectar si el dispositivo esta modo darks o no
     val isDarkTheme = isSystemInDarkTheme()
+
+    // Fuente montserrat
+    val Montserrat = FontFamily(
+        Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         for (week in 0 until weeks) {
@@ -371,6 +416,7 @@ fun CalendarioGrid(
                             Text(
                                 text = displayText,
                                 color = textColor,
+                                fontFamily = Montserrat,
                                 fontSize = 14.sp,
                                 fontWeight = if (isSelected || isToday) FontWeight.Bold else FontWeight.Normal
                             )
@@ -388,6 +434,12 @@ fun OutfitCard(outfit: Outfit) {
     val isDark = isSystemInDarkTheme()
     val cardBackgroundColor = if (isDark) Color(0xFF44344E) else Color(0xFFECE6F0)
 
+    // Fuente montserrat
+    val Montserrat = FontFamily(
+        Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -402,17 +454,16 @@ fun OutfitCard(outfit: Outfit) {
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Surface(
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.size(80.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = outfit.imagenRes),
-                    contentDescription = "Imagen del outfit",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            }
+            // IMAGEN RECTANGULAR
+            Image(
+                painter = painterResource(id = outfit.imagenRes),
+                contentDescription = "Imagen de ${outfit.nombre}",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .width(80.dp)
+                    .height(110.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
 
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -423,6 +474,7 @@ fun OutfitCard(outfit: Outfit) {
                 Text(
                     text = "Outfit ${outfit.nombre}",
                     fontSize = 16.sp,
+                    fontFamily = Montserrat,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -430,6 +482,7 @@ fun OutfitCard(outfit: Outfit) {
                 Text(
                     text = outfit.descripcion,
                     fontSize = 14.sp,
+                    fontFamily = Montserrat,
                     color = if (isDark) Color(0xFFD3D3D3) else Color(0xFF808080),
                     maxLines = 2
                 )
@@ -448,6 +501,7 @@ fun OutfitCard(outfit: Outfit) {
                     )
                     Text(
                         text = outfit.fecha,
+                        fontFamily = Montserrat,
                         fontSize = 11.sp,
                         color = if (isDark) Color(0x33FFFFFF) else Color(0x33000000)
                     )

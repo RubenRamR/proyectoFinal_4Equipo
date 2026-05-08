@@ -26,12 +26,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import ramirez.ruben.closetvirtual.R
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.utils.OpcionColor
 import ramirez.ruben.closetvirtual.utils.PrendaConstants
@@ -53,6 +57,12 @@ fun GestionPrendaScreen(
     var talla by remember { mutableStateOf("Talla") }
     var formalidad by remember { mutableStateOf("Formalidad") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    // Fuente montserrat
+    val Montserrat = FontFamily(
+        Font(resId = ramirez.ruben.closetvirtual.R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
 
     Scaffold(
         topBar = {

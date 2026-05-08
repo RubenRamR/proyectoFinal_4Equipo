@@ -23,6 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ramirez.ruben.closetvirtual.R
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +50,12 @@ fun RegisterScreen(
     var customGender by remember { mutableStateOf("") }
     val genderOptions = listOf("Mujer", "Hombre", "Personalizado")
 
+    // Fuente montserrat
+    val Montserrat = FontFamily(
+        Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
+
     // Pantalla principal
     Column(
         modifier = Modifier
@@ -62,6 +71,7 @@ fun RegisterScreen(
         Text(
             text = "Registrarse",
             fontSize = 32.sp,
+            fontFamily = Montserrat,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 16.dp)
@@ -73,7 +83,13 @@ fun RegisterScreen(
         TextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Nombre", color = Color.Gray) },
+            label = {
+                Text(
+                    "Nombre",
+                    fontFamily = Montserrat,
+                    color = Color.Gray
+                )},
+
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.mipmap.user_icon),
@@ -99,7 +115,13 @@ fun RegisterScreen(
         TextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Correo Electrónico", color = Color.Gray) },
+            label = {
+                Text(
+                    "Correo Electrónico",
+                    fontFamily = Montserrat,
+                    color = Color.Gray
+                )},
+
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.mipmap.email_icon),
@@ -125,7 +147,11 @@ fun RegisterScreen(
         TextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Contraseña", color = Color.Gray) },
+            label = {
+                Text("Contraseña",
+                    fontFamily = Montserrat,
+                    color = Color.Gray
+                )},
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.mipmap.password_icon),
@@ -170,7 +196,11 @@ fun RegisterScreen(
         TextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = { Text("Confirmar Contraseña", color = Color.Gray) },
+            label = {
+                Text("Confirmar Contraseña",
+                    fontFamily = Montserrat,
+                    color = Color.Gray
+                )},
             isError = showPasswordError,
             supportingText = {
                 if (showPasswordError) {
@@ -222,7 +252,11 @@ fun RegisterScreen(
         TextField(
             value = dateOfBirth,
             onValueChange = { dateOfBirth = it },
-            label = { Text("(DD/MM/AAAA)", color = Color.Gray) },
+            label = {
+                Text("(DD/MM/AAAA)",
+                    fontFamily = Montserrat,
+                    color = Color.Gray
+                )},
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.mipmap.calendar_icon),
@@ -253,8 +287,15 @@ fun RegisterScreen(
                 value = selectedGender,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Genero", color = Color.Gray) },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedGender) }, // La flechita que gira
+                label = {
+                    Text(
+                        "Genero",
+                        fontFamily = Montserrat,
+                        color = Color.Gray
+                    )},
+
+                trailingIcon =
+                    { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedGender) }, // La flechita que gira
                 modifier = Modifier
                     .menuAnchor()
                     .width(270.dp),
@@ -294,6 +335,7 @@ fun RegisterScreen(
             Text(
                 text = "Registrarse",
                 fontSize = 16.sp,
+                fontFamily = Montserrat,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
@@ -318,6 +360,7 @@ fun RegisterScreen(
         ) {
             Text(
                 text = "Iniciar Sesión",
+                fontFamily = Montserrat,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onTertiary

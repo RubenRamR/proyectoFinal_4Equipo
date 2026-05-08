@@ -13,23 +13,34 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ramirez.ruben.closetvirtual.R
-import ramirez.ruben.closetvirtual.data.PrendaMock
-import ramirez.ruben.closetvirtual.data.prendasMock
+import ramirez.ruben.closetvirtual.datastore.PrendaMock
+import ramirez.ruben.closetvirtual.datastore.prendasMock
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 @Composable
 fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
-    // Usare prendasSeleccionadas para guardar las prendas como mock (duh) que el usuario seleccione
+    // Usare prendasSeleccionadas para guardar las prendas como mock que el usuario seleccione
     val prendasSeleccionadas = remember { mutableStateListOf<Int>() }
+
+    // Fuente montserrat
+    val Montserrat = FontFamily(
+        Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
 
     // Estructura principal de registro
     Column(
@@ -64,6 +75,7 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
             text = "Registro Diario",
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
+            fontFamily = Montserrat,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 16.dp)
         )
@@ -107,9 +119,12 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
         Text(
             text = "¡Registra tu outfit dirariamente para continuar con tu racha!",
             fontSize = 14.sp,
+            fontFamily = Montserrat,
             textAlign = TextAlign.Center,
+            fontWeight = FontWeight.W600,
+            lineHeight = 18.sp,
             color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(12.dp)
         )
 
         Image(
@@ -133,6 +148,7 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
                 Text(
                     text = "SELECCIONA TUS PRENDAS",
                     fontSize = 12.sp,
+                    fontFamily = Montserrat,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(bottom = 16.dp)
@@ -213,6 +229,12 @@ fun PrendaMockItem(
     // Mock de prendas favoritas
     var isFavorite by remember { mutableStateOf(false) }
 
+    // Fuente montserrat
+    val Montserrat = FontFamily(
+        Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
+
     Box(
         modifier = modifier
             .background(bgColor, RoundedCornerShape(12.dp))
@@ -231,6 +253,7 @@ fun PrendaMockItem(
             Text(
                 text = prenda.nombre,
                 fontSize = 12.sp,
+                fontFamily = Montserrat,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -240,6 +263,7 @@ fun PrendaMockItem(
             Text(
                 text = prenda.marca,
                 fontSize = 10.sp,
+                fontFamily = Montserrat,
                 maxLines = 1,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -247,10 +271,13 @@ fun PrendaMockItem(
             Spacer(modifier = Modifier.height(8.dp))
 
             Image(
-                painter = painterResource(id = R.mipmap.no_image),
-                contentDescription = "Imagen de la prenda",
+                painter = painterResource(id = prenda.imagenResId),
+                contentDescription = "Imagen de ${prenda.nombre}",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(48.dp)
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(8.dp))
                     .align(Alignment.CenterHorizontally)
             )
 
@@ -266,6 +293,7 @@ fun PrendaMockItem(
                     Text(
                         text = prenda.temporada,
                         fontSize = 10.sp,
+                        fontFamily = Montserrat,
                         maxLines = 1,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -273,6 +301,7 @@ fun PrendaMockItem(
                     Text(
                         text = prenda.categoria,
                         fontSize = 10.sp,
+                        fontFamily = Montserrat,
                         maxLines = 1,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

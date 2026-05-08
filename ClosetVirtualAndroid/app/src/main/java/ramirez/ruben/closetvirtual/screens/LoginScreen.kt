@@ -11,9 +11,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -34,6 +38,11 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     // Esto es para poder mostrar y ocultar la contrasena a gusto
     var isPasswordVisible by remember { mutableStateOf(false) }
+
+    val Montserrat = FontFamily(
+        Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
 
     // Pantalla principal
     Column(
@@ -60,7 +69,12 @@ fun LoginScreen(
         TextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Correo Electrónico", color = Color.Gray) },
+            label = {
+                Text(
+                    "Correo Electrónico",
+                    fontFamily = Montserrat,
+                    color = Color.Gray
+                )},
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.mipmap.email_icon),
@@ -86,7 +100,12 @@ fun LoginScreen(
         TextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Contraseña", color = Color.Gray) },
+            label = {
+                Text(
+                    "Contraseña",
+                    fontFamily = Montserrat,
+                    color = Color.Gray
+                )},
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.mipmap.password_icon),
@@ -135,7 +154,8 @@ fun LoginScreen(
         Text(
             text = "¿Olvidaste tu contraseña?",
             color = Color(0xFF4F46E5),
-            fontSize = 14.sp,
+            fontFamily = Montserrat,
+            fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .align(Alignment.End)
@@ -157,6 +177,7 @@ fun LoginScreen(
             Text(
                 text = "Iniciar Sesión",
                 fontSize = 16.sp,
+                fontFamily = Montserrat,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
@@ -165,8 +186,9 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "-------------------------- or --------------------------",
+            text = "------------------ or ------------------",
             color = Color.Gray,
+            fontFamily = Montserrat,
             fontSize = 16.sp
         )
 
@@ -182,6 +204,7 @@ fun LoginScreen(
             Text(
                 text = "Registrarse",
                 fontSize = 16.sp,
+                fontFamily = Montserrat,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onTertiary
             )
@@ -195,10 +218,12 @@ fun LoginScreen(
             Image(
                 painter = painterResource(id = R.mipmap.fingerprint),
                 contentDescription = "Iniciar sesión con huella",
-                alpha = 0.5f,
+                alpha = 0.2f,
                 modifier = Modifier
                     .size(100.dp)
-                    .clickable { println("Inicio de sesion fon Fingerprint") }
+                    .scale(scaleX = -1f, scaleY = 1f)
+                    .clickable { println("Inicio de sesión con fingerprint"
+                    )}
             )
         }
 

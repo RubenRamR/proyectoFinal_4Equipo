@@ -31,13 +31,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import ramirez.ruben.closetvirtual.data.OutfitRepository
-import ramirez.ruben.closetvirtual.data.Prenda
+import ramirez.ruben.closetvirtual.R
+import ramirez.ruben.closetvirtual.datastore.OutfitRepository
+import ramirez.ruben.closetvirtual.datastore.Prenda
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 @Preview(showBackground = true, name = "Light Mode")
@@ -60,6 +64,12 @@ fun PantallaDetalleOutfitDarkPreview() {
 fun PantallaDetalleOutfit() {
     val outfit = OutfitRepository.todosLosOutfits.firstOrNull()
     val prendas = outfit?.prendas ?: emptyList()
+
+    // Fuente montserrat
+    val Montserrat = FontFamily(
+        Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
 
     ClosetVirtualTheme {
         Scaffold(

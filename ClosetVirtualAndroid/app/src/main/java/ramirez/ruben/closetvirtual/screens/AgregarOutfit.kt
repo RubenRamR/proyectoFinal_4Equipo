@@ -25,8 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import ramirez.ruben.closetvirtual.data.Prenda
-import ramirez.ruben.closetvirtual.data.PrendaRepository
+import ramirez.ruben.closetvirtual.datastore.Prenda
+import ramirez.ruben.closetvirtual.datastore.PrendaRepository
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
@@ -90,7 +90,7 @@ fun AgregarOutfitScreen() {
                         label = { Text("Nombre del outfit") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        leadingIcon = { Icon(Icons.AutoMirrored.Filled.Label, contentDescription = null) }
+                        //leadingIcon = { Icon(Icons.AutoMirrored.Filled.Label, contentDescription = null) }
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))

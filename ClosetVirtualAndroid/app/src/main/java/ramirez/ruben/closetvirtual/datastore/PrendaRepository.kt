@@ -1,7 +1,6 @@
-package ramirez.ruben.closetvirtual.data
+package ramirez.ruben.closetvirtual.datastore
 
 import ramirez.ruben.closetvirtual.R
-import ramirez.ruben.closetvirtual.data.Prenda
 
 // repositorio solo para tener datos para mostrar en pantalla
 object PrendaRepository {

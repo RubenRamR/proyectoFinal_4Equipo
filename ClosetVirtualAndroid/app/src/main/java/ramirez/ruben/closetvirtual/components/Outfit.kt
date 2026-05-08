@@ -1,6 +1,6 @@
 package ramirez.ruben.closetvirtual.components
 
-import ramirez.ruben.closetvirtual.data.Prenda
+import ramirez.ruben.closetvirtual.datastore.Prenda
 
 data class Outfit(
     val nombre: String = "",

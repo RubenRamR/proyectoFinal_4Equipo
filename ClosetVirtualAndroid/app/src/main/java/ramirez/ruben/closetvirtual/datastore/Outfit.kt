@@ -1,7 +1,6 @@
-package ramirez.ruben.closetvirtual.data
+package ramirez.ruben.closetvirtual.datastore
 
 import ramirez.ruben.closetvirtual.R
-import ramirez.ruben.closetvirtual.components.Outfit
 
 // mock para los Outfits
 data class Outfit(
@@ -19,7 +18,7 @@ val mockOutfits = listOf(
         "Noche de Gala",
         "Vestido largo seda, tacones plata, collar perlas",
         "11/04/26",
-        R.mipmap.no_image
+        R.mipmap.outfit_gala
     ),
 
     Outfit(
@@ -27,14 +26,14 @@ val mockOutfits = listOf(
         "Gym Flow",
         "Leggings negros, top deportivo, tenis running",
         "10/04/26",
-        R.mipmap.no_image
+        R.mipmap.outfit_gym
     ),
 
     Outfit(
         3,
         "Casual Friday",
-        "Jeans claros, playera blanca, chamarra mezclilla",
+        "shorts, playera colorida, tennis vans",
         "09/04/26",
-        R.mipmap.no_image
+        R.mipmap.outfit_friday
     )
 )

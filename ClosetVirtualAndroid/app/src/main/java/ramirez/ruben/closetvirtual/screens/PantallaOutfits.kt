@@ -16,15 +16,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import ramirez.ruben.closetvirtual.data.OutfitRepository
+import ramirez.ruben.closetvirtual.datastore.OutfitRepository
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import coil.compose.AsyncImage
-import ramirez.ruben.closetvirtual.data.Prenda
+import ramirez.ruben.closetvirtual.datastore.Prenda
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.R
 import ramirez.ruben.closetvirtual.components.Outfit
@@ -50,6 +53,12 @@ fun OutfitsScreen(
     onNavigateToRegistroDiario: () -> Unit = {}
 ) {
     val outfits = OutfitRepository.todosLosOutfits
+
+    // Fuente montserrat
+    val Montserrat = FontFamily(
+        Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
 
     Scaffold(
         bottomBar = { },
@@ -97,7 +106,7 @@ fun FiltrosOutfits() {
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        item { Icon(Icons.DefaultTune, contentDescription = null) }
+        //item { Icon(Icons.DefaultTune, contentDescription = null) }
         items(filters) { text ->
             AssistChip(onClick = {}, label = { Text(text) })
         }

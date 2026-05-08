@@ -13,6 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -27,6 +30,11 @@ import ramirez.ruben.closetvirtual.R
 fun PasswordRecoveryScreen(){
     var email by remember { mutableStateOf("") }
 
+    val Montserrat = FontFamily(
+        Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
+
     // Pantalla principal
     Column(
         modifier = Modifier
@@ -39,7 +47,8 @@ fun PasswordRecoveryScreen(){
 
         Text(
             text = "Recuperar Contraseña",
-            fontSize = 32.sp,
+            fontSize = 26.sp,
+            fontFamily = Montserrat,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 16.dp)
@@ -49,7 +58,9 @@ fun PasswordRecoveryScreen(){
 
         Text(
             text = "Ingresa tu correo electrónico asociado y te enviaremos las instrucciones para restablecer tu contraseña.",
-            fontSize = 13.sp,
+            fontSize = 11.sp,
+            fontFamily = Montserrat,
+            fontWeight = FontWeight.W600,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 12.dp),
             textAlign = TextAlign.Center,
@@ -61,7 +72,12 @@ fun PasswordRecoveryScreen(){
         TextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Correo Electrónico", color = Color.Gray) },
+            label = {
+                Text("Correo Electrónico",
+                    fontFamily = Montserrat,
+                    color = Color.Gray,
+                    fontSize = 15.sp
+                )},
             leadingIcon = {
                 Image(
                     painter = painterResource(id = R.mipmap.email_icon),
@@ -86,15 +102,16 @@ fun PasswordRecoveryScreen(){
 
         Button(
             onClick = { println("Correo a enviar el enlace: Email=$email") },
-            modifier = Modifier.width(270.dp),
+            modifier = Modifier.width(280.dp).height(37.dp),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors
                 (containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Text(
                 text = "Envíar enlace",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
+                fontFamily = Montserrat,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.W700,
                 color = Color.White
             )
         }
