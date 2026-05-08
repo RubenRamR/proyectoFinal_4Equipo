@@ -7,10 +7,25 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import ramirez.ruben.closetvirtual.components.NavigationBottomPanel
+import ramirez.ruben.closetvirtual.screens.CalendarioScreen
+import ramirez.ruben.closetvirtual.screens.DetallePrendaScreen
+import ramirez.ruben.closetvirtual.screens.GestionPrendaScreen
+import ramirez.ruben.closetvirtual.screens.LoginScreen
+import ramirez.ruben.closetvirtual.screens.AgregarOutfitScreen
+import ramirez.ruben.closetvirtual.screens.ClosetScreen
+import ramirez.ruben.closetvirtual.screens.OutfitsScreen
+import ramirez.ruben.closetvirtual.screens.PasswordRecoveryScreen
+import ramirez.ruben.closetvirtual.screens.PerfilScreen
+import ramirez.ruben.closetvirtual.screens.RegistroDiarioScreen
+import ramirez.ruben.closetvirtual.screens.RegisterScreen
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,29 +34,120 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ClosetVirtualTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MainAppScreen()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun MainAppScreen() {
+    val navController = rememberNavController()
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ClosetVirtualTheme {
-        Greeting("Android")
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val screensWithoutBottomBar = listOf("login_route", "register_route", "recovery_route")
+
+    val showBottomBar = currentRoute !in screensWithoutBottomBar
+
+    // Scaffold para estructurar la pantalla
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            // el panel sale si es tru
+            if (showBottomBar) {
+                NavigationBottomPanel(navController = navController)
+            }
+        }
+    ) { innerPadding ->
+
+        NavHost(
+            navController = navController,
+            startDestination = "login_route",
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            // estas pantallas NO tendran el bottom panel
+            composable("login_route") {
+                LoginScreen(
+                    onNavigateToRegister = {
+                        navController.navigate("register_route")
+                    },
+
+                    onLoginSuccess = {
+                        navController.navigate("main_route")
+                    }
+                )
+            }
+
+            composable("register_route") {
+                RegisterScreen(
+                    onNavigateToLogin = { navController.navigate("login_route") },
+                    onRegisterSuccess = { navController.navigate("main_route") }
+                )
+            }
+
+            composable("recovery_route") {
+                PasswordRecoveryScreen()
+            }
+
+            composable("detalle_prenda_route") {
+                DetallePrendaScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+
+            composable("gestion_prenda_route") {
+                GestionPrendaScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+
+            composable("agregar_outfit_route") {
+                AgregarOutfitScreen()
+            }
+
+            // estas pantallas SI tendran el bottom panel
+            composable("main_route") {
+                ClosetScreen(
+                    onNavigateToRegistroDiario = {
+                        navController.navigate("registro_diario_route")
+                    }
+                )
+            }
+
+            composable("closet_route") {
+                OutfitsScreen()
+            }
+
+            composable("calendario_route") {
+                CalendarioScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+
+            composable("perfil_route") {
+                PerfilScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onLogoutClick = {
+                        navController.navigate("login_route") {
+                            popUpTo(navController.graph.id) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
+            composable("registro_diario_route") {
+                RegistroDiarioScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+
+            /* composable("registro_diario_route") {
+                RegistroDiarioScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            } */
+        }
     }
 }

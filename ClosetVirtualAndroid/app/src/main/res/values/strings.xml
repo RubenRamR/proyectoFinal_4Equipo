@@ -1,3 +1,59 @@
 <resources>
-    <string name="app_name">ClosetVirtual</string>
+    <string name="app_name">Closet Virtual</string>
+
+    <string name="cd_back">Regresar</string>
+
+    //Gestion Prenda (registrar y editar)
+    <string name="title_edit_prenda">Editar prenda</string>
+    <string name="title_register_prenda">Registrar prenda</string>
+    <string name="label_printed">Estampada</string>
+    <string name="label_tag_vintage">Vintage</string>
+    <string name="label_tag_favorite">Favorito</string>
+    <string name="cd_prenda_photo">Foto de la prenda</string>
+    <string name="cd_edit_photo">Editar Foto</string>
+    <string name="cd_add_photo">Añadir Foto</string>
+    <string name="hint_name">Nombre de la prenda</string>
+    <string name="hint_brand">Marca</string>
+    <string name="hint_category">Categoría</string>
+    <string name="hint_color">Color</string>
+    <string name="hint_season">Temporada</string>
+    <string name="hint_size">Talla</string>
+    <string name="hint_formality">Formalidad</string>
+    <string name="hint_add_tag">Añadir tag</string>
+    <string name="cd_add_tag">Añadir</string>
+    <string name="cd_remove_tag">Eliminar tag</string>
+    <string name="btn_save">Guardar</string>
+    <string name="btn_delete">Eliminar</string>
+    <string name="btn_register">Registrar prenda</string>
+
+    //Perfil usuario
+    <string name="perfil_title">Perfil</string>
+    <string name="cd_profile_avatar">Avatar de usuario</string>
+    <string name="cd_edit_profile_photo">Editar foto de perfil</string>
+    <string name="label_name">Nombre</string>
+    <string name="cd_user_icon">Icono de usuario</string>
+    <string name="cd_edit_name">Editar nombre</string>
+    <string name="label_email">Correo electrónico</string>
+    <string name="cd_email_icon">Icono de email</string>
+    <string name="label_birth_date">DD/MM/AAAA</string>
+    <string name="cd_calendar_icon">Icono de calendario</string>
+    <string name="cd_edit_date">Editar fecha</string>
+    <string name="label_gender">Género</string>
+    <string name="gender_male">Masculino</string>
+    <string name="gender_female">Femenino</string>
+    <string name="gender_other">Personalizado</string>
+    <string name="label_biometrics">Activar Biometría</string>
+    <string name="btn_save_changes">Guardar cambios</string>
+    <string name="btn_logout">Cerrar sesión</string>
+    <string name="cd_theme_light">Tema Claro</string>
+    <string name="cd_theme_dark">Tema Oscuro</string>
+
+    //Detalle prenda
+    <string name="label_uses">Usos</string>
+    <string name="uses_total_count">%1$d usos totales</string>
+    <string name="uses_per_month_approx">%1$d x mes, apróx.</string>
+    <string name="cd_no_photo">Sin Foto</string>
+    <string name="cd_is_printed">Es estampada</string>
+    <string name="cd_not_printed">No es estampada</string>
+    <string name="btn_edit">Editar</string>
 </resources>

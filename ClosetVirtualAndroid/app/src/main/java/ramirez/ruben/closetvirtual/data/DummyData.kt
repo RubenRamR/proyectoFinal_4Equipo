@@ -33,7 +33,7 @@ object DummyData {
             categoria = "Bottom",
             color = "Negro",
             esEstampada = false,
-            talla = "32",
+            talla = "XXL",
             temporada = "Primavera",
             formalidad = "Casual",
             tags = listOf("Oversize", "Urbano", "Bolsillos", "Techwear")
