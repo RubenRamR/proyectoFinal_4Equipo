@@ -96,7 +96,8 @@ fun FiltrosOutfits() {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        item { Icon(Icons.Default.Tune, contentDescription = null) }
+
+        item { Icon(Icons.DefaultTune, contentDescription = null) }
         items(filters) { text ->
             AssistChip(onClick = {}, label = { Text(text) })
         }

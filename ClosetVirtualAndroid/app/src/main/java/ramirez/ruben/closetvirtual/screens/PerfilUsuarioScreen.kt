@@ -26,6 +26,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,6 +53,12 @@ fun PerfilScreen(
 
     var isBiometricsEnabled by remember { mutableStateOf(true) }
     var isDarkThemeEnabled by remember { mutableStateOf(false) }
+
+    // Fuente montserrat
+    val Montserrat = FontFamily(
+        Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal),
+        Font(resId = R.font.montserrat_italic, weight = FontWeight.Normal, style = FontStyle.Italic)
+    )
 
     Scaffold(
         topBar = {
@@ -97,6 +106,7 @@ fun PerfilScreen(
                 text = "Perfil",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
+                fontFamily = Montserrat,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
@@ -145,7 +155,13 @@ fun PerfilScreen(
             TextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Name", color = Color.Gray) },
+                label = {
+                    Text(
+                        "Name",
+                        color = Color.Gray,
+                        fontFamily = Montserrat,
+                    )},
+
                 leadingIcon = {
                     Image(
                         painter = painterResource(id = R.mipmap.user_icon),
@@ -178,7 +194,12 @@ fun PerfilScreen(
                 value = email,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Email", color = Color.Gray) },
+                label = {
+                    Text(
+                        "Email",
+                        fontFamily = Montserrat,
+                        color = Color.Gray
+                    )},
                 leadingIcon = {
                     Image(
                         painter = painterResource(id = R.mipmap.email_icon),
@@ -204,7 +225,13 @@ fun PerfilScreen(
             TextField(
                 value = dateOfBirth,
                 onValueChange = { dateOfBirth = it },
-                label = { Text("DD/MM/AAA", color = Color.Gray) },
+                label = {
+                    Text(
+                        "DD/MM/AAA",
+                        fontFamily = Montserrat,
+                        color = Color.Gray
+                    )},
+
                 leadingIcon = {
                     Image(
                         painter = painterResource(id = R.mipmap.calendar_icon),
@@ -242,7 +269,12 @@ fun PerfilScreen(
                     value = selectedGender,
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Género", color = Color.Gray) },
+                    label = {
+                        Text(
+                            "Género",
+                            fontFamily = Montserrat,
+                            color = Color.Gray
+                        )},
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedGender) },
                     modifier = Modifier
                         .menuAnchor()
@@ -281,6 +313,7 @@ fun PerfilScreen(
 
                 Text(
                     text = "Activar Biometría",
+                    fontFamily = Montserrat,
                     fontSize = 16.sp,
                     color = Color.Gray
                 )
@@ -310,26 +343,27 @@ fun PerfilScreen(
             ) {
                 Text(
                     "Guardar cambios",
+                    fontFamily = Montserrat,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(26.dp))
 
             Button(
                 onClick = onLogoutClick,
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .height(50.dp),
+                    .width(140.dp)
+                    .height(40.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
             ) {
                 Text(
                     "Cerrar sesión",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontFamily = Montserrat,
+                    fontSize = 12.sp,
                     color = Color.White
                 )
             }
