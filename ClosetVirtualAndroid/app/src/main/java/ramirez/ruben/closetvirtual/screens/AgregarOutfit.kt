@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import ramirez.ruben.closetvirtual.data.Prenda
+import ramirez.ruben.closetvirtual.data.mocks.Prenda
 // TODO (Compañero): Comenté esta importación porque el repositorio cambió su estructura para usar Room.
 // import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme

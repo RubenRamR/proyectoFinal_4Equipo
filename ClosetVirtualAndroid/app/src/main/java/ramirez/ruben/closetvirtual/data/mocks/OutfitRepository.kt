@@ -1,6 +1,6 @@
-package ramirez.ruben.closetvirtual.data
+package ramirez.ruben.closetvirtual.data.mocks
 
-import ramirez.ruben.closetvirtual.components.Outfit
+import ramirez.ruben.closetvirtual.data.database.entity.Outfit
 
 // Repositorio temporal para datos de prueba en pantalla.
 // Se usa emptyList() para las prendas porque ahora los datos reales

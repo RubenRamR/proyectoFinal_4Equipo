@@ -1,7 +1,6 @@
-package ramirez.ruben.closetvirtual.data
+package ramirez.ruben.closetvirtual.data.mocks
 
 import ramirez.ruben.closetvirtual.R
-import ramirez.ruben.closetvirtual.components.Outfit
 
 // mock para los Outfits
 data class Outfit(

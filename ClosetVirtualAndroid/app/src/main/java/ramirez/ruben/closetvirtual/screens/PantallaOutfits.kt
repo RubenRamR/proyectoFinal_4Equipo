@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import ramirez.ruben.closetvirtual.data.OutfitRepository
+import ramirez.ruben.closetvirtual.data.mocks.OutfitRepository
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,10 +24,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
-import ramirez.ruben.closetvirtual.data.Prenda
+import ramirez.ruben.closetvirtual.data.mocks.Prenda
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.R
-import ramirez.ruben.closetvirtual.components.Outfit
+import ramirez.ruben.closetvirtual.data.database.entity.Outfit
 
 @Preview(showBackground = true, name = "Light Mode")
 @Composable

@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
-import ramirez.ruben.closetvirtual.data.Prenda
+import ramirez.ruben.closetvirtual.data.mocks.Prenda
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import androidx.compose.material3.FabPosition
 import androidx.compose.ui.res.painterResource
