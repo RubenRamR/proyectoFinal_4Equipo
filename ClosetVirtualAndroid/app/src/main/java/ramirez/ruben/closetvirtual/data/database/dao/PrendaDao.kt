@@ -13,17 +13,17 @@ import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
 interface PrendaDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertarPrenda(prenda: PrendaEntity): @JvmSuppressWildcards Long
+    suspend fun insertarPrenda(prenda: PrendaEntity): Long
 
     @Update
-    suspend fun actualizarPrenda(prenda: PrendaEntity): @JvmSuppressWildcards Int
+    suspend fun actualizarPrenda(prenda: PrendaEntity): Int
 
     @Delete
-    suspend fun eliminarPrenda(prenda: PrendaEntity): @JvmSuppressWildcards Int
+    suspend fun eliminarPrenda(prenda: PrendaEntity): Int
 
-    @Query("SELECT * FROM prendas ORDER BY fechaRegistro DESC")
+    @Query("SELECT * FROM prenda")
     fun obtenerTodasLasPrendas(): Flow<List<PrendaEntity>>
 
-    @Query("SELECT * FROM prendas WHERE id = :id")
-    suspend fun obtenerPrendaPorId(id: String): @JvmSuppressWildcards PrendaEntity?
+    @Query("SELECT * FROM prenda WHERE id = :id")
+    suspend fun obtenerPrendaPorId(id: Int): PrendaEntity?
 }

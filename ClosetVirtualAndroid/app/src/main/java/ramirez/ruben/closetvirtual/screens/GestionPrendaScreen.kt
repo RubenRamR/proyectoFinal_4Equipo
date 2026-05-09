@@ -41,7 +41,6 @@ import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.utils.OpcionColor
 import ramirez.ruben.closetvirtual.utils.PrendaConstants
 import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
-import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +62,9 @@ fun GestionPrendaScreen(
     var temporada by remember { mutableStateOf("") }
     var talla by remember { mutableStateOf("") }
     var formalidad by remember { mutableStateOf("") }
+    
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var imagenActualBytes by remember { mutableStateOf<ByteArray?>(null) }
 
     // --- LÓGICA DE CARGA PARA MODO EDICIÓN ---
     val prendaParaEditar by viewModel.prendaCargada.collectAsState()
@@ -72,18 +73,14 @@ fun GestionPrendaScreen(
         prendaParaEditar?.let { prenda ->
             nombre = prenda.nombre
             marca = prenda.marca ?: ""
-            esEstampada = prenda.esEstampada
+            esEstampada = prenda.estampada
             categoria = prenda.categoria
             colorPrenda = prenda.color
             temporada = prenda.temporada
             talla = prenda.talla ?: ""
             formalidad = prenda.formalidad
             tagsList = prenda.tags
-
-            // Si la prenda tiene una ruta de imagen válida en memoria, la cargamos
-            if (prenda.imagenUri.isNotBlank()) {
-                imageUri = Uri.fromFile(File(prenda.imagenUri))
-            }
+            imagenActualBytes = prenda.imagen
         }
     }
 
@@ -126,7 +123,9 @@ fun GestionPrendaScreen(
             SeccionFotoYTextos(
                 nombre = nombre, onNombreChange = { nombre = it },
                 marca = marca, onMarcaChange = { marca = it },
-                imageUri = imageUri, onImageSelected = { imageUri = it },
+                imageUri = imageUri, 
+                imagenActual = imagenActualBytes,
+                onImageSelected = { imageUri = it },
                 isEditMode = isEditMode
             )
 
@@ -167,10 +166,11 @@ fun GestionPrendaScreen(
                             if (nombre.isNotBlank() && categoria.isNotBlank() && colorPrenda.isNotBlank()) {
                                 viewModel.guardarOActualizarPrenda(
                                     idExistente = prendaParaEditar?.id,
+                                    idUsuario = prendaParaEditar?.idUsuario ?: 1, // TODO: Obtener del usuario logueado
                                     nombre = nombre.trim(),
                                     marca = marca.trim(),
                                     uriImagenTemporal = imageUri,
-                                    rutaImagenAnterior = prendaParaEditar?.imagenUri,
+                                    imagenActual = imagenActualBytes,
                                     categoria = categoria,
                                     color = colorPrenda,
                                     esEstampada = esEstampada,
@@ -214,10 +214,11 @@ fun GestionPrendaScreen(
                         if (nombre.isNotBlank() && categoria.isNotBlank() && colorPrenda.isNotBlank()) {
                             viewModel.guardarOActualizarPrenda(
                                 idExistente = null,
+                                idUsuario = 1, // TODO: Obtener del usuario logueado
                                 nombre = nombre.trim(),
                                 marca = marca.trim(),
                                 uriImagenTemporal = imageUri,
-                                rutaImagenAnterior = null,
+                                imagenActual = null,
                                 categoria = categoria,
                                 color = colorPrenda,
                                 esEstampada = esEstampada,
@@ -249,7 +250,9 @@ fun GestionPrendaScreen(
 private fun SeccionFotoYTextos(
     nombre: String, onNombreChange: (String) -> Unit,
     marca: String, onMarcaChange: (String) -> Unit,
-    imageUri: Uri?, onImageSelected: (Uri?) -> Unit,
+    imageUri: Uri?, 
+    imagenActual: ByteArray?,
+    onImageSelected: (Uri?) -> Unit,
     isEditMode: Boolean
 ) {
     val photoPickerLauncher = rememberLauncherForActivityResult(
@@ -267,9 +270,10 @@ private fun SeccionFotoYTextos(
                 },
             contentAlignment = Alignment.Center
         ) {
-            if (imageUri != null) {
+            val modelToDisplay = imageUri ?: imagenActual
+            if (modelToDisplay != null) {
                 AsyncImage(
-                    model = imageUri,
+                    model = modelToDisplay,
                     contentDescription = stringResource(R.string.cd_prenda_photo),
                     modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
@@ -602,7 +606,7 @@ private fun provideDummyViewModel(context: android.content.Context): GestionPren
         override suspend fun actualizarPrenda(prenda: PrendaEntity) = 0
         override suspend fun eliminarPrenda(prenda: PrendaEntity) = 0
         override fun obtenerTodasLasPrendas() = flowOf(emptyList<PrendaEntity>())
-        override suspend fun obtenerPrendaPorId(id: String) = null
+        override suspend fun obtenerPrendaPorId(id: Int) = null
     }
     val repository = PrendaRepository(mockDao)
     return GestionPrendaViewModel(repository, context)

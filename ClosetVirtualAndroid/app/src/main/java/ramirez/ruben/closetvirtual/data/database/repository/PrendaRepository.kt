@@ -20,7 +20,7 @@ class PrendaRepository(private val prendaDao: PrendaDao) {
         prendaDao.eliminarPrenda(prenda)
     }
 
-    suspend fun obtenerPrendaPorId(id: String): PrendaEntity? {
+    suspend fun obtenerPrendaPorId(id: Int): PrendaEntity? {
         return prendaDao.obtenerPrendaPorId(id)
     }
 }

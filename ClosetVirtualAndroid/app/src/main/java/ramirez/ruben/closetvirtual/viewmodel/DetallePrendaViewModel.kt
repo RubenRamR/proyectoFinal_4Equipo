@@ -18,7 +18,7 @@ class DetallePrendaViewModel(
     private val _prenda = MutableStateFlow<PrendaEntity?>(null)
     val prenda: StateFlow<PrendaEntity?> = _prenda.asStateFlow()
 
-    fun cargarPrenda(id: String) {
+    fun cargarPrenda(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             _prenda.value = repository.obtenerPrendaPorId(id)
         }

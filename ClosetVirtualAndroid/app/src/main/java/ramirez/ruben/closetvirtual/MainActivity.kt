@@ -38,9 +38,20 @@ import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.viewmodel.DetallePrendaViewModel
 import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
 
+import ramirez.ruben.closetvirtual.utils.ImageExport
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // es para detectar la primera vez que corremos la app
+        // y entonces exportar las imagenes que tenemos  en drawable al telefono
+        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        if (!prefs.getBoolean("images_exported", false)) {
+            ImageExport.saveDrawablesToGallery(this)
+            prefs.edit().putBoolean("images_exported", true).apply()
+        }
+
         enableEdgeToEdge()
         setContent {
             ClosetVirtualTheme {
@@ -82,7 +93,7 @@ fun MainAppScreen() {
 
         NavHost(
             navController = navController,
-            startDestination = "gestion_prenda_route", // Start screen
+            startDestination = "login_route", // Start screen
             modifier = Modifier.padding(innerPadding)
         ) {
 
@@ -94,9 +105,9 @@ fun MainAppScreen() {
                     factory = GestionPrendaViewModel.Factory(repository, context)
                 )
 
-                LaunchedEffect(Unit) {
-                    navController.navigate("detalle_prenda_route/cc7aab1c-3860-47a4-854d-4abf025fc0e3")
-                }
+//                LaunchedEffect(Unit) {
+//                    navController.navigate("detalle_prenda_route/cc7aab1c-3860-47a4-854d-4abf025fc0e3")
+//                }
 
                 GestionPrendaScreen(
                     viewModel = gestionViewModel,
@@ -108,15 +119,17 @@ fun MainAppScreen() {
             // 2. Editar Prenda
             composable(
                 route = "gestion_prenda_route/{prendaId}",
-                arguments = listOf(navArgument("prendaId") { type = NavType.StringType })
+                arguments = listOf(navArgument("prendaId") { type = NavType.IntType })
             ) { backStackEntry ->
-                val prendaId = backStackEntry.arguments?.getString("prendaId")
+                val prendaId = backStackEntry.arguments?.getInt("prendaId") ?: 0
                 val gestionViewModel: GestionPrendaViewModel = viewModel(
                     factory = GestionPrendaViewModel.Factory(repository, context)
                 )
 
                 LaunchedEffect(prendaId) {
-                    prendaId?.let { gestionViewModel.cargarPrendaParaEdicion(it) }
+                    if (prendaId != 0) {
+                        gestionViewModel.cargarPrendaParaEdicion(prendaId)
+                    }
                 }
 
                 GestionPrendaScreen(
@@ -129,9 +142,9 @@ fun MainAppScreen() {
             // 3. Detalle de Prenda
             composable(
                 route = "detalle_prenda_route/{prendaId}",
-                arguments = listOf(navArgument("prendaId") { type = NavType.StringType })
+                arguments = listOf(navArgument("prendaId") { type = NavType.IntType })
             ) { backStackEntry ->
-                val prendaId = backStackEntry.arguments?.getString("prendaId") ?: return@composable
+                val prendaId = backStackEntry.arguments?.getInt("prendaId") ?: 0
                 val detalleViewModel: DetallePrendaViewModel = viewModel(
                     factory = DetallePrendaViewModel.Factory(repository)
                 )
@@ -172,12 +185,14 @@ fun MainAppScreen() {
 
             composable("main_route") {
                 ClosetScreen(
-                    onNavigateToRegistroDiario = { navController.navigate("registro_diario_route") }
+                    onNavigateToRegistroDiario = { navController.navigate("registro_diario_route") },
+                    onNavigateToGestionPrenda = { navController.navigate("gestion_prenda_route")}
                 )
             }
 
             composable("closet_route") {
-                OutfitsScreen()
+                OutfitsScreen(onNavigateToRegistroDiario = { navController.navigate("registro_diario_route") },
+                    onNavigateToAgregarOutfit =  {navController.navigate("agregar_outfit_route")})
             }
 
             composable("calendario_route") {

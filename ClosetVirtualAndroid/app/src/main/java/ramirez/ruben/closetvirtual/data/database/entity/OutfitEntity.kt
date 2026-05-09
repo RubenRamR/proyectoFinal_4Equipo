@@ -1,12 +1,11 @@
 package ramirez.ruben.closetvirtual.data.database.entity
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "prenda",
+    tableName = "outfit",
     foreignKeys = [
         ForeignKey(
             entity = UsuarioEntity::class,
@@ -16,19 +15,12 @@ import androidx.room.PrimaryKey
         )
     ]
 )
-data class PrendaEntity(
+data class OutfitEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val idUsuario: Int,
     val nombre: String,
-    val marca: String?,
-    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
-    val imagen: ByteArray?,
-    val categoria: String,
-    val color: String,
-    val estampada: Boolean,
-    val talla: String?,
+    val estilo: String,
     val temporada: String,
-    val formalidad: String,
     val tags: List<String>
 )

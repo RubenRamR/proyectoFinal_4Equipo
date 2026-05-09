@@ -46,6 +46,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import ramirez.ruben.closetvirtual.data.Prenda
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
+import ramirez.ruben.closetvirtual.ui.theme.Montserrat
 import androidx.compose.material3.FabPosition
 import androidx.compose.ui.res.painterResource
 import ramirez.ruben.closetvirtual.R
@@ -70,7 +71,8 @@ fun ClosetScreenDarkPreview() {
 
 @Composable
 fun ClosetScreen(
-    onNavigateToRegistroDiario: () -> Unit = {}
+    onNavigateToRegistroDiario: () -> Unit = {},
+    onNavigateToGestionPrenda: () -> Unit = {}
 ) {
     // TODO (Compañero): PrendaRepository ya no es estático y devuelve un Flow<List<PrendaEntity>>.
     // Debes crear un ViewModel para el Clóset, inyectar el repositorio y recolectar
@@ -98,11 +100,11 @@ fun ClosetScreen(
                     )
                 }
 
-                AddFab()
-            }
+                AddFab(onClick = onNavigateToGestionPrenda)            }
+
         },
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+        Column(modifier = Modifier.padding(12.dp).fillMaxSize()) {
             BarraDeBusqueda()
             Filtros()
             Box(modifier = Modifier.weight(1f)) {
@@ -115,9 +117,7 @@ fun ClosetScreen(
 //@Preview(showBackground = true)
 @Composable
 fun BarraDeBusqueda() {
-    OutlinedTextField(value = "", onValueChange = {}, placeholder = { Text("Busqueda de prendas") }, leadingIcon = {
-        Icon(Icons.Default.Menu, contentDescription = null)
-    },
+    OutlinedTextField(value = "", onValueChange = {}, placeholder = { Text("Busqueda de prendas", fontFamily = Montserrat) }, leadingIcon = {},
         trailingIcon = {
             Icon(Icons.Default.Search, contentDescription = null)
         },
@@ -127,13 +127,10 @@ fun BarraDeBusqueda() {
 //@Preview(showBackground = true)
 @Composable
 fun Filtros() {
-    val filters = listOf("Marca", "Categoria", "Temporada", "Usos", "Label")
+    val filters = listOf("Marca", "Categoria", "Temporada", "Usos")
     LazyRow(contentPadding = PaddingValues(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        item {
-            Icon(Icons.Default.Tune, contentDescription = null)
-        }
         items(filters) { text ->
-            AssistChip(onClick = {}, label = { Text(text) })
+            AssistChip(onClick = {}, label = { Text(text, fontFamily = Montserrat) })
         }
     }
 }
@@ -165,7 +162,7 @@ fun PrendasCard(prenda: Prenda) {
         Column {
             // Header
             Column(modifier = Modifier.padding(8.dp)) {
-                Text(prenda.nombre, fontWeight = FontWeight.Bold)
+                Text(prenda.nombre, fontWeight = FontWeight.Bold, fontFamily = Montserrat)
                 Text(prenda.marca ?: "nada", style = MaterialTheme.typography.bodySmall)
             }
 
@@ -190,7 +187,7 @@ fun PrendasCard(prenda: Prenda) {
             Column(modifier = Modifier.padding(8.dp)) {
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     Column {
-                        Text(prenda.temporada)
+                        Text(prenda.temporada, fontFamily = Montserrat)
                         Text(prenda.categoria, style = MaterialTheme.typography.bodySmall)
                     }
                     //Icono de corazon
@@ -202,10 +199,10 @@ fun PrendasCard(prenda: Prenda) {
                 // botones
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     OutlinedButton(onClick = {}, modifier = Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 4.dp)) {
-                        Text("Hoy la usé", fontSize = 11.sp, maxLines = 1)
+                        Text("Hoy la usé", fontSize = 11.sp, maxLines = 1, fontFamily = Montserrat)
                     }
                     Button(onClick = {}, modifier = Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 4.dp)) {
-                        Text(text = "Detalle", fontSize = 11.sp, maxLines = 1)
+                        Text(text = "Detalle", fontSize = 11.sp, maxLines = 1, fontFamily = Montserrat)
                     }
                 }
             }
@@ -216,8 +213,8 @@ fun PrendasCard(prenda: Prenda) {
 //@Preview(showBackground = true)
 
 @Composable
-fun AddFab() { //botoncito de + para agregar prendas
-    FloatingActionButton(onClick = {}) {
+fun AddFab(onClick: () -> Unit) { // Ahora recibe el evento click
+    FloatingActionButton(onClick = onClick) {
         Icon(Icons.Default.Add, contentDescription = null)
     }
 }

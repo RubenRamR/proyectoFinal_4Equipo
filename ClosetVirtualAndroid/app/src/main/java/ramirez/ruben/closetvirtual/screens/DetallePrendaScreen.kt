@@ -1,7 +1,6 @@
 package ramirez.ruben.closetvirtual.screens
 
 import android.content.res.Configuration
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -35,15 +34,14 @@ import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
 import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.viewmodel.DetallePrendaViewModel
-import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetallePrendaScreen(
-    prendaId: String,
+    prendaId: Int,
     viewModel: DetallePrendaViewModel,
     onNavigateBack: () -> Unit = {},
-    onEditClick: (String) -> Unit = {}
+    onEditClick: (Int) -> Unit = {}
 ) {
     LaunchedEffect(prendaId) {
         viewModel.cargarPrenda(prendaId)
@@ -164,9 +162,9 @@ private fun SeccionCabeceraDetalle(prenda: PrendaEntity) {
                 ),
             contentAlignment = Alignment.Center
         ) {
-            if (prenda.imagenUri.isNotBlank() && File(prenda.imagenUri).exists()) {
+            if (prenda.imagen != null) {
                 AsyncImage(
-                    model = Uri.fromFile(File(prenda.imagenUri)),
+                    model = prenda.imagen,
                     contentDescription = stringResource(R.string.cd_prenda_photo),
                     modifier = Modifier
                         .fillMaxSize()
@@ -230,10 +228,10 @@ private fun SeccionEstadisticas(prenda: PrendaEntity) {
             Spacer(modifier = Modifier.width(8.dp))
 
             Icon(
-                imageVector = if (prenda.esEstampada) Icons.Default.Check else Icons.Default.Close,
-                contentDescription = if (prenda.esEstampada) stringResource(R.string.cd_is_printed)
+                imageVector = if (prenda.estampada) Icons.Default.Check else Icons.Default.Close,
+                contentDescription = if (prenda.estampada) stringResource(R.string.cd_is_printed)
                 else stringResource(R.string.cd_not_printed),
-                tint = if (prenda.esEstampada) {
+                tint = if (prenda.estampada) {
                     if (isDark) Color(0xFF5E9C94) else Color(0xFF2D4B55)
                 } else {
                     MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
@@ -319,14 +317,15 @@ private fun provideDummyDetalleViewModel(): DetallePrendaViewModel {
         override suspend fun eliminarPrenda(prenda: PrendaEntity) = 0
         override fun obtenerTodasLasPrendas() = flowOf(emptyList<PrendaEntity>())
 
-        override suspend fun obtenerPrendaPorId(id: String) = PrendaEntity(
-            id = "1",
+        override suspend fun obtenerPrendaPorId(id: Int) = PrendaEntity(
+            id = 1,
+            idUsuario = 1,
             nombre = "Camisa Vintage",
             marca = "Levis",
-            imagenUri = "",
+            imagen = null,
             categoria = "Top",
             color = "Azul",
-            esEstampada = false,
+            estampada = false,
             talla = "M",
             temporada = "Primavera",
             formalidad = "Casual",
@@ -343,7 +342,7 @@ private fun provideDummyDetalleViewModel(): DetallePrendaViewModel {
 private fun PreviewDetalleClaro() {
     ClosetVirtualTheme(darkTheme = false) {
         DetallePrendaScreen(
-            prendaId = "1",
+            prendaId = 1,
             viewModel = provideDummyDetalleViewModel()
         )
     }
@@ -359,7 +358,7 @@ private fun PreviewDetalleClaro() {
 private fun PreviewDetalleOscuro() {
     ClosetVirtualTheme(darkTheme = true) {
         DetallePrendaScreen(
-            prendaId = "1",
+            prendaId = 1,
             viewModel = provideDummyDetalleViewModel()
         )
     }

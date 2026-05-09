@@ -39,6 +39,7 @@ import coil.compose.AsyncImage
 import ramirez.ruben.closetvirtual.data.OutfitRepository
 import ramirez.ruben.closetvirtual.data.Prenda
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
+import ramirez.ruben.closetvirtual.ui.theme.Montserrat
 
 @Preview(showBackground = true, name = "Light Mode")
 @Composable
@@ -87,6 +88,7 @@ fun PantallaDetalleOutfit() {
                         text = outfit?.nombre ?: "Detalle de Outfit",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
+                        fontFamily = Montserrat,
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
@@ -127,7 +129,7 @@ fun PrendaOutfitCard(prenda: Prenda) {
         Column {
             // Header
             Column(modifier = Modifier.padding(8.dp)) {
-                Text(prenda.nombre, fontWeight = FontWeight.Bold)
+                Text(prenda.nombre, fontWeight = FontWeight.Bold, fontFamily = Montserrat)
                 Text(prenda.marca ?: "Sin marca", style = MaterialTheme.typography.bodySmall)
             }
 
@@ -151,7 +153,7 @@ fun PrendaOutfitCard(prenda: Prenda) {
             Column(modifier = Modifier.padding(8.dp)) {
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     Column {
-                        Text(prenda.temporada)
+                        Text(prenda.temporada, fontFamily = Montserrat)
                         Text(prenda.categoria, style = MaterialTheme.typography.bodySmall)
                     }
                     Icon(Icons.Default.FavoriteBorder, contentDescription = null)
@@ -160,7 +162,7 @@ fun PrendaOutfitCard(prenda: Prenda) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Button(onClick = {}, modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 4.dp)) {
-                    Text(text = "Detalle", fontSize = 11.sp, maxLines = 1)
+                    Text(text = "Detalle", fontSize = 11.sp, maxLines = 1, fontFamily = Montserrat)
                 }
             }
         }

@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import ramirez.ruben.closetvirtual.data.Prenda
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
+import ramirez.ruben.closetvirtual.ui.theme.Montserrat
 import ramirez.ruben.closetvirtual.R
 import ramirez.ruben.closetvirtual.components.Outfit
 
@@ -47,7 +48,8 @@ fun OutfitsScreenDarkPreview() {
 
 @Composable
 fun OutfitsScreen(
-    onNavigateToRegistroDiario: () -> Unit = {}
+    onNavigateToRegistroDiario: () -> Unit = {},
+    onNavigateToAgregarOutfit: () -> Unit = {}
 ) {
     val outfits = OutfitRepository.todosLosOutfits
 
@@ -68,11 +70,11 @@ fun OutfitsScreen(
                     )
                 }
 
-                AddFab()
+                AddFab(onClick = onNavigateToAgregarOutfit)
             }
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+        Column(modifier = Modifier.padding(12.dp).fillMaxSize()) {
             BarraDeBusquedaOutfits()
             FiltrosOutfits()
 
@@ -85,20 +87,25 @@ fun OutfitsScreen(
 
 @Composable
 fun BarraDeBusquedaOutfits() {
-    OutlinedTextField(value = "", onValueChange = {}, placeholder = { Text("Búsqueda de outfits") }, leadingIcon = { Icon(Icons.Default.Menu, contentDescription = null) }, trailingIcon = { Icon(Icons.Default.Search, contentDescription = null) }, modifier = Modifier.fillMaxWidth().padding(12.dp), shape = RoundedCornerShape(24.dp))
+    OutlinedTextField(value = "",
+        onValueChange = {},
+        placeholder = { Text("Búsqueda de outfits", fontFamily = Montserrat) },
+        leadingIcon = { },
+        trailingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+        modifier = Modifier.fillMaxWidth().padding(12.dp),
+        shape = RoundedCornerShape(24.dp))
 }
 
 @Composable
 fun FiltrosOutfits() {
-    val filters = listOf("Estilo", "Formalidad", "Temporada", "Color")
+    val filters = listOf("Estilo", "Formalidad", "Temporada", "Mios")
     LazyRow(
         contentPadding = PaddingValues(horizontal = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        item { Icon(Icons.Default.Tune, contentDescription = null) }
         items(filters) { text ->
-            AssistChip(onClick = {}, label = { Text(text) })
+            AssistChip(onClick = {}, label = { Text(text, fontFamily = Montserrat) })
         }
     }
 }
@@ -125,7 +132,7 @@ fun OutfitCard(outfit: Outfit) {
         Column {
             // Header
             Column(modifier = Modifier.padding(8.dp)) {
-                Text(outfit.nombre, fontWeight = FontWeight.Bold)
+                Text(outfit.nombre, fontWeight = FontWeight.Bold, fontFamily = Montserrat)
                 Text(outfit.estilo.ifEmpty { "Sin estilo" }, style = MaterialTheme.typography.bodySmall)
             }
 
@@ -136,8 +143,8 @@ fun OutfitCard(outfit: Outfit) {
             Column(modifier = Modifier.padding(8.dp)) {
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     Column {
-                        Text(outfit.temporada, fontSize = 12.sp)
-                        Text(outfit.formalidad, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                        Text(outfit.temporada, fontSize = 12.sp, fontFamily = Montserrat)
+                        //Text(outfit.formalidad, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                     }
                     // Icono de corazon
                     Icon(Icons.Default.FavoriteBorder, contentDescription = null)
@@ -147,7 +154,7 @@ fun OutfitCard(outfit: Outfit) {
 
                 // botón de detalle
                 Button(onClick = {}, modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(vertical = 4.dp)) {
-                    Text(text = "Detalle", fontSize = 13.sp)
+                    Text(text = "Detalle", fontSize = 13.sp, fontFamily = Montserrat)
                 }
             }
         }

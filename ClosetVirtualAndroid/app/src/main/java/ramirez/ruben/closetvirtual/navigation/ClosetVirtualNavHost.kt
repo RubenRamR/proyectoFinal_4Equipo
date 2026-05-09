@@ -46,16 +46,18 @@ fun ClosetVirtualNavHost() {
         // --- RUTA 2: GESTIÓN DE PRENDAS (MODO EDICIÓN) ---
         composable(
             route = "gestion_prenda/{prendaId}",
-            arguments = listOf(navArgument("prendaId") { type = NavType.StringType })
+            arguments = listOf(navArgument("prendaId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val prendaId = backStackEntry.arguments?.getString("prendaId")
+            val prendaId = backStackEntry.arguments?.getInt("prendaId") ?: 0
 
             val gestionViewModel: GestionPrendaViewModel = viewModel(
                 factory = GestionPrendaViewModel.Factory(repository, context)
             )
 
             LaunchedEffect(prendaId) {
-                prendaId?.let { gestionViewModel.cargarPrendaParaEdicion(it) }
+                if (prendaId != 0) {
+                    gestionViewModel.cargarPrendaParaEdicion(prendaId)
+                }
             }
 
             GestionPrendaScreen(
@@ -66,8 +68,11 @@ fun ClosetVirtualNavHost() {
         }
 
         // --- RUTA 3: DETALLE DE PRENDA ---
-        composable("detalle_prenda/{prendaId}") { backStackEntry ->
-            val prendaId = backStackEntry.arguments?.getString("prendaId") ?: return@composable
+        composable(
+            route = "detalle_prenda/{prendaId}",
+            arguments = listOf(navArgument("prendaId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val prendaId = backStackEntry.arguments?.getInt("prendaId") ?: 0
 
             val detalleViewModel: DetallePrendaViewModel = viewModel(
                 factory = DetallePrendaViewModel.Factory(repository)

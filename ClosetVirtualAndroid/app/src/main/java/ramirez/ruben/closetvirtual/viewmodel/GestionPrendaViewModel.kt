@@ -13,9 +13,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
 import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
-import java.io.File
-import java.io.FileOutputStream
-import java.util.UUID
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 
 class GestionPrendaViewModel(
     private val repository: PrendaRepository,
@@ -25,40 +24,41 @@ class GestionPrendaViewModel(
     private val _prendaCargada = MutableStateFlow<PrendaEntity?>(null)
     val prendaCargada: StateFlow<PrendaEntity?> = _prendaCargada.asStateFlow()
 
-    fun cargarPrendaParaEdicion(id: String) {
+    fun cargarPrendaParaEdicion(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             _prendaCargada.value = repository.obtenerPrendaPorId(id)
         }
     }
 
     fun guardarOActualizarPrenda(
-        idExistente: String?, nombre: String, marca: String, uriImagenTemporal: Uri?,
-        rutaImagenAnterior: String?, categoria: String, color: String,
+        idExistente: Int?, idUsuario: Int, nombre: String, marca: String, uriImagenTemporal: Uri?,
+        imagenActual: ByteArray?, categoria: String, color: String,
         esEstampada: Boolean, talla: String, temporada: String,
         formalidad: String, tags: List<String>
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            val rutaLocal = if (uriImagenTemporal != null) {
-                copiarImagenAlAlmacenamientoInterno(uriImagenTemporal)
+            val imagenBytes = if (uriImagenTemporal != null) {
+                convertirUriAByteArray(uriImagenTemporal)
             } else {
-                rutaImagenAnterior ?: ""
+                imagenActual
             }
 
             val prenda = PrendaEntity(
-                id = idExistente ?: UUID.randomUUID().toString(),
+                id = idExistente ?: 0,
+                idUsuario = idUsuario,
                 nombre = nombre,
                 marca = marca,
-                imagenUri = rutaLocal,
+                imagen = imagenBytes,
                 categoria = categoria,
                 color = color,
-                esEstampada = esEstampada,
+                estampada = esEstampada,
                 talla = talla,
                 temporada = temporada,
                 formalidad = formalidad,
                 tags = tags
             )
 
-            if (idExistente != null) {
+            if (idExistente != null && idExistente != 0) {
                 repository.actualizarPrenda(prenda)
             } else {
                 repository.insertarPrenda(prenda)
@@ -73,21 +73,22 @@ class GestionPrendaViewModel(
         }
     }
 
-    private suspend fun copiarImagenAlAlmacenamientoInterno(uri: Uri): String {
+    private suspend fun convertirUriAByteArray(uri: Uri): ByteArray? {
         return withContext(Dispatchers.IO) {
             try {
-                val nombreArchivo = "prenda_${System.currentTimeMillis()}.jpg"
-                val archivoDestino = File(context.filesDir, nombreArchivo)
-
                 context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                    FileOutputStream(archivoDestino).use { outputStream ->
-                        inputStream.copyTo(outputStream)
+                    val byteBuffer = ByteArrayOutputStream()
+                    val bufferSize = 1024
+                    val buffer = ByteArray(bufferSize)
+                    var len: Int
+                    while (inputStream.read(buffer).also { len = it } != -1) {
+                        byteBuffer.write(buffer, 0, len)
                     }
+                    byteBuffer.toByteArray()
                 }
-                archivoDestino.absolutePath
             } catch (e: Exception) {
                 e.printStackTrace()
-                ""
+                null
             }
         }
     }

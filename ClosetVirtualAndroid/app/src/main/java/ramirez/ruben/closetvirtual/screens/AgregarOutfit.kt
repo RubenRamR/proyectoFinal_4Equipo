@@ -29,11 +29,13 @@ import ramirez.ruben.closetvirtual.data.Prenda
 // TODO (Compañero): Comenté esta importación porque el repositorio cambió su estructura para usar Room.
 // import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
+import ramirez.ruben.closetvirtual.ui.theme.Montserrat
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AgregarOutfitScreen() {
     var nombre by remember { mutableStateOf("") }
+    var estilo by remember { mutableStateOf("") }
     var isEstampada by remember { mutableStateOf(false) }
     var tagText by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
@@ -60,18 +62,21 @@ fun AgregarOutfitScreen() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = { }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atras")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atras", tint = MaterialTheme.colorScheme.onBackground
+                )
             }
             Text(
                 text = "Nuevo Outfit",
                 fontSize = 20.sp,
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onBackground,
+                fontFamily = Montserrat
             )
             Button(
                 onClick = { },
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Guardar", fontWeight = FontWeight.Bold)
+                Text("Guardar", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = Montserrat)
             }
         }
 
@@ -86,44 +91,38 @@ fun AgregarOutfitScreen() {
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Detalles del Outfit", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text("Detalles del Outfit", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, fontFamily = Montserrat)
                     Spacer(modifier = Modifier.height(16.dp))
 
                     OutlinedTextField(
                         value = nombre,
                         onValueChange = { nombre = it },
-                        label = { Text("Nombre del outfit") },
+                        label = { Text("Nombre del outfit", fontFamily = Montserrat) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        leadingIcon = { Icon(Icons.AutoMirrored.Filled.Label, contentDescription = null) }
+                        leadingIcon = { Icon(Icons.AutoMirrored.Filled.Label, contentDescription = null) },
+                        singleLine = true
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
-                            Checkbox(checked = isEstampada, onCheckedChange = { isEstampada = it })
-                        }
-                        Text("¿Es estampada?", modifier = Modifier.padding(start = 12.dp), style = MaterialTheme.typography.bodyMedium)
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
+                    
 
                     Row(modifier = Modifier.fillMaxWidth()) {
-                        DropdownField("Color", Modifier.weight(1f))
+                        OutlinedTextField(
+                            value = estilo,
+                            onValueChange = { estilo = it },
+                            label = { Text("Estilo", fontFamily = Montserrat) },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = Montserrat),
+                            singleLine = true
+                        )
                         Spacer(modifier = Modifier.width(12.dp))
-                        DropdownField("Categoria", Modifier.weight(1f))
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        DropdownField("Talla", Modifier.weight(1f))
-                        Spacer(modifier = Modifier.width(12.dp))
-                        DropdownField("Temporada", Modifier.weight(1f))
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        DropdownField("Estilo", Modifier.weight(1f))
-                        Spacer(modifier = Modifier.width(12.dp))
+                        DropdownField(
+                            label = "Temporada",
+                            options = listOf("Primavera", "Verano", "Otoño", "Invierno"),
+                            modifier = Modifier.weight(1f)
+                        )
                     }
                 }
             }
@@ -138,14 +137,14 @@ fun AgregarOutfitScreen() {
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Etiquetas", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text("Etiquetas", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, fontFamily = Montserrat)
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         OutlinedTextField(
                             value = tagText,
                             onValueChange = { tagText = it },
-                            label = { Text("Nuevo tag") },
+                            label = { Text("Nuevo tag", fontFamily = Montserrat) },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp),
                             singleLine = true
@@ -156,7 +155,7 @@ fun AgregarOutfitScreen() {
                             modifier = Modifier.size(52.dp),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = "Agregar")
+                            Icon(Icons.Default.Add, contentDescription = "Agregar", tint = Color.White)
                         }
                     }
 
@@ -166,7 +165,7 @@ fun AgregarOutfitScreen() {
                         tags.forEach { tag ->
                             SuggestionChip(
                                 onClick = { tags.remove(tag) },
-                                label = { Text(tag) },
+                                label = { Text(tag, fontFamily = Montserrat) },
                                 icon = { Icon(Icons.Default.Close, modifier = Modifier.size(16.dp), contentDescription = null) },
                                 shape = RoundedCornerShape(8.dp)
                             )
@@ -178,16 +177,17 @@ fun AgregarOutfitScreen() {
             Spacer(modifier = Modifier.height(24.dp))
 
             // seleccion prendas
-            Text(text = "Seleccionar Prendas", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            Text(text = "Elige la ropa para este outfit", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = "Seleccionar Prendas", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground, fontFamily = Montserrat)
+            Text(text = "Elige la ropa para este outfit", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = Montserrat)
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                placeholder = { Text("Buscar por nombre") },
+                placeholder = { Text("Buscar por nombre", fontFamily = Montserrat) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary) }
+                leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground) }
+
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -219,7 +219,7 @@ fun AgregarOutfitScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropdownField(label: String, modifier: Modifier = Modifier) {
+fun DropdownField(label: String, options: List<String>, modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("") }
 
@@ -232,21 +232,18 @@ fun DropdownField(label: String, modifier: Modifier = Modifier) {
             value = selectedOption,
             onValueChange = {},
             readOnly = true,
-            label = { Text(label) },
+            label = { Text(label, maxLines = 1, fontFamily = Montserrat) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier.menuAnchor(),
             shape = RoundedCornerShape(12.dp),
-            textStyle = MaterialTheme.typography.bodySmall
+            textStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = Montserrat),
+            singleLine = true
         )
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            listOf("Opción A", "Opción B", "Opción C").forEach { option ->
+        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            options.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(option) },
-                    onClick = {
-                        selectedOption = option
+                    text = { Text(option, fontFamily = Montserrat) },
+                    onClick = { selectedOption = option
                         expanded = false
                     }
                 )
@@ -275,11 +272,8 @@ fun PrendaSelectionCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
+            Box(modifier = Modifier.fillMaxWidth().height(140.dp)
+                .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 if (prenda.imagenUri.isNotEmpty()) {
@@ -299,19 +293,14 @@ fun PrendaSelectionCard(
                 }
 
                 if (isSelected) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
+                    Box(modifier = Modifier.fillMaxSize()
                             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
                     )
                     Icon(
                         Icons.Default.CheckCircle,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(8.dp)
-                            .background(Color.White, CircleShape)
+                        modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).background(Color.White, CircleShape)
                     )
                 }
             }
@@ -320,12 +309,14 @@ fun PrendaSelectionCard(
                     prenda.nombre,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 1
+                    maxLines = 1,
+                    fontFamily = Montserrat
                 )
                 Text(
                     prenda.marca ?: "Sin marca",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    fontFamily = Montserrat
                 )
             }
         }
