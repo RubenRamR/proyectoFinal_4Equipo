@@ -71,7 +71,7 @@ fun ClosetVirtualNavHost() {
             )
         }
 
-        // GESTIÓN DE PRENDAS (MODO REGISTRO NUEVO)
+        // GESTIÓN DE PRENDAS - MODO REGISTRO NUEVO
         composable("gestion_prenda") {
             val gestionViewModel: GestionPrendaViewModel = viewModel(
                 factory = GestionPrendaViewModel.Factory(prendaRepository, context)
@@ -84,7 +84,7 @@ fun ClosetVirtualNavHost() {
             )
         }
 
-        // GESTIÓN DE PRENDAS (MODO EDICIÓN)
+        // GESTIÓN DE PRENDAS - MODO EDICION
         composable(
             route = "gestion_prenda/{prendaId}",
             arguments = listOf(navArgument("prendaId") { type = NavType.StringType })
