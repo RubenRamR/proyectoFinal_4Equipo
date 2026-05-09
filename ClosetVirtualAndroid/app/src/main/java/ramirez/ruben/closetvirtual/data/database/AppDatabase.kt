@@ -8,18 +8,22 @@ import androidx.room.TypeConverters
 import ramirez.ruben.closetvirtual.data.database.converters.StringListConverter
 import ramirez.ruben.closetvirtual.data.database.dao.PrendaDao
 import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
+import ramirez.ruben.closetvirtual.data.database.dao.UsuarioDao
+import ramirez.ruben.closetvirtual.data.database.entity.UsuarioEntity
 
 @Database(
     entities = [
         PrendaEntity::class,
+        UsuarioEntity::class
     ],
-    version = 1,
+    version = 2, // aumenta con cada cambio
     exportSchema = false
 )
 @TypeConverters(StringListConverter::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun prendaDao(): PrendaDao
+    abstract fun usuarioDao(): UsuarioDao
 
     companion object {
         @Volatile

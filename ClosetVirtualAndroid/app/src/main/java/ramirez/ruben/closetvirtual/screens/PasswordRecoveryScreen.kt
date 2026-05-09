@@ -21,11 +21,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.R
+import ramirez.ruben.closetvirtual.data.database.dao.UsuarioDao
+import ramirez.ruben.closetvirtual.data.database.entity.UsuarioEntity
+import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
+import ramirez.ruben.closetvirtual.viewmodel.UsuarioViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PasswordRecoveryScreen(){
+fun PasswordRecoveryScreen(
+    onNavigateBack: () -> Unit = {},
+    viewModel: UsuarioViewModel
+){
     var email by remember { mutableStateOf("") }
+
+    val uiStateMessage by viewModel.uiStateMessage.collectAsState()
 
     // Pantalla principal
     Column(
@@ -60,7 +69,11 @@ fun PasswordRecoveryScreen(){
 
         TextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange =
+                {
+                    email = it
+                    viewModel.clearMessage()
+                },
             label = { Text("Correo Electrónico", color = Color.Gray) },
             leadingIcon = {
                 Image(
@@ -84,8 +97,25 @@ fun PasswordRecoveryScreen(){
 
         Spacer(modifier = Modifier.height(70.dp))
 
+        uiStateMessage?.let { mensaje ->
+            Text(
+                text = mensaje,
+                color = if (
+                    mensaje.contains("enviado")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .width(270.dp)
+                    .padding(bottom = 16.dp)
+            )
+        }
+
         Button(
-            onClick = { println("Correo a enviar el enlace: Email=$email") },
+            onClick = {
+                if(email.isNotEmpty()){
+                    viewModel.recuperarContrasena(email) // Llama a la logica de la BD
+                }
+            },
             modifier = Modifier.width(270.dp),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors
@@ -101,11 +131,24 @@ fun PasswordRecoveryScreen(){
     }
 }
 
+// preview mock
+private fun provideDummyUsuarioViewModel(): UsuarioViewModel {
+    val mockDao = object : UsuarioDao {
+        override suspend fun insertarUsuario(usuario: UsuarioEntity) = 0L
+        override suspend fun actualizarUsuario(usuario: UsuarioEntity) = 0
+        override suspend fun login(correo: String, contrasena: String): UsuarioEntity? = null
+        override suspend fun obtenerUsuarioPorCorreo(correo: String): UsuarioEntity? = null
+        override suspend fun obtenerUsuarioPorId(id: String): UsuarioEntity? = null
+    }
+    val repository = UsuarioRepository(mockDao)
+    return UsuarioViewModel(repository)
+}
+
 @Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
 @Composable
 private fun PreviewModoClaro() {
     ClosetVirtualTheme(darkTheme = false) {
-        PasswordRecoveryScreen()
+        PasswordRecoveryScreen(viewModel = provideDummyUsuarioViewModel())
     }
 }
 
@@ -118,6 +161,6 @@ private fun PreviewModoClaro() {
 @Composable
 private fun PreviewModoOscuro() {
     ClosetVirtualTheme(darkTheme = true) {
-        PasswordRecoveryScreen()
+        PasswordRecoveryScreen(viewModel = provideDummyUsuarioViewModel())
     }
 }

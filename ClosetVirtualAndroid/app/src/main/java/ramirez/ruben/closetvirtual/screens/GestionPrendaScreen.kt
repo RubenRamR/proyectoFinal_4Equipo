@@ -46,7 +46,7 @@ import java.io.File
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GestionPrendaScreen(
-    viewModel: GestionPrendaViewModel, // ViewModel inyectado
+    viewModel: GestionPrendaViewModel,
     isEditMode: Boolean = false,
     onNavigateBack: () -> Unit = {}
 ) {
@@ -65,7 +65,6 @@ fun GestionPrendaScreen(
     var formalidad by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
-    // --- LÓGICA DE CARGA PARA MODO EDICIÓN ---
     val prendaParaEditar by viewModel.prendaCargada.collectAsState()
 
     LaunchedEffect(prendaParaEditar) {
@@ -595,7 +594,6 @@ fun InteractiveDropdown(
     }
 }
 
-// FUNCIONES AUXILIARES PARA PREVIEWS
 private fun provideDummyViewModel(context: android.content.Context): GestionPrendaViewModel {
     val mockDao = object : PrendaDao {
         override suspend fun insertarPrenda(prenda: PrendaEntity) = 0L
@@ -608,7 +606,6 @@ private fun provideDummyViewModel(context: android.content.Context): GestionPren
     return GestionPrendaViewModel(repository, context)
 }
 
-// PREVIEWS ACTUALIZADOS
 @Preview(name = "1. Registrar (Claro)", showBackground = true, showSystemUi = true)
 @Composable
 private fun PreviewRegistrarClaro() {

@@ -16,6 +16,11 @@ import ramirez.ruben.closetvirtual.screens.GestionPrendaScreen
 import ramirez.ruben.closetvirtual.viewmodel.DetallePrendaViewModel
 import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
 import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
+import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
+import ramirez.ruben.closetvirtual.screens.LoginScreen
+import ramirez.ruben.closetvirtual.screens.PerfilScreen
+import ramirez.ruben.closetvirtual.screens.RegisterScreen
+import ramirez.ruben.closetvirtual.viewmodel.UsuarioViewModel
 
 @Composable
 fun ClosetVirtualNavHost() {
@@ -23,17 +28,53 @@ fun ClosetVirtualNavHost() {
     val context = LocalContext.current
 
     val database = remember { AppDatabase.getDatabase(context) }
-    val repository = remember { PrendaRepository(database.prendaDao()) }
+    val prendaRepository = remember { PrendaRepository(database.prendaDao()) }
+    val usuarioRepository = remember { UsuarioRepository(database.usuarioDao()) }
+
+    val usuarioViewModel: UsuarioViewModel = viewModel(
+        factory = UsuarioViewModel.Factory(usuarioRepository)
+    )
 
     NavHost(
         navController = navController,
-        startDestination = "gestion_prenda" // Pantalla principal a iniciar
+        startDestination = "login" // empezamos  en login
     ) {
 
-        // --- RUTA 1: GESTIÓN DE PRENDAS (MODO REGISTRO NUEVO) ---
+        // rutas del usuario
+
+        composable("login") {
+            LoginScreen(
+                onNavigateToRegister = { navController.navigate("register") },
+                onLoginSuccess = { navController.navigate("gestion_prenda") },
+                viewModel = usuarioViewModel
+            )
+        }
+
+        composable("register") {
+            RegisterScreen(
+                onNavigateToLogin = { navController.popBackStack() },
+                onRegisterSuccess = { navController.navigate("gestion_prenda") },
+                viewModel = usuarioViewModel
+            )
+        }
+
+        composable("perfil") {
+            PerfilScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onLogoutClick = {
+                    usuarioViewModel.logout()
+                    navController.navigate("login") {
+                        popUpTo(0) // Limpia el backstack al cerrar sesión
+                    }
+                },
+                viewModel = usuarioViewModel
+            )
+        }
+
+        // GESTIÓN DE PRENDAS (MODO REGISTRO NUEVO)
         composable("gestion_prenda") {
             val gestionViewModel: GestionPrendaViewModel = viewModel(
-                factory = GestionPrendaViewModel.Factory(repository, context)
+                factory = GestionPrendaViewModel.Factory(prendaRepository, context)
             )
 
             GestionPrendaScreen(
@@ -43,7 +84,7 @@ fun ClosetVirtualNavHost() {
             )
         }
 
-        // --- RUTA 2: GESTIÓN DE PRENDAS (MODO EDICIÓN) ---
+        // GESTIÓN DE PRENDAS (MODO EDICIÓN)
         composable(
             route = "gestion_prenda/{prendaId}",
             arguments = listOf(navArgument("prendaId") { type = NavType.StringType })
@@ -51,7 +92,7 @@ fun ClosetVirtualNavHost() {
             val prendaId = backStackEntry.arguments?.getString("prendaId")
 
             val gestionViewModel: GestionPrendaViewModel = viewModel(
-                factory = GestionPrendaViewModel.Factory(repository, context)
+                factory = GestionPrendaViewModel.Factory(prendaRepository, context)
             )
 
             LaunchedEffect(prendaId) {
@@ -65,12 +106,12 @@ fun ClosetVirtualNavHost() {
             )
         }
 
-        // --- RUTA 3: DETALLE DE PRENDA ---
+        // DETALLE DE PRENDA
         composable("detalle_prenda/{prendaId}") { backStackEntry ->
             val prendaId = backStackEntry.arguments?.getString("prendaId") ?: return@composable
 
             val detalleViewModel: DetallePrendaViewModel = viewModel(
-                factory = DetallePrendaViewModel.Factory(repository)
+                factory = DetallePrendaViewModel.Factory(prendaRepository)
             )
 
             DetallePrendaScreen(
@@ -83,6 +124,5 @@ fun ClosetVirtualNavHost() {
             )
         }
 
-        // Resto de pantallas...
     }
 }

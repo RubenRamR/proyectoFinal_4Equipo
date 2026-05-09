@@ -37,6 +37,8 @@ import ramirez.ruben.closetvirtual.screens.RegisterScreen
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.viewmodel.DetallePrendaViewModel
 import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
+import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
+import ramirez.ruben.closetvirtual.viewmodel.UsuarioViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,7 +59,13 @@ fun MainAppScreen() {
 
     // INICIALIZACIÓN DE LA BASE DE DATOS (Single Source of Truth)
     val database = remember { AppDatabase.getDatabase(context) }
-    val repository = remember { PrendaRepository(database.prendaDao()) }
+
+    val prendaRepository = remember { PrendaRepository(database.prendaDao()) }
+    val usuarioRepository = remember { UsuarioRepository(database.usuarioDao()) }
+
+    val usuarioViewModel: UsuarioViewModel = viewModel(
+        factory = UsuarioViewModel.Factory(usuarioRepository)
+    )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -82,16 +90,62 @@ fun MainAppScreen() {
 
         NavHost(
             navController = navController,
-            startDestination = "gestion_prenda_route", // Start screen
+            startDestination = "login_route", //ruta inicial
             modifier = Modifier.padding(innerPadding)
         ) {
 
-            // --- RUTAS DE ROOM ---
+            // RUTAS DE USUARIO
+
+            composable("login_route") {
+                LoginScreen(
+                    onNavigateToRegister = { navController.navigate("register_route") },
+                    onLoginSuccess = {
+                        navController.navigate("main_route") {
+                            popUpTo("login_route") { inclusive = true } // Limpiamos el registro del historial
+                        }
+                    },
+                    viewModel = usuarioViewModel
+                )
+            }
+
+            composable("register_route") {
+                RegisterScreen(
+                    onNavigateToLogin = { navController.popBackStack() }, // Regresa atras al login
+                    onRegisterSuccess = {
+                        navController.navigate("main_route") {
+                            popUpTo("register_route") { inclusive = true } // Limpiamos el registro del historial
+                        }
+                    },
+                    viewModel = usuarioViewModel
+                )
+            }
+
+            composable("recovery_route") {
+                PasswordRecoveryScreen(
+                    viewModel = usuarioViewModel
+                )
+            }
+
+            composable("perfil_route") {
+                PerfilScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onLogoutClick = {
+                        // Limpiamos la sesión en el ViewModel
+                        usuarioViewModel.logout()
+                        navController.navigate("login_route") {
+                            popUpTo(navController.graph.id) { inclusive = true }
+                        }
+                    },
+                    viewModel = usuarioViewModel
+                )
+            }
+
+            // RUTAS DE ROOM
 
             // 1. Agregar Prenda
             composable("gestion_prenda_route") {
                 val gestionViewModel: GestionPrendaViewModel = viewModel(
-                    factory = GestionPrendaViewModel.Factory(repository, context)
+                    factory = GestionPrendaViewModel.Factory(prendaRepository, context)
                 )
 
                 LaunchedEffect(Unit) {
@@ -112,7 +166,7 @@ fun MainAppScreen() {
             ) { backStackEntry ->
                 val prendaId = backStackEntry.arguments?.getString("prendaId")
                 val gestionViewModel: GestionPrendaViewModel = viewModel(
-                    factory = GestionPrendaViewModel.Factory(repository, context)
+                    factory = GestionPrendaViewModel.Factory(prendaRepository, context)
                 )
 
                 LaunchedEffect(prendaId) {
@@ -133,7 +187,7 @@ fun MainAppScreen() {
             ) { backStackEntry ->
                 val prendaId = backStackEntry.arguments?.getString("prendaId") ?: return@composable
                 val detalleViewModel: DetallePrendaViewModel = viewModel(
-                    factory = DetallePrendaViewModel.Factory(repository)
+                    factory = DetallePrendaViewModel.Factory(prendaRepository)
                 )
 
                 DetallePrendaScreen(
@@ -146,25 +200,7 @@ fun MainAppScreen() {
                 )
             }
 
-            // --- RESTO DE LAS PANTALLAS ---
-
-            composable("login_route") {
-                LoginScreen(
-                    onNavigateToRegister = { navController.navigate("register_route") },
-                    onLoginSuccess = { navController.navigate("main_route") }
-                )
-            }
-
-            composable("register_route") {
-                RegisterScreen(
-                    onNavigateToLogin = { navController.navigate("login_route") },
-                    onRegisterSuccess = { navController.navigate("main_route") }
-                )
-            }
-
-            composable("recovery_route") {
-                PasswordRecoveryScreen()
-            }
+            // OTRAS PANTALLAS
 
             composable("agregar_outfit_route") {
                 AgregarOutfitScreen()
@@ -183,17 +219,6 @@ fun MainAppScreen() {
             composable("calendario_route") {
                 CalendarioScreen(
                     onNavigateBack = { navController.popBackStack() }
-                )
-            }
-
-            composable("perfil_route") {
-                PerfilScreen(
-                    onNavigateBack = { navController.popBackStack() },
-                    onLogoutClick = {
-                        navController.navigate("login_route") {
-                            popUpTo(navController.graph.id) { inclusive = true }
-                        }
-                    }
                 )
             }
 
