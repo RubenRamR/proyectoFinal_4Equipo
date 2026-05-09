@@ -23,6 +23,7 @@ import androidx.navigation.navArgument
 import ramirez.ruben.closetvirtual.components.NavigationBottomPanel
 import ramirez.ruben.closetvirtual.data.database.AppDatabase
 import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
+import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
 import ramirez.ruben.closetvirtual.screens.CalendarioScreen
 import ramirez.ruben.closetvirtual.screens.DetallePrendaScreen
 import ramirez.ruben.closetvirtual.screens.GestionPrendaScreen
@@ -37,6 +38,8 @@ import ramirez.ruben.closetvirtual.screens.RegisterScreen
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.viewmodel.DetallePrendaViewModel
 import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
+import ramirez.ruben.closetvirtual.viewmodel.LoginViewModel
+import ramirez.ruben.closetvirtual.viewmodel.RegisterViewModel
 
 import ramirez.ruben.closetvirtual.utils.ImageExport
 
@@ -69,6 +72,7 @@ fun MainAppScreen() {
     // INICIALIZACIÓN DE LA BASE DE DATOS (Single Source of Truth)
     val database = remember { AppDatabase.getDatabase(context) }
     val repository = remember { PrendaRepository(database.prendaDao()) }
+    val usuarioRepository = remember { UsuarioRepository(database.usuarioDao()) }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -162,16 +166,24 @@ fun MainAppScreen() {
             // --- RESTO DE LAS PANTALLAS ---
 
             composable("login_route") {
+                val loginViewModel: LoginViewModel = viewModel(
+                    factory = LoginViewModel.Factory(usuarioRepository)
+                )
                 LoginScreen(
                     onNavigateToRegister = { navController.navigate("register_route") },
-                    onLoginSuccess = { navController.navigate("main_route") }
+                    onLoginSuccess = { navController.navigate("main_route") },
+                    viewModel = loginViewModel
                 )
             }
 
             composable("register_route") {
+                val registerViewModel: RegisterViewModel = viewModel(
+                    factory = RegisterViewModel.Factory(usuarioRepository)
+                )
                 RegisterScreen(
                     onNavigateToLogin = { navController.navigate("login_route") },
-                    onRegisterSuccess = { navController.navigate("main_route") }
+                    onRegisterSuccess = { navController.navigate("main_route") },
+                    viewModel = registerViewModel
                 )
             }
 

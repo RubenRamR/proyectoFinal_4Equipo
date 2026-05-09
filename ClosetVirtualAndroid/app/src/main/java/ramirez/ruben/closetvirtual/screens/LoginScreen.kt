@@ -24,12 +24,22 @@ import androidx.compose.ui.unit.sp
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.R
 
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import ramirez.ruben.closetvirtual.viewmodel.LoginViewModel
+import ramirez.ruben.closetvirtual.data.database.dao.UsuarioDao
+import ramirez.ruben.closetvirtual.data.database.entity.UsuarioEntity
+import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     onNavigateToRegister: () -> Unit = {},
-    onLoginSuccess: () -> Unit = {}
+    onLoginSuccess: () -> Unit = {},
+    viewModel: LoginViewModel = viewModel()
 ){
+    val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     // Esto es para poder mostrar y ocultar la contrasena a gusto
@@ -147,7 +157,17 @@ fun LoginScreen(
 
         Button(
             onClick = {
-                onLoginSuccess()
+                viewModel.login(
+                    correo = email,
+                    password = password,
+                    onLoginSuccess = {
+                        Toast.makeText(context, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
+                        onLoginSuccess()
+                    },
+                    onLoginError = { error ->
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                    }
+                )
             },
             modifier = Modifier.width(270.dp),
             shape = RoundedCornerShape(8.dp),
@@ -210,8 +230,14 @@ fun LoginScreen(
 @Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
 @Composable
 private fun PreviewModoClaro() {
+    val fakeDao = object : UsuarioDao {
+        override suspend fun registrarUsuario(usuario: UsuarioEntity): Long = 0
+        override suspend fun login(correo: String, password: String): UsuarioEntity? = null
+    }
+    val fakeRepo = UsuarioRepository(fakeDao)
+    val fakeViewModel = LoginViewModel(fakeRepo)
     ClosetVirtualTheme(darkTheme = false) {
-        LoginScreen()
+        LoginScreen(viewModel = fakeViewModel)
     }
 }
 
@@ -223,7 +249,13 @@ private fun PreviewModoClaro() {
 )
 @Composable
 private fun PreviewModoOscuro() {
+    val fakeDao = object : UsuarioDao {
+        override suspend fun registrarUsuario(usuario: UsuarioEntity): Long = 0
+        override suspend fun login(correo: String, password: String): UsuarioEntity? = null
+    }
+    val fakeRepo = UsuarioRepository(fakeDao)
+    val fakeViewModel = LoginViewModel(fakeRepo)
     ClosetVirtualTheme(darkTheme = true) {
-        LoginScreen()
+        LoginScreen(viewModel = fakeViewModel)
     }
 }

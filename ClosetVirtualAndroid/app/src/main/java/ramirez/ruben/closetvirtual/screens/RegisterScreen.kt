@@ -25,13 +25,22 @@ import ramirez.ruben.closetvirtual.R
 import androidx.compose.foundation.verticalScroll
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import ramirez.ruben.closetvirtual.viewmodel.RegisterViewModel
+import ramirez.ruben.closetvirtual.data.database.dao.UsuarioDao
+import ramirez.ruben.closetvirtual.data.database.entity.UsuarioEntity
+import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     onNavigateToLogin: () -> Unit = {},
-    onRegisterSuccess: () -> Unit = {}
+    onRegisterSuccess: () -> Unit = {},
+    viewModel: RegisterViewModel = viewModel()
 ){
-
+    val context = LocalContext.current
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -282,10 +291,41 @@ fun RegisterScreen(
             }
         }
 
+        if (selectedGender == "Personalizado") {
+            Spacer(modifier = Modifier.height(16.dp))
+            TextField(
+                value = customGender,
+                onValueChange = { customGender = it },
+                label = { Text("Especifique género", color = Color.Gray) },
+                modifier = Modifier.width(270.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.LightGray,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.primary
+                )
+            )
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { onRegisterSuccess() },
+            onClick = {
+                viewModel.registrarUsuario(
+                    nombre = username,
+                    correo = email,
+                    password = password,
+                    fechaNacimiento = dateOfBirth,
+                    genero = if (selectedGender == "Personalizado") customGender else selectedGender,
+                    onSuccess = {
+                        Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                        onRegisterSuccess()
+                    },
+                    onError = { error ->
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                    }
+                )
+            },
             modifier = Modifier.width(270.dp),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors
@@ -331,8 +371,14 @@ fun RegisterScreen(
 @Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
 @Composable
 private fun PreviewModoClaro() {
+    val fakeDao = object : UsuarioDao {
+        override suspend fun registrarUsuario(usuario: UsuarioEntity): Long = 0
+        override suspend fun login(correo: String, password: String): UsuarioEntity? = null
+    }
+    val fakeRepo = UsuarioRepository(fakeDao)
+    val fakeViewModel = RegisterViewModel(fakeRepo)
     ClosetVirtualTheme(darkTheme = false) {
-        RegisterScreen()
+        RegisterScreen(viewModel = fakeViewModel)
     }
 }
 
@@ -344,7 +390,13 @@ private fun PreviewModoClaro() {
 )
 @Composable
 private fun PreviewModoOscuro() {
+    val fakeDao = object : UsuarioDao {
+        override suspend fun registrarUsuario(usuario: UsuarioEntity): Long = 0
+        override suspend fun login(correo: String, password: String): UsuarioEntity? = null
+    }
+    val fakeRepo = UsuarioRepository(fakeDao)
+    val fakeViewModel = RegisterViewModel(fakeRepo)
     ClosetVirtualTheme(darkTheme = true) {
-        RegisterScreen()
+        RegisterScreen(viewModel = fakeViewModel)
     }
 }
