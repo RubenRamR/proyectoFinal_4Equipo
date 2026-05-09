@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.launch
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -24,6 +27,7 @@ import ramirez.ruben.closetvirtual.components.NavigationBottomPanel
 import ramirez.ruben.closetvirtual.data.database.AppDatabase
 import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
 import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
+import ramirez.ruben.closetvirtual.data.datastore.DataStoreManager
 import ramirez.ruben.closetvirtual.screens.CalendarioScreen
 import ramirez.ruben.closetvirtual.screens.DetallePrendaScreen
 import ramirez.ruben.closetvirtual.screens.GestionPrendaScreen
@@ -38,7 +42,11 @@ import ramirez.ruben.closetvirtual.screens.RegisterScreen
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.viewmodel.DetallePrendaViewModel
 import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
+import ramirez.ruben.closetvirtual.viewmodel.ClosetViewModel
 import ramirez.ruben.closetvirtual.viewmodel.LoginViewModel
+import ramirez.ruben.closetvirtual.data.database.repository.OutfitRepository
+import ramirez.ruben.closetvirtual.viewmodel.AgregarOutfitViewModel
+import ramirez.ruben.closetvirtual.viewmodel.OutfitsViewModel
 import ramirez.ruben.closetvirtual.viewmodel.RegisterViewModel
 
 import ramirez.ruben.closetvirtual.utils.ImageExport
@@ -68,11 +76,26 @@ class MainActivity : ComponentActivity() {
 fun MainAppScreen() {
     val navController = rememberNavController()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     // INICIALIZACIÓN DE LA BASE DE DATOS (Single Source of Truth)
     val database = remember { AppDatabase.getDatabase(context) }
     val repository = remember { PrendaRepository(database.prendaDao()) }
     val usuarioRepository = remember { UsuarioRepository(database.usuarioDao()) }
+    val outfitRepository = remember { OutfitRepository(database.outfitDao()) }
+    val dataStoreManager = remember { DataStoreManager(context) }
+
+    //para el autologin en caso de que ya este logeado con el usuario
+    val userId by dataStoreManager.getUserId.collectAsState(initial = null)
+    LaunchedEffect(userId) {
+        if (userId != null) {
+            // si hay un usuario guardado, vamos directamente a la pantalla principal
+            // Usamos popUpTo para limpiar el stack y que no se pueda volver al login con atrás
+            navController.navigate("main_route") {
+                popUpTo("login_route") { inclusive = true }
+            }
+        }
+    }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -106,7 +129,7 @@ fun MainAppScreen() {
             // 1. Agregar Prenda
             composable("gestion_prenda_route") {
                 val gestionViewModel: GestionPrendaViewModel = viewModel(
-                    factory = GestionPrendaViewModel.Factory(repository, context)
+                    factory = GestionPrendaViewModel.Factory(repository, dataStoreManager, context)
                 )
 
 //                LaunchedEffect(Unit) {
@@ -127,7 +150,7 @@ fun MainAppScreen() {
             ) { backStackEntry ->
                 val prendaId = backStackEntry.arguments?.getInt("prendaId") ?: 0
                 val gestionViewModel: GestionPrendaViewModel = viewModel(
-                    factory = GestionPrendaViewModel.Factory(repository, context)
+                    factory = GestionPrendaViewModel.Factory(repository, dataStoreManager, context)
                 )
 
                 LaunchedEffect(prendaId) {
@@ -167,7 +190,7 @@ fun MainAppScreen() {
 
             composable("login_route") {
                 val loginViewModel: LoginViewModel = viewModel(
-                    factory = LoginViewModel.Factory(usuarioRepository)
+                    factory = LoginViewModel.Factory(usuarioRepository, dataStoreManager)
                 )
                 LoginScreen(
                     onNavigateToRegister = { navController.navigate("register_route") },
@@ -178,7 +201,7 @@ fun MainAppScreen() {
 
             composable("register_route") {
                 val registerViewModel: RegisterViewModel = viewModel(
-                    factory = RegisterViewModel.Factory(usuarioRepository)
+                    factory = RegisterViewModel.Factory(usuarioRepository, dataStoreManager)
                 )
                 RegisterScreen(
                     onNavigateToLogin = { navController.navigate("login_route") },
@@ -192,19 +215,36 @@ fun MainAppScreen() {
             }
 
             composable("agregar_outfit_route") {
-                AgregarOutfitScreen()
+                val agregarOutfitViewModel: AgregarOutfitViewModel = viewModel(
+                    factory = AgregarOutfitViewModel.Factory(repository, outfitRepository, dataStoreManager)
+                )
+                AgregarOutfitScreen(
+                    viewModel = agregarOutfitViewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
 
             composable("main_route") {
+                val closetViewModel: ClosetViewModel = viewModel(
+                    factory = ClosetViewModel.Factory(repository, dataStoreManager)
+                )
                 ClosetScreen(
+                    viewModel = closetViewModel,
                     onNavigateToRegistroDiario = { navController.navigate("registro_diario_route") },
-                    onNavigateToGestionPrenda = { navController.navigate("gestion_prenda_route")}
+                    onNavigateToGestionPrenda = { navController.navigate("gestion_prenda_route") },
+                    onNavigateToDetalle = { id -> navController.navigate("detalle_prenda_route/$id") }
                 )
             }
 
             composable("closet_route") {
-                OutfitsScreen(onNavigateToRegistroDiario = { navController.navigate("registro_diario_route") },
-                    onNavigateToAgregarOutfit =  {navController.navigate("agregar_outfit_route")})
+                val outfitsViewModel: OutfitsViewModel = viewModel(
+                    factory = OutfitsViewModel.Factory(outfitRepository, dataStoreManager)
+                )
+                OutfitsScreen(
+                    onNavigateToRegistroDiario = { navController.navigate("registro_diario_route") },
+                    onNavigateToAgregarOutfit = { navController.navigate("agregar_outfit_route") },
+                    viewModel = outfitsViewModel
+                )
             }
 
             composable("calendario_route") {
@@ -217,8 +257,11 @@ fun MainAppScreen() {
                 PerfilScreen(
                     onNavigateBack = { navController.popBackStack() },
                     onLogoutClick = {
-                        navController.navigate("login_route") {
-                            popUpTo(navController.graph.id) { inclusive = true }
+                        scope.launch {
+                            dataStoreManager.clearUserId()
+                            navController.navigate("login_route") {
+                                popUpTo(navController.graph.id) { inclusive = true }
+                            }
                         }
                     }
                 )

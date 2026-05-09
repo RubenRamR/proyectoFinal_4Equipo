@@ -38,6 +38,7 @@ import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
 import ramirez.ruben.closetvirtual.data.database.dao.PrendaDao
 import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
+import ramirez.ruben.closetvirtual.data.datastore.DataStoreManager
 import ramirez.ruben.closetvirtual.utils.OpcionColor
 import ramirez.ruben.closetvirtual.utils.PrendaConstants
 import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
@@ -47,7 +48,8 @@ import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
 fun GestionPrendaScreen(
     viewModel: GestionPrendaViewModel, // ViewModel inyectado
     isEditMode: Boolean = false,
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    dataStoreManager: DataStoreManager? = null
 ) {
     var nombre by remember { mutableStateOf("") }
     var marca by remember { mutableStateOf("") }
@@ -166,7 +168,6 @@ fun GestionPrendaScreen(
                             if (nombre.isNotBlank() && categoria.isNotBlank() && colorPrenda.isNotBlank()) {
                                 viewModel.guardarOActualizarPrenda(
                                     idExistente = prendaParaEditar?.id,
-                                    idUsuario = prendaParaEditar?.idUsuario ?: 1, // TODO: Obtener del usuario logueado
                                     nombre = nombre.trim(),
                                     marca = marca.trim(),
                                     uriImagenTemporal = imageUri,
@@ -214,7 +215,6 @@ fun GestionPrendaScreen(
                         if (nombre.isNotBlank() && categoria.isNotBlank() && colorPrenda.isNotBlank()) {
                             viewModel.guardarOActualizarPrenda(
                                 idExistente = null,
-                                idUsuario = 1, // TODO: Obtener del usuario logueado
                                 nombre = nombre.trim(),
                                 marca = marca.trim(),
                                 uriImagenTemporal = imageUri,
@@ -606,10 +606,12 @@ private fun provideDummyViewModel(context: android.content.Context): GestionPren
         override suspend fun actualizarPrenda(prenda: PrendaEntity) = 0
         override suspend fun eliminarPrenda(prenda: PrendaEntity) = 0
         override fun obtenerTodasLasPrendas() = flowOf(emptyList<PrendaEntity>())
+        override fun obtenerPrendasPorUsuario(idUsuario: Int) = flowOf(emptyList<PrendaEntity>())
         override suspend fun obtenerPrendaPorId(id: Int) = null
     }
     val repository = PrendaRepository(mockDao)
-    return GestionPrendaViewModel(repository, context)
+    val dataStoreManager = DataStoreManager(context)
+    return GestionPrendaViewModel(repository, dataStoreManager, context)
 }
 
 // PREVIEWS ACTUALIZADOS

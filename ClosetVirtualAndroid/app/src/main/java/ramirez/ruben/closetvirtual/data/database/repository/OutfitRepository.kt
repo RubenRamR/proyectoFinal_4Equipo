@@ -4,11 +4,15 @@ import kotlinx.coroutines.flow.Flow
 import ramirez.ruben.closetvirtual.data.database.dao.OutfitDao
 import ramirez.ruben.closetvirtual.data.database.entity.OutfitEntity
 import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
+import ramirez.ruben.closetvirtual.data.database.entity.PrendaOutfitEntity
 
 class OutfitRepository(private val outfitDao: OutfitDao) {
 
     suspend fun guardarOutfitConPrendas(outfit: OutfitEntity, prendasIds: List<Int>) {
-        outfitDao.insertarOutfitConPrendas(outfit, prendasIds)
+        val outfitId = outfitDao.insertarOutfit(outfit).toInt()
+        prendasIds.forEach { prendaId ->
+            outfitDao.insertarPrendaOutfit(PrendaOutfitEntity(idPrenda = prendaId, idOutfit = outfitId))
+        }
     }
 
     fun obtenerOutfitsPorUsuario(idUsuario: Int): Flow<List<OutfitEntity>> {

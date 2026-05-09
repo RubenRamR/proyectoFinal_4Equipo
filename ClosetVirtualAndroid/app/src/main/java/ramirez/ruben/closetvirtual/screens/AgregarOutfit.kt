@@ -1,6 +1,7 @@
 package ramirez.ruben.closetvirtual.screens
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,33 +21,51 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import ramirez.ruben.closetvirtual.data.Prenda
-// TODO (Compañero): Comenté esta importación porque el repositorio cambió su estructura para usar Room.
-// import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.graphics.asImageBitmap
+import android.graphics.BitmapFactory
+import ramirez.ruben.closetvirtual.R
+import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.ui.theme.Montserrat
+import ramirez.ruben.closetvirtual.viewmodel.AgregarOutfitViewModel
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun AgregarOutfitScreen() {
+fun AgregarOutfitScreen(
+    viewModel: AgregarOutfitViewModel = viewModel(),
+    onNavigateBack: () -> Unit = {}
+) {
+    val prendasDisponibles by viewModel.prendasDisponibles.collectAsState()
+    val prendasSeleccionadas by viewModel.prendasSeleccionadas.collectAsState()
+    val mensajeError by viewModel.mensajeError.collectAsState()
+
     var nombre by remember { mutableStateOf("") }
     var estilo by remember { mutableStateOf("") }
-    var isEstampada by remember { mutableStateOf(false) }
+    var temporada by remember { mutableStateOf("Primavera") }
     var tagText by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
+    val tags = remember { mutableStateListOf<String>() }
 
-    val tags = remember { mutableStateListOf("Casual", "Verano", "Favorito") }
+    val context = LocalContext.current
 
-    // TODO (Compañero): PrendaRepository ya no es un objeto estático (Singleton).
-    // Ahora devuelve un Flow<List<PrendaEntity>> desde SQLite.
-    // Necesitas crear un ViewModel para esta pantalla (ej. OutfitViewModel),
-    // inyectarle el PrendaRepository y recolectar el Flow usando collectAsState().
-    // val todasLasPrendas = PrendaRepository.todasLasPrendas
+    LaunchedEffect(mensajeError) {
+        mensajeError?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.limpiarError()
+        }
+    }
+
+    val prendasFiltradas = if (searchQuery.isBlank()) {
+        prendasDisponibles
+    } else {
+        prendasDisponibles.filter { it.nombre.contains(searchQuery, ignoreCase = true) }
+    }
 
     Column(
         modifier = Modifier
@@ -61,8 +80,11 @@ fun AgregarOutfitScreen() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            IconButton(onClick = { }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atras", tint = MaterialTheme.colorScheme.onBackground
+            IconButton(onClick = onNavigateBack) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Atras",
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
             Text(
@@ -73,7 +95,12 @@ fun AgregarOutfitScreen() {
                 fontFamily = Montserrat
             )
             Button(
-                onClick = { },
+                onClick = {
+                    viewModel.guardarOutfit(nombre, estilo, temporada, tags.toList()) {
+                        Toast.makeText(context, "Outfit guardado con éxito", Toast.LENGTH_SHORT).show()
+                        onNavigateBack()
+                    }
+                },
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Guardar", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = Montserrat)
@@ -105,7 +132,6 @@ fun AgregarOutfitScreen() {
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
-                    
 
                     Row(modifier = Modifier.fillMaxWidth()) {
                         OutlinedTextField(
@@ -121,6 +147,8 @@ fun AgregarOutfitScreen() {
                         DropdownField(
                             label = "Temporada",
                             options = listOf("Primavera", "Verano", "Otoño", "Invierno"),
+                            selectedOption = temporada,
+                            onSelectionChange = { temporada = it },
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -177,8 +205,8 @@ fun AgregarOutfitScreen() {
             Spacer(modifier = Modifier.height(24.dp))
 
             // seleccion prendas
-            Text(text = "Seleccionar Prendas", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground, fontFamily = Montserrat)
-            Text(text = "Elige la ropa para este outfit", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = Montserrat)
+            Text(text = "Seleccionar Prendas (${prendasSeleccionadas.size}/5)", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground, fontFamily = Montserrat)
+            Text(text = "Elige la ropa para este outfit (Máximo 5)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = Montserrat)
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = searchQuery,
@@ -187,30 +215,39 @@ fun AgregarOutfitScreen() {
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground) }
-
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            /* TODO (Compañero): Comenté el bloque que renderiza las cartas porque depende
-               de la lista 'todasLasPrendas' que ya no es estática.
-               Además, tu función 'PrendaSelectionCard' debe actualizarse para recibir un 'PrendaEntity'
-               en lugar de la clase antigua 'Prenda'.
-
-            // Lista completa de prendas
-            todasLasPrendas.chunked(2).forEach { par ->
+            // Lista de prendas disponibles para seleccionar
+            prendasFiltradas.chunked(2).forEach { par ->
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    PrendaSelectionCard(par[0], isSelected = false, onToggle = {}, modifier = Modifier.weight(1f))
+                    PrendaSelectionCard(
+                        prenda = par[0],
+                        isSelected = prendasSeleccionadas.contains(par[0].id),
+                        onToggle = { viewModel.toggleSeleccionPrenda(par[0].id) },
+                        modifier = Modifier.weight(1f)
+                    )
                     Spacer(modifier = Modifier.width(12.dp))
                     if (par.size > 1) {
-                        PrendaSelectionCard(par[1], isSelected = false, onToggle = {}, modifier = Modifier.weight(1f))
+                        PrendaSelectionCard(
+                            prenda = par[1],
+                            isSelected = prendasSeleccionadas.contains(par[1].id),
+                            onToggle = { viewModel.toggleSeleccionPrenda(par[1].id) },
+                            modifier = Modifier.weight(1f)
+                        )
                     } else {
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
                 Spacer(modifier = Modifier.height(12.dp))
             }
-            */
+
+            if (prendasFiltradas.isEmpty()) {
+                Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                    Text("No se encontraron prendas", fontFamily = Montserrat, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -219,9 +256,14 @@ fun AgregarOutfitScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropdownField(label: String, options: List<String>, modifier: Modifier = Modifier) {
+fun DropdownField(
+    label: String,
+    options: List<String>,
+    selectedOption: String,
+    onSelectionChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf("") }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -243,7 +285,8 @@ fun DropdownField(label: String, options: List<String>, modifier: Modifier = Mod
             options.forEach { option ->
                 DropdownMenuItem(
                     text = { Text(option, fontFamily = Montserrat) },
-                    onClick = { selectedOption = option
+                    onClick = {
+                        onSelectionChange(option)
                         expanded = false
                     }
                 )
@@ -252,10 +295,9 @@ fun DropdownField(label: String, options: List<String>, modifier: Modifier = Mod
     }
 }
 
-// TODO (Compañero): Cambiar el parámetro de tipo 'Prenda' a 'PrendaEntity'
 @Composable
 fun PrendaSelectionCard(
-    prenda: Prenda,
+    prenda: PrendaEntity,
     isSelected: Boolean,
     onToggle: () -> Unit,
     modifier: Modifier = Modifier
@@ -276,13 +318,18 @@ fun PrendaSelectionCard(
                 .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
-                if (prenda.imagenUri.isNotEmpty()) {
-                    AsyncImage(
-                        model = prenda.imagenUri,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
+                if (prenda.imagen != null) {
+                    val bitmap = remember(prenda.imagen) {
+                        BitmapFactory.decodeByteArray(prenda.imagen, 0, prenda.imagen.size)
+                    }
+                    if (bitmap != null) {
+                        androidx.compose.foundation.Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 } else {
                     Icon(
                         Icons.Default.Checkroom,
@@ -327,15 +374,6 @@ fun PrendaSelectionCard(
 @Preview(showBackground = true, name = "Light Mode")
 @Composable
 fun AgregarOutfitScreenPreview() {
-    ClosetVirtualTheme {
-        AgregarOutfitScreen()
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
-@Composable
-fun AgregarOutfitScreenDarkPreview() {
     ClosetVirtualTheme {
         AgregarOutfitScreen()
     }

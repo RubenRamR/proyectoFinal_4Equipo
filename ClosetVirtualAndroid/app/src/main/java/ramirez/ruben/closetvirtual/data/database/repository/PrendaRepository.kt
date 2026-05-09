@@ -8,6 +8,10 @@ class PrendaRepository(private val prendaDao: PrendaDao) {
 
     val todasLasPrendas: Flow<List<PrendaEntity>> = prendaDao.obtenerTodasLasPrendas()
 
+    fun obtenerPrendasPorUsuario(idUsuario: Int): Flow<List<PrendaEntity>> {
+        return prendaDao.obtenerPrendasPorUsuario(idUsuario)
+    }
+
     suspend fun insertarPrenda(prenda: PrendaEntity) {
         prendaDao.insertarPrenda(prenda)
     }

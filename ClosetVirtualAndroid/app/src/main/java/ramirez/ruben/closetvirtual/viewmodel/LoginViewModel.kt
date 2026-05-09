@@ -5,8 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
+import ramirez.ruben.closetvirtual.data.datastore.DataStoreManager
 
-class LoginViewModel(private val repository: UsuarioRepository) : ViewModel() {
+class LoginViewModel(private val repository: UsuarioRepository, private val dataStoreManager: DataStoreManager) : ViewModel() {
 
     fun login(correo: String, password: String, onLoginSuccess: () -> Unit, onLoginError: (String) -> Unit) {
         if (correo.isBlank() || password.isBlank()) {
@@ -17,6 +18,7 @@ class LoginViewModel(private val repository: UsuarioRepository) : ViewModel() {
         viewModelScope.launch {
             val user = repository.login(correo, password)
             if (user != null) {
+                dataStoreManager.saveUserId(user.id)
                 onLoginSuccess()
             } else {
                 onLoginError("Correo o contraseña incorrectos")
@@ -24,11 +26,11 @@ class LoginViewModel(private val repository: UsuarioRepository) : ViewModel() {
         }
     }
 
-    class Factory(private val repository: UsuarioRepository) : ViewModelProvider.Factory {
+    class Factory(private val repository: UsuarioRepository, private val dataStoreManager: DataStoreManager) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return LoginViewModel(repository) as T
+                return LoginViewModel(repository, dataStoreManager) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

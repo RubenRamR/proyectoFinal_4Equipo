@@ -31,13 +31,15 @@ import ramirez.ruben.closetvirtual.viewmodel.LoginViewModel
 import ramirez.ruben.closetvirtual.data.database.dao.UsuarioDao
 import ramirez.ruben.closetvirtual.data.database.entity.UsuarioEntity
 import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
+import ramirez.ruben.closetvirtual.data.datastore.DataStoreManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     onNavigateToRegister: () -> Unit = {},
     onLoginSuccess: () -> Unit = {},
-    viewModel: LoginViewModel = viewModel()
+    viewModel: LoginViewModel = viewModel(),
+    dataStoreManager: DataStoreManager? = null
 ){
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
@@ -235,7 +237,7 @@ private fun PreviewModoClaro() {
         override suspend fun login(correo: String, password: String): UsuarioEntity? = null
     }
     val fakeRepo = UsuarioRepository(fakeDao)
-    val fakeViewModel = LoginViewModel(fakeRepo)
+    val fakeViewModel = LoginViewModel(fakeRepo, DataStoreManager(LocalContext.current))
     ClosetVirtualTheme(darkTheme = false) {
         LoginScreen(viewModel = fakeViewModel)
     }
@@ -254,7 +256,7 @@ private fun PreviewModoOscuro() {
         override suspend fun login(correo: String, password: String): UsuarioEntity? = null
     }
     val fakeRepo = UsuarioRepository(fakeDao)
-    val fakeViewModel = LoginViewModel(fakeRepo)
+    val fakeViewModel = LoginViewModel(fakeRepo, DataStoreManager(LocalContext.current))
     ClosetVirtualTheme(darkTheme = true) {
         LoginScreen(viewModel = fakeViewModel)
     }

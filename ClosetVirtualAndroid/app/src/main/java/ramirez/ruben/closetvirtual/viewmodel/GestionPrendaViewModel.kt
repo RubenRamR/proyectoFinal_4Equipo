@@ -9,15 +9,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
 import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
+import ramirez.ruben.closetvirtual.data.datastore.DataStoreManager
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
 class GestionPrendaViewModel(
     private val repository: PrendaRepository,
+    private val dataStoreManager: DataStoreManager,
     private val context: Context
 ) : ViewModel() {
 
@@ -31,12 +34,14 @@ class GestionPrendaViewModel(
     }
 
     fun guardarOActualizarPrenda(
-        idExistente: Int?, idUsuario: Int, nombre: String, marca: String, uriImagenTemporal: Uri?,
+        idExistente: Int?, nombre: String, marca: String, uriImagenTemporal: Uri?,
         imagenActual: ByteArray?, categoria: String, color: String,
         esEstampada: Boolean, talla: String, temporada: String,
         formalidad: String, tags: List<String>
     ) {
         viewModelScope.launch(Dispatchers.IO) {
+            val idUsuario = dataStoreManager.getUserId.first() ?: 1 // Default to 1 if not found, but should be found
+
             val imagenBytes = if (uriImagenTemporal != null) {
                 convertirUriAByteArray(uriImagenTemporal)
             } else {
@@ -95,12 +100,13 @@ class GestionPrendaViewModel(
 
     class Factory(
         private val repository: PrendaRepository,
+        private val dataStoreManager: DataStoreManager,
         private val context: Context
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(GestionPrendaViewModel::class.java)) {
-                return GestionPrendaViewModel(repository, context) as T
+                return GestionPrendaViewModel(repository, dataStoreManager, context) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

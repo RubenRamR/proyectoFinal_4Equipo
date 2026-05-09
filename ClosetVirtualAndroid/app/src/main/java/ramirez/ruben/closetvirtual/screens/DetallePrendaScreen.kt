@@ -316,6 +316,7 @@ private fun provideDummyDetalleViewModel(): DetallePrendaViewModel {
         override suspend fun actualizarPrenda(prenda: PrendaEntity) = 0
         override suspend fun eliminarPrenda(prenda: PrendaEntity) = 0
         override fun obtenerTodasLasPrendas() = flowOf(emptyList<PrendaEntity>())
+        override fun obtenerPrendasPorUsuario(idUsuario: Int) = flowOf(emptyList<PrendaEntity>())
 
         override suspend fun obtenerPrendaPorId(id: Int) = PrendaEntity(
             id = 1,

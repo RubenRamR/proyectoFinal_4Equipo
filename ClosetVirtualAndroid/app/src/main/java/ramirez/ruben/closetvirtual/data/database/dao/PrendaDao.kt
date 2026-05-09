@@ -24,6 +24,9 @@ interface PrendaDao {
     @Query("SELECT * FROM prenda")
     fun obtenerTodasLasPrendas(): Flow<List<PrendaEntity>>
 
+    @Query("SELECT * FROM prenda WHERE idUsuario = :idUsuario")
+    fun obtenerPrendasPorUsuario(idUsuario: Int): Flow<List<PrendaEntity>>
+
     @Query("SELECT * FROM prenda WHERE id = :id")
     suspend fun obtenerPrendaPorId(id: Int): PrendaEntity?
 }
