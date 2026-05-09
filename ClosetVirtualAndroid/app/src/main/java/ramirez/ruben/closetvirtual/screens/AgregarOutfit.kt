@@ -26,7 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import ramirez.ruben.closetvirtual.data.Prenda
-import ramirez.ruben.closetvirtual.data.PrendaRepository
+// TODO (Compañero): Comenté esta importación porque el repositorio cambió su estructura para usar Room.
+// import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
@@ -36,10 +37,14 @@ fun AgregarOutfitScreen() {
     var isEstampada by remember { mutableStateOf(false) }
     var tagText by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
-    
+
     val tags = remember { mutableStateListOf("Casual", "Verano", "Favorito") }
 
-    val todasLasPrendas = PrendaRepository.todasLasPrendas
+    // TODO (Compañero): PrendaRepository ya no es un objeto estático (Singleton).
+    // Ahora devuelve un Flow<List<PrendaEntity>> desde SQLite.
+    // Necesitas crear un ViewModel para esta pantalla (ej. OutfitViewModel),
+    // inyectarle el PrendaRepository y recolectar el Flow usando collectAsState().
+    // val todasLasPrendas = PrendaRepository.todasLasPrendas
 
     Column(
         modifier = Modifier
@@ -187,6 +192,11 @@ fun AgregarOutfitScreen() {
 
             Spacer(modifier = Modifier.height(20.dp))
 
+            /* TODO (Compañero): Comenté el bloque que renderiza las cartas porque depende
+               de la lista 'todasLasPrendas' que ya no es estática.
+               Además, tu función 'PrendaSelectionCard' debe actualizarse para recibir un 'PrendaEntity'
+               en lugar de la clase antigua 'Prenda'.
+
             // Lista completa de prendas
             todasLasPrendas.chunked(2).forEach { par ->
                 Row(modifier = Modifier.fillMaxWidth()) {
@@ -200,6 +210,7 @@ fun AgregarOutfitScreen() {
                 }
                 Spacer(modifier = Modifier.height(12.dp))
             }
+            */
 
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -244,6 +255,7 @@ fun DropdownField(label: String, modifier: Modifier = Modifier) {
     }
 }
 
+// TODO (Compañero): Cambiar el parámetro de tipo 'Prenda' a 'PrendaEntity'
 @Composable
 fun PrendaSelectionCard(
     prenda: Prenda,
@@ -285,7 +297,7 @@ fun PrendaSelectionCard(
                         modifier = Modifier.size(48.dp)
                     )
                 }
-                
+
                 if (isSelected) {
                     Box(
                         modifier = Modifier

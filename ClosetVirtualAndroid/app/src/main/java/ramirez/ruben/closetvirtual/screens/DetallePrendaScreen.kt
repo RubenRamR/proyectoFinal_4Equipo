@@ -16,6 +16,9 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,30 +28,29 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import kotlinx.coroutines.flow.flowOf
 import ramirez.ruben.closetvirtual.R
+import ramirez.ruben.closetvirtual.data.database.dao.PrendaDao
+import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
+import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
-
-// Modelo de datos (Se mantiene igual, la lógica cambia en el receptor)
-data class PrendaDetalleUiState(
-    val nombre: String = "Oblivius Topless",
-    val marca: String = "Nike",
-    val usosTotales: Int = 30,
-    val usosPorMes: Int = 4,
-    val esEstampada: Boolean = true,
-    val categoria: String = "Top",
-    val temporada: String = "Otoño",
-    val tags: List<String> = listOf("Vintage", "Favorito", "Casual"),
-    val imageUri: Uri? = null
-)
+import ramirez.ruben.closetvirtual.viewmodel.DetallePrendaViewModel
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetallePrendaScreen(
-    state: PrendaDetalleUiState = PrendaDetalleUiState(),
+    prendaId: String,
+    viewModel: DetallePrendaViewModel,
     onNavigateBack: () -> Unit = {},
-    onEditClick: () -> Unit = {},
-    onDeleteClick: () -> Unit = {}
+    onEditClick: (String) -> Unit = {}
 ) {
+    LaunchedEffect(prendaId) {
+        viewModel.cargarPrenda(prendaId)
+    }
+
+    val prenda by viewModel.prenda.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -66,82 +68,88 @@ fun DetallePrendaScreen(
             )
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 24.dp)
-                .verticalScroll(rememberScrollState()),
-        ) {
-            SeccionCabeceraDetalle(state)
-
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 24.dp),
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-
-            SeccionEstadisticas(state)
-
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 24.dp),
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-
-            SeccionAtributosEstaticos(state)
-
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 24.dp),
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-
-            SeccionTagsLectura(state.tags)
-
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 24.dp),
-                color = MaterialTheme.colorScheme.outlineVariant
-            )
-
-            // Botones con Estilos Globales
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Button(
-                    onClick = onEditClick,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF26657A)),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.btn_edit),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = Color.White
-                    )
-                }
-                Button(
-                    onClick = onDeleteClick,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.btn_delete),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = Color.White
-                    )
-                }
+        if (prenda == null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
             }
-            Spacer(modifier = Modifier.height(32.dp))
+        } else {
+            val prendaActual = prenda!!
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 24.dp)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                SeccionCabeceraDetalle(prendaActual)
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 24.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+
+                SeccionEstadisticas(prendaActual)
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 24.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+
+                SeccionAtributosEstaticos(prendaActual)
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 24.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+
+                SeccionTagsLectura(prendaActual.tags)
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 24.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Button(
+                        onClick = { onEditClick(prendaActual.id) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF26657A)),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.btn_edit),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.White
+                        )
+                    }
+                    Button(
+                        onClick = { viewModel.eliminarPrendaActual(onSuccess = onNavigateBack) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.btn_delete),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.White
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+            }
         }
     }
 }
 
 @Composable
-private fun SeccionCabeceraDetalle(state: PrendaDetalleUiState) {
+private fun SeccionCabeceraDetalle(prenda: PrendaEntity) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(24.dp),
@@ -156,9 +164,9 @@ private fun SeccionCabeceraDetalle(state: PrendaDetalleUiState) {
                 ),
             contentAlignment = Alignment.Center
         ) {
-            if (state.imageUri != null) {
+            if (prenda.imagenUri.isNotBlank() && File(prenda.imagenUri).exists()) {
                 AsyncImage(
-                    model = state.imageUri,
+                    model = Uri.fromFile(File(prenda.imagenUri)),
                     contentDescription = stringResource(R.string.cd_prenda_photo),
                     modifier = Modifier
                         .fillMaxSize()
@@ -177,21 +185,23 @@ private fun SeccionCabeceraDetalle(state: PrendaDetalleUiState) {
 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(
-                text = state.nombre,
+                text = prenda.nombre,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Text(
-                text = state.marca,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+            if (!prenda.marca.isNullOrBlank()) {
+                Text(
+                    text = prenda.marca,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun SeccionEstadisticas(state: PrendaDetalleUiState) {
+private fun SeccionEstadisticas(prenda: PrendaEntity) {
     val isDark = isSystemInDarkTheme()
 
     Row(
@@ -204,14 +214,8 @@ private fun SeccionEstadisticas(state: PrendaDetalleUiState) {
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            // Uso de strings con formato dinámico
             Text(
-                text = stringResource(R.string.uses_total_count, state.usosTotales),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = stringResource(R.string.uses_per_month_approx, state.usosPorMes),
+                text = stringResource(R.string.uses_total_count, 0),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -226,10 +230,10 @@ private fun SeccionEstadisticas(state: PrendaDetalleUiState) {
             Spacer(modifier = Modifier.width(8.dp))
 
             Icon(
-                imageVector = if (state.esEstampada) Icons.Default.Check else Icons.Default.Close,
-                contentDescription = if (state.esEstampada) stringResource(R.string.cd_is_printed)
+                imageVector = if (prenda.esEstampada) Icons.Default.Check else Icons.Default.Close,
+                contentDescription = if (prenda.esEstampada) stringResource(R.string.cd_is_printed)
                 else stringResource(R.string.cd_not_printed),
-                tint = if (state.esEstampada) {
+                tint = if (prenda.esEstampada) {
                     if (isDark) Color(0xFF5E9C94) else Color(0xFF2D4B55)
                 } else {
                     MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
@@ -240,7 +244,7 @@ private fun SeccionEstadisticas(state: PrendaDetalleUiState) {
 }
 
 @Composable
-private fun SeccionAtributosEstaticos(state: PrendaDetalleUiState) {
+private fun SeccionAtributosEstaticos(prenda: PrendaEntity) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
@@ -248,7 +252,7 @@ private fun SeccionAtributosEstaticos(state: PrendaDetalleUiState) {
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Text(text = state.categoria, style = MaterialTheme.typography.bodyMedium)
+            Text(text = prenda.categoria, style = MaterialTheme.typography.bodyMedium)
         }
         Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
@@ -256,7 +260,7 @@ private fun SeccionAtributosEstaticos(state: PrendaDetalleUiState) {
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Text(text = state.temporada, style = MaterialTheme.typography.bodyMedium)
+            Text(text = prenda.temporada, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
@@ -307,12 +311,41 @@ private fun SeccionTagsLectura(tags: List<String>) {
     }
 }
 
+// FUNCIONES AUXILIARES PARA PREVIEWS
+private fun provideDummyDetalleViewModel(): DetallePrendaViewModel {
+    val mockDao = object : PrendaDao {
+        override suspend fun insertarPrenda(prenda: PrendaEntity) = 0L
+        override suspend fun actualizarPrenda(prenda: PrendaEntity) = 0
+        override suspend fun eliminarPrenda(prenda: PrendaEntity) = 0
+        override fun obtenerTodasLasPrendas() = flowOf(emptyList<PrendaEntity>())
+
+        override suspend fun obtenerPrendaPorId(id: String) = PrendaEntity(
+            id = "1",
+            nombre = "Camisa Vintage",
+            marca = "Levis",
+            imagenUri = "",
+            categoria = "Top",
+            color = "Azul",
+            esEstampada = false,
+            talla = "M",
+            temporada = "Primavera",
+            formalidad = "Casual",
+            tags = listOf("Vintage", "Favorito", "Uso Diario")
+        )
+    }
+    val repository = PrendaRepository(mockDao)
+    return DetallePrendaViewModel(repository)
+}
+
 // PREVIEWS
 @Preview(name = "1. Detalle (Claro)", showBackground = true, showSystemUi = true)
 @Composable
 private fun PreviewDetalleClaro() {
     ClosetVirtualTheme(darkTheme = false) {
-        DetallePrendaScreen()
+        DetallePrendaScreen(
+            prendaId = "1",
+            viewModel = provideDummyDetalleViewModel()
+        )
     }
 }
 
@@ -325,6 +358,9 @@ private fun PreviewDetalleClaro() {
 @Composable
 private fun PreviewDetalleOscuro() {
     ClosetVirtualTheme(darkTheme = true) {
-        DetallePrendaScreen()
+        DetallePrendaScreen(
+            prendaId = "1",
+            viewModel = provideDummyDetalleViewModel()
+        )
     }
 }

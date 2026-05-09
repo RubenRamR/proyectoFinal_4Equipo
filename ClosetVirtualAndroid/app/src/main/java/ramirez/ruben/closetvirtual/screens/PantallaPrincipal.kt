@@ -49,7 +49,8 @@ import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import androidx.compose.material3.FabPosition
 import androidx.compose.ui.res.painterResource
 import ramirez.ruben.closetvirtual.R
-import ramirez.ruben.closetvirtual.data.PrendaRepository
+// TODO (Compañero): Importación comentada porque la estructura del repositorio cambió.
+// import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
 
 @Preview(showBackground = true)
 @Composable
@@ -71,7 +72,12 @@ fun ClosetScreenDarkPreview() {
 fun ClosetScreen(
     onNavigateToRegistroDiario: () -> Unit = {}
 ) {
-    val prendas = PrendaRepository.todasLasPrendas
+    // TODO (Compañero): PrendaRepository ya no es estático y devuelve un Flow<List<PrendaEntity>>.
+    // Debes crear un ViewModel para el Clóset, inyectar el repositorio y recolectar
+    // el estado con 'collectAsState()'.
+    // Por ahora, se desconectó usando una lista vacía para que el proyecto compile.
+    // val prendas = PrendaRepository.todasLasPrendas
+    val prendas = emptyList<Prenda>()
 
     Scaffold(
         bottomBar = { },
@@ -110,8 +116,8 @@ fun ClosetScreen(
 @Composable
 fun BarraDeBusqueda() {
     OutlinedTextField(value = "", onValueChange = {}, placeholder = { Text("Busqueda de prendas") }, leadingIcon = {
-            Icon(Icons.Default.Menu, contentDescription = null)
-        },
+        Icon(Icons.Default.Menu, contentDescription = null)
+    },
         trailingIcon = {
             Icon(Icons.Default.Search, contentDescription = null)
         },
@@ -132,6 +138,7 @@ fun Filtros() {
     }
 }
 
+// TODO (Compañero): Cuando implementes Room aquí, cambia 'List<Prenda>' por 'List<PrendaEntity>'
 @Composable
 fun PrendasGrid(prendas: List<Prenda>) {
     // grid para ejecutar le card d cada prenda
@@ -147,11 +154,12 @@ fun PrendasGrid(prendas: List<Prenda>) {
     }
 }
 
+// TODO (Compañero): Cambiar el parámetro de tipo 'Prenda' a 'PrendaEntity'
 @Composable
 fun PrendasCard(prenda: Prenda) {
     // Card usa por defecto MaterialTheme.colorScheme.surface
     Card(
-        shape = RoundedCornerShape(16.dp), 
+        shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column {
@@ -213,5 +221,3 @@ fun AddFab() { //botoncito de + para agregar prendas
         Icon(Icons.Default.Add, contentDescription = null)
     }
 }
-
-

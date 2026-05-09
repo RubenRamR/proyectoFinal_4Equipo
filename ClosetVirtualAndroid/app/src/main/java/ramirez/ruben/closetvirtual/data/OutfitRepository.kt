@@ -2,7 +2,9 @@ package ramirez.ruben.closetvirtual.data
 
 import ramirez.ruben.closetvirtual.components.Outfit
 
-// repositorio solo para tener datos para mostrar en pantalla
+// Repositorio temporal para datos de prueba en pantalla.
+// Se usa emptyList() para las prendas porque ahora los datos reales
+// viven en SQLite y se cargan de forma asíncrona mediante ViewModels.
 object OutfitRepository {
 
     val todosLosOutfits: List<Outfit> = listOf(
@@ -11,11 +13,7 @@ object OutfitRepository {
             estilo = "Rock",
             temporada = "Otoño",
             formalidad = "No",
-            prendas = PrendaRepository.todasLasPrendas.filter {
-                it.nombre.contains("Vinipiel", ignoreCase = true) ||
-                        it.nombre.contains("Bolsa", ignoreCase = true) ||
-                        it.nombre.contains("Tacones", ignoreCase = true)
-            },
+            prendas = emptyList(),
             tags = listOf("Noche", "Cuero", "Trendy")
         ),
 
@@ -24,11 +22,7 @@ object OutfitRepository {
             estilo = "Sport",
             temporada = "Todas las temporadas",
             formalidad = "No",
-            prendas = PrendaRepository.todasLasPrendas.filter {
-                it.nombre.contains("Deportiva", ignoreCase = true) ||
-                        it.nombre.contains("Short Deportivo", ignoreCase = true) ||
-                        it.nombre.contains("Tenis", ignoreCase = true)
-            },
+            prendas = emptyList(),
             tags = listOf("Fitness", "Cómodo", "Entrenamiento")
         ),
 
@@ -37,9 +31,7 @@ object OutfitRepository {
             estilo = "Oficina",
             temporada = "Todas las temporadas",
             formalidad = "Formal",
-            prendas = PrendaRepository.todasLasPrendas.filter {
-                it.nombre == "Blusa Formal Blanca" || it.nombre == "Pantalón de Vestir Formal"
-            },
+            prendas = emptyList(),
             tags = listOf("Trabajo", "Elegante")
         ),
 
@@ -48,12 +40,7 @@ object OutfitRepository {
             estilo = "Relajado",
             temporada = "Primavera / Verano",
             formalidad = "Informal",
-            prendas = PrendaRepository.todasLasPrendas.filter {
-                it.nombre == "Blusa Rosa Casual" ||
-                        it.nombre == "Pantalón de Mezclilla Clásico" ||
-                        it.nombre == "Sombrero de Playa" ||
-                        it.nombre == "Tenis Blancos Urbanos"
-            },
+            prendas = emptyList(),
             tags = listOf("Fin de semana", "Fresco", "Básico")
         )
     )
