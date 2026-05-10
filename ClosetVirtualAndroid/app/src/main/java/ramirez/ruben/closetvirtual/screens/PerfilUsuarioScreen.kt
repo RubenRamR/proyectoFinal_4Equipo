@@ -70,10 +70,14 @@ fun PerfilScreen(
 
     // preferencias del usuario
     var isBiometricsEnabled by remember(usuarioActual) {
-        mutableStateOf(usuarioActual?.isBiometricsEnabled ?: true)
+        mutableStateOf(usuarioActual?.isBiometricsEnabled ?: false)
     }
-    var isDarkThemeEnabled by remember(usuarioActual) {
-        mutableStateOf(usuarioActual?.isDarkThemeEnabled ?: false)
+
+    // Observar el modo oscuro desde DataStore
+    val isDarkThemeDataStore by loginViewModel?.isDarkThemeEnabled?.collectAsState(initial = false) ?: remember { mutableStateOf(false) }
+
+    var isDarkThemeEnabled by remember(isDarkThemeDataStore) {
+        mutableStateOf(isDarkThemeDataStore)
     }
 
     Scaffold(
@@ -96,7 +100,10 @@ fun PerfilScreen(
                     ) {
                         CustomThemeSwitch(
                             checked = isDarkThemeEnabled,
-                            onCheckedChange = { isDarkThemeEnabled = it }
+                            onCheckedChange = { 
+                                isDarkThemeEnabled = it
+                                loginViewModel?.toggleDarkMode(it)
+                            }
                         )
                     }
                 },

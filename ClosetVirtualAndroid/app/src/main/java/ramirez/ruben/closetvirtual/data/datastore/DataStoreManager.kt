@@ -17,6 +17,7 @@ class DataStoreManager(private val context: Context) {
         val USER_ID_KEY = intPreferencesKey("user_id")
         val IS_LOGGED_IN_KEY = booleanPreferencesKey("is_logged_in")
         val BIOMETRICS_ENABLED_KEY = booleanPreferencesKey("biometrics_enabled")
+        val DARK_MODE_KEY = booleanPreferencesKey("dark_mode")
     }
 
     val getUserId: Flow<Int?> = context.dataStore.data
@@ -34,6 +35,11 @@ class DataStoreManager(private val context: Context) {
             preferences[BIOMETRICS_ENABLED_KEY] ?: false
         }
 
+    val isDarkThemeEnabled: Flow<Boolean> = context.dataStore.data
+        .map { preferences ->
+            preferences[DARK_MODE_KEY] ?: false
+        }
+
     suspend fun saveUserId(id: Int) {
         context.dataStore.edit { preferences ->
             preferences[USER_ID_KEY] = id
@@ -44,6 +50,12 @@ class DataStoreManager(private val context: Context) {
     suspend fun setBiometricsEnabled(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[BIOMETRICS_ENABLED_KEY] = enabled
+        }
+    }
+
+    suspend fun setDarkThemeEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[DARK_MODE_KEY] = enabled
         }
     }
 

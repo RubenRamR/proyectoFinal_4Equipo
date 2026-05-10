@@ -68,6 +68,15 @@ class UsuarioViewModel(
         }
     }
 
+    fun obtenerUsuario(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val usuario = repository.obtenerUsuarioPorId(id)
+            if (usuario != null) {
+                _usuarioActual.value = usuario
+            }
+        }
+    }
+
     fun actualizarPerfil(usuarioActualizado: UsuarioEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.actualizarUsuario(usuarioActualizado)

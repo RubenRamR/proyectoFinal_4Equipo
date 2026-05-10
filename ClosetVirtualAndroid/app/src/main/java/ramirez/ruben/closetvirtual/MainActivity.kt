@@ -63,15 +63,19 @@ class MainActivity : FragmentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            ClosetVirtualTheme {
-                MainAppScreen()
+            val context = LocalContext.current
+            val dataStoreManager = remember { DataStoreManager(context) }
+            val isDarkTheme by dataStoreManager.isDarkThemeEnabled.collectAsState(initial = false)
+
+            ClosetVirtualTheme(darkTheme = isDarkTheme) {
+                MainAppScreen(dataStoreManager)
             }
         }
     }
 }
 
 @Composable
-fun MainAppScreen() {
+fun MainAppScreen(dataStoreManager: DataStoreManager) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -81,24 +85,24 @@ fun MainAppScreen() {
     val prendaRepository = remember { PrendaRepository(database.prendaDao()) }
     val usuarioRepository = remember { UsuarioRepository(database.usuarioDao()) }
     val outfitRepository = remember { OutfitRepository(database.outfitDao()) }
-    val dataStoreManager = remember { DataStoreManager(context) }
-
-    //para el autologin en caso de que ya este logeado con el usuario
-//    val userId by dataStoreManager.getUserId.collectAsState(initial = null)
-//    LaunchedEffect(userId) {
-//        if (userId != null) {
-//            // si hay un usuario guardado, vamos directamente a la pantalla principal
-//            // Usamos popUpTo para limpiar el stack y que no se pueda volver al login con atrás
-//            navController.navigate("main_route") {
-//                popUpTo("login_route") { inclusive = true }
-//            }
-//        }
-//    }
-
+    // val dataStoreManager = remember { DataStoreManager(context) } // Se pasa como parámetro
 
     val usuarioViewModel: UsuarioViewModel = viewModel(
         factory = UsuarioViewModel.Factory(usuarioRepository)
     )
+
+    //para el autologin en caso de que ya este logeado con el usuario
+    val userId by dataStoreManager.getUserId.collectAsState(initial = null)
+    LaunchedEffect(userId) {
+        if (userId != null) {
+            usuarioViewModel.obtenerUsuario(userId!!)
+            // si hay un usuario guardado, vamos directamente a la pantalla principal
+            // Usamos popUpTo para limpiar el stack y que no se pueda volver al login con atrás
+            // navController.navigate("main_route") {
+            //     popUpTo("login_route") { inclusive = true }
+            // }
+        }
+    }
 
     val loginViewModel: LoginViewModel = viewModel(
         factory = LoginViewModel.Factory(usuarioRepository, dataStoreManager)

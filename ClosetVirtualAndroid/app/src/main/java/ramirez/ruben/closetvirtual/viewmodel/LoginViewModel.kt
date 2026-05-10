@@ -18,6 +18,7 @@ class LoginViewModel(private val repository: UsuarioRepository, private val data
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
     val isBiometricsEnabled: Flow<Boolean> = dataStoreManager.isBiometricsEnabled
+    val isDarkThemeEnabled: Flow<Boolean> = dataStoreManager.isDarkThemeEnabled
     val userId: Flow<Int?> = dataStoreManager.getUserId
 
     fun login(correo: String, password: String, onLoginSuccess: () -> Unit, onLoginError: (String) -> Unit) {
@@ -34,6 +35,7 @@ class LoginViewModel(private val repository: UsuarioRepository, private val data
                 _errorMessage.value = null
                 dataStoreManager.saveUserId(user.id)
                 dataStoreManager.setBiometricsEnabled(user.isBiometricsEnabled)
+                dataStoreManager.setDarkThemeEnabled(user.isDarkThemeEnabled)
                 println("Debug: Sesión guardada en DataStore para ID: ${user.id}")
                 onLoginSuccess()
             } else {
@@ -58,6 +60,12 @@ class LoginViewModel(private val repository: UsuarioRepository, private val data
     fun toggleBiometrics(enabled: Boolean) {
         viewModelScope.launch {
             dataStoreManager.setBiometricsEnabled(enabled)
+        }
+    }
+
+    fun toggleDarkMode(enabled: Boolean) {
+        viewModelScope.launch {
+            dataStoreManager.setDarkThemeEnabled(enabled)
         }
     }
 

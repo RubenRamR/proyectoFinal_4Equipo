@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.FabPosition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -62,6 +63,7 @@ fun OutfitsScreen(
 
     Scaffold(
         bottomBar = { },
+        floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
             Row(
                 modifier = Modifier
@@ -81,7 +83,7 @@ fun OutfitsScreen(
             }
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(12.dp).padding(12.dp).fillMaxSize()) {
+        Column(modifier = Modifier.padding(12.dp).fillMaxSize()) {
             BarraDeBusquedaOutfits()
             FiltrosOutfits()
 
