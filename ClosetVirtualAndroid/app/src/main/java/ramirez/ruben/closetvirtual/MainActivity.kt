@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import kotlinx.coroutines.launch
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -43,18 +42,16 @@ import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.viewmodel.DetallePrendaViewModel
 import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
 import ramirez.ruben.closetvirtual.viewmodel.ClosetViewModel
-import ramirez.ruben.closetvirtual.viewmodel.LoginViewModel
 import ramirez.ruben.closetvirtual.data.database.repository.OutfitRepository
 import ramirez.ruben.closetvirtual.viewmodel.AgregarOutfitViewModel
 import ramirez.ruben.closetvirtual.viewmodel.OutfitsViewModel
-import ramirez.ruben.closetvirtual.viewmodel.RegisterViewModel
-
 import ramirez.ruben.closetvirtual.utils.ImageExport
+import ramirez.ruben.closetvirtual.viewmodel.UsuarioViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // es para detectar la primera vez que corremos la app
         // y entonces exportar las imagenes que tenemos  en drawable al telefono
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
@@ -80,7 +77,7 @@ fun MainAppScreen() {
 
     // INICIALIZACIÓN DE LA BASE DE DATOS (Single Source of Truth)
     val database = remember { AppDatabase.getDatabase(context) }
-    val repository = remember { PrendaRepository(database.prendaDao()) }
+    val prendaRepository = remember { PrendaRepository(database.prendaDao()) }
     val usuarioRepository = remember { UsuarioRepository(database.usuarioDao()) }
     val outfitRepository = remember { OutfitRepository(database.outfitDao()) }
     val dataStoreManager = remember { DataStoreManager(context) }
@@ -96,6 +93,11 @@ fun MainAppScreen() {
             }
         }
     }
+
+
+    val usuarioViewModel: UsuarioViewModel = viewModel(
+        factory = UsuarioViewModel.Factory(usuarioRepository)
+    )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -120,16 +122,62 @@ fun MainAppScreen() {
 
         NavHost(
             navController = navController,
-            startDestination = "login_route", // Start screen
+            startDestination = "login_route", //ruta inicial
             modifier = Modifier.padding(innerPadding)
         ) {
 
-            // --- RUTAS DE ROOM ---
+            // RUTAS DE USUARIO
+
+            composable("login_route") {
+                LoginScreen(
+                    onNavigateToRegister = { navController.navigate("register_route") },
+                    onLoginSuccess = {
+                        navController.navigate("main_route") {
+                            popUpTo("login_route") { inclusive = true } // Limpiamos el registro del historial
+                        }
+                    },
+                    viewModel = usuarioViewModel
+                )
+            }
+
+            composable("register_route") {
+                RegisterScreen(
+                    onNavigateToLogin = { navController.popBackStack() }, // Regresa atras al login
+                    onRegisterSuccess = {
+                        navController.navigate("main_route") {
+                            popUpTo("register_route") { inclusive = true } // Limpiamos el registro del historial
+                        }
+                    },
+                    viewModel = usuarioViewModel
+                )
+            }
+
+            composable("recovery_route") {
+                PasswordRecoveryScreen(
+                    viewModel = usuarioViewModel
+                )
+            }
+
+            composable("perfil_route") {
+                PerfilScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onLogoutClick = {
+                        // Limpiamos la sesión en el ViewModel
+                        usuarioViewModel.logout()
+                        navController.navigate("login_route") {
+                            popUpTo(navController.graph.id) { inclusive = true }
+                        }
+                    },
+                    viewModel = usuarioViewModel
+                )
+            }
+
+            // RUTAS DE ROOM
 
             // 1. Agregar Prenda
             composable("gestion_prenda_route") {
                 val gestionViewModel: GestionPrendaViewModel = viewModel(
-                    factory = GestionPrendaViewModel.Factory(repository, dataStoreManager, context)
+                    factory = GestionPrendaViewModel.Factory(prendaRepository, dataStoreManager, context)
                 )
 
 //                LaunchedEffect(Unit) {
@@ -150,7 +198,7 @@ fun MainAppScreen() {
             ) { backStackEntry ->
                 val prendaId = backStackEntry.arguments?.getInt("prendaId") ?: 0
                 val gestionViewModel: GestionPrendaViewModel = viewModel(
-                    factory = GestionPrendaViewModel.Factory(repository, dataStoreManager, context)
+                    factory = GestionPrendaViewModel.Factory(prendaRepository, dataStoreManager, context)
                 )
 
                 LaunchedEffect(prendaId) {
@@ -173,7 +221,7 @@ fun MainAppScreen() {
             ) { backStackEntry ->
                 val prendaId = backStackEntry.arguments?.getInt("prendaId") ?: 0
                 val detalleViewModel: DetallePrendaViewModel = viewModel(
-                    factory = DetallePrendaViewModel.Factory(repository)
+                    factory = DetallePrendaViewModel.Factory(prendaRepository)
                 )
 
                 DetallePrendaScreen(
@@ -186,37 +234,11 @@ fun MainAppScreen() {
                 )
             }
 
-            // --- RESTO DE LAS PANTALLAS ---
-
-            composable("login_route") {
-                val loginViewModel: LoginViewModel = viewModel(
-                    factory = LoginViewModel.Factory(usuarioRepository, dataStoreManager)
-                )
-                LoginScreen(
-                    onNavigateToRegister = { navController.navigate("register_route") },
-                    onLoginSuccess = { navController.navigate("main_route") },
-                    viewModel = loginViewModel
-                )
-            }
-
-            composable("register_route") {
-                val registerViewModel: RegisterViewModel = viewModel(
-                    factory = RegisterViewModel.Factory(usuarioRepository, dataStoreManager)
-                )
-                RegisterScreen(
-                    onNavigateToLogin = { navController.navigate("login_route") },
-                    onRegisterSuccess = { navController.navigate("main_route") },
-                    viewModel = registerViewModel
-                )
-            }
-
-            composable("recovery_route") {
-                PasswordRecoveryScreen()
-            }
+            // OTRAS PANTALLAS
 
             composable("agregar_outfit_route") {
                 val agregarOutfitViewModel: AgregarOutfitViewModel = viewModel(
-                    factory = AgregarOutfitViewModel.Factory(repository, outfitRepository, dataStoreManager)
+                    factory = AgregarOutfitViewModel.Factory(prendaRepository, outfitRepository, dataStoreManager)
                 )
                 AgregarOutfitScreen(
                     viewModel = agregarOutfitViewModel,
@@ -226,7 +248,7 @@ fun MainAppScreen() {
 
             composable("main_route") {
                 val closetViewModel: ClosetViewModel = viewModel(
-                    factory = ClosetViewModel.Factory(repository, dataStoreManager)
+                    factory = ClosetViewModel.Factory(prendaRepository, dataStoreManager)
                 )
                 ClosetScreen(
                     viewModel = closetViewModel,
@@ -250,20 +272,6 @@ fun MainAppScreen() {
             composable("calendario_route") {
                 CalendarioScreen(
                     onNavigateBack = { navController.popBackStack() }
-                )
-            }
-
-            composable("perfil_route") {
-                PerfilScreen(
-                    onNavigateBack = { navController.popBackStack() },
-                    onLogoutClick = {
-                        scope.launch {
-                            dataStoreManager.clearUserId()
-                            navController.navigate("login_route") {
-                                popUpTo(navController.graph.id) { inclusive = true }
-                            }
-                        }
-                    }
                 )
             }
 

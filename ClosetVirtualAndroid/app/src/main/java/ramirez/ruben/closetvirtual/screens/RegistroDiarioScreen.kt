@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,8 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ramirez.ruben.closetvirtual.R
-import ramirez.ruben.closetvirtual.data.PrendaMock
-import ramirez.ruben.closetvirtual.data.prendasMock
+import ramirez.ruben.closetvirtual.data.mocks.PrendaMock
+import ramirez.ruben.closetvirtual.data.mocks.prendasMock
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 
 @Composable

@@ -36,8 +36,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import ramirez.ruben.closetvirtual.data.OutfitRepository
-import ramirez.ruben.closetvirtual.data.Prenda
+import ramirez.ruben.closetvirtual.data.mocks.OutfitRepository
+import ramirez.ruben.closetvirtual.data.mocks.Prenda
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.ui.theme.Montserrat
 

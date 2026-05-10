@@ -23,26 +23,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ramirez.ruben.closetvirtual.R
 import androidx.compose.foundation.verticalScroll
+import ramirez.ruben.closetvirtual.data.database.dao.PrendaDao
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
-
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import ramirez.ruben.closetvirtual.viewmodel.RegisterViewModel
+import ramirez.ruben.closetvirtual.viewmodel.UsuarioViewModel
 import ramirez.ruben.closetvirtual.data.database.dao.UsuarioDao
 import ramirez.ruben.closetvirtual.data.database.entity.UsuarioEntity
 import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
-import ramirez.ruben.closetvirtual.data.datastore.DataStoreManager
+import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     onNavigateToLogin: () -> Unit = {},
     onRegisterSuccess: () -> Unit = {},
-    viewModel: RegisterViewModel = viewModel(),
-    dataStoreManager: DataStoreManager? = null
+    viewModel: UsuarioViewModel
 ){
-    val context = LocalContext.current
+
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -57,6 +53,8 @@ fun RegisterScreen(
     var selectedGender by remember { mutableStateOf("") }
     var customGender by remember { mutableStateOf("") }
     val genderOptions = listOf("Mujer", "Hombre", "Personalizado")
+
+    val uiStateMessage by viewModel.uiStateMessage.collectAsState()
 
     // Pantalla principal
     Column(
@@ -293,40 +291,21 @@ fun RegisterScreen(
             }
         }
 
-        if (selectedGender == "Personalizado") {
-            Spacer(modifier = Modifier.height(16.dp))
-            TextField(
-                value = customGender,
-                onValueChange = { customGender = it },
-                label = { Text("Especifique género", color = Color.Gray) },
-                modifier = Modifier.width(270.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.LightGray,
-                    focusedIndicatorColor = MaterialTheme.colorScheme.primary
-                )
-            )
-        }
-
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
-                viewModel.registrarUsuario(
-                    nombre = username,
-                    correo = email,
-                    password = password,
-                    fechaNacimiento = dateOfBirth,
-                    genero = if (selectedGender == "Personalizado") customGender else selectedGender,
-                    onSuccess = {
-                        Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                        onRegisterSuccess()
-                    },
-                    onError = { error ->
-                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                    }
-                )
+                // hay que validar la contrasena antes de mandarla
+                if (password == confirmPassword) {
+                    viewModel.registrar(
+                        nombre = username,
+                        correo = email,
+                        contrasena = password,
+                        fechaNacimiento = dateOfBirth,
+                        genero = selectedGender,
+                        onSuccess = onRegisterSuccess // manda al usuario a la app si todo sale bien
+                    )
+                }
             },
             modifier = Modifier.width(270.dp),
             shape = RoundedCornerShape(8.dp),
@@ -344,7 +323,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = "--------------------------- or ---------------------------",
+            text = "--------------------- or ---------------------",
             color = Color.Gray,
             fontSize = 16.sp
         )
@@ -370,17 +349,28 @@ fun RegisterScreen(
     }
 }
 
+// mock de un usuario porque quier la preview si o si
+private fun provideDummyUsuarioViewModel(): UsuarioViewModel {
+    val mockDao = object : UsuarioDao {
+        override suspend fun insertarUsuario(usuario: UsuarioEntity) = 0L
+        override suspend fun actualizarUsuario(usuario: UsuarioEntity) = 0
+        override suspend fun login(correo: String, contrasena: String): UsuarioEntity? = null
+        override suspend fun obtenerUsuarioPorCorreo(correo: String): UsuarioEntity? = null
+        override suspend fun obtenerUsuarioPorId(id: String): UsuarioEntity? = null
+    }
+    val repository = UsuarioRepository(mockDao)
+    return UsuarioViewModel(repository)
+}
+
 @Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
 @Composable
 private fun PreviewModoClaro() {
-    val fakeDao = object : UsuarioDao {
-        override suspend fun registrarUsuario(usuario: UsuarioEntity): Long = 0
-        override suspend fun login(correo: String, password: String): UsuarioEntity? = null
-    }
-    val fakeRepo = UsuarioRepository(fakeDao)
-    val fakeViewModel = RegisterViewModel(fakeRepo, DataStoreManager(LocalContext.current))
     ClosetVirtualTheme(darkTheme = false) {
-        RegisterScreen(viewModel = fakeViewModel)
+        RegisterScreen(
+            onNavigateToLogin = {},
+            onRegisterSuccess = {},
+            viewModel = provideDummyUsuarioViewModel() //mock djfrbgkj
+        )
     }
 }
 
@@ -392,13 +382,11 @@ private fun PreviewModoClaro() {
 )
 @Composable
 private fun PreviewModoOscuro() {
-    val fakeDao = object : UsuarioDao {
-        override suspend fun registrarUsuario(usuario: UsuarioEntity): Long = 0
-        override suspend fun login(correo: String, password: String): UsuarioEntity? = null
-    }
-    val fakeRepo = UsuarioRepository(fakeDao)
-    val fakeViewModel = RegisterViewModel(fakeRepo, DataStoreManager(LocalContext.current))
     ClosetVirtualTheme(darkTheme = true) {
-        RegisterScreen(viewModel = fakeViewModel)
+        RegisterScreen(
+            onNavigateToLogin = {},
+            onRegisterSuccess = {},
+            viewModel = provideDummyUsuarioViewModel() // mock
+        )
     }
 }

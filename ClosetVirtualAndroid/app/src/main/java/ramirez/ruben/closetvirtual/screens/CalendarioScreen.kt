@@ -31,14 +31,14 @@ import androidx.compose.material.icons.filled.Tune
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import ramirez.ruben.closetvirtual.R
-import ramirez.ruben.closetvirtual.data.mockOutfits
+import ramirez.ruben.closetvirtual.data.mocks.mockOutfits
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
-import java.util.Locale
-import ramirez.ruben.closetvirtual.data.Outfit
+import ramirez.ruben.closetvirtual.data.mocks.Outfit
+import androidx.compose.ui.platform.LocalLocale
 
 @Composable
 fun CalendarioScreen(onNavigateBack: () -> Unit = {}) {
@@ -177,7 +177,7 @@ fun CalendarioHeader(
                 ) {
                     val monthName = currentMonth.month.getDisplayName(
                         TextStyle.SHORT,
-                        Locale.getDefault()).replaceFirstChar { it.uppercase() }
+                        LocalLocale.current.platformLocale).replaceFirstChar { it.uppercase() }
 
                     Text(
                         text = monthName,

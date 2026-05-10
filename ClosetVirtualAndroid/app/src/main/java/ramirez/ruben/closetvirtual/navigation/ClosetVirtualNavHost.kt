@@ -16,78 +16,113 @@ import ramirez.ruben.closetvirtual.screens.GestionPrendaScreen
 import ramirez.ruben.closetvirtual.viewmodel.DetallePrendaViewModel
 import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
 import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
+import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
+import ramirez.ruben.closetvirtual.screens.LoginScreen
+import ramirez.ruben.closetvirtual.screens.PerfilScreen
+import ramirez.ruben.closetvirtual.screens.RegisterScreen
+import ramirez.ruben.closetvirtual.viewmodel.UsuarioViewModel
 
-//@Composable
-//fun ClosetVirtualNavHost() {
-//    val navController = rememberNavController()
-//    val context = LocalContext.current
-//
-//    val database = remember { AppDatabase.getDatabase(context) }
-//    val repository = remember { PrendaRepository(database.prendaDao()) }
-//
-//    NavHost(
-//        navController = navController,
-//        startDestination = "gestion_prenda" // Pantalla principal a iniciar
-//    ) {
-//
-//        // --- RUTA 1: GESTIÓN DE PRENDAS (MODO REGISTRO NUEVO) ---
-//        composable("gestion_prenda") {
-//            val gestionViewModel: GestionPrendaViewModel = viewModel(
-//                factory = GestionPrendaViewModel.Factory(repository, context)
-//            )
-//
-//            GestionPrendaScreen(
-//                viewModel = gestionViewModel,
-//                isEditMode = false,
-//                onNavigateBack = { navController.popBackStack() }
-//            )
-//        }
-//
-//        // --- RUTA 2: GESTIÓN DE PRENDAS (MODO EDICIÓN) ---
-//        composable(
-//            route = "gestion_prenda/{prendaId}",
-//            arguments = listOf(navArgument("prendaId") { type = NavType.IntType })
-//        ) { backStackEntry ->
-//            val prendaId = backStackEntry.arguments?.getInt("prendaId") ?: 0
-//
-//            val gestionViewModel: GestionPrendaViewModel = viewModel(
-//                factory = GestionPrendaViewModel.Factory(repository, context)
-//            )
-//
-//            LaunchedEffect(prendaId) {
-//                if (prendaId != 0) {
-//                    gestionViewModel.cargarPrendaParaEdicion(prendaId)
-//                }
-//            }
-//
-//            GestionPrendaScreen(
-//                viewModel = gestionViewModel,
-//                isEditMode = true,
-//                onNavigateBack = { navController.popBackStack() }
-//            )
-//        }
-//
-//        // --- RUTA 3: DETALLE DE PRENDA ---
-//        composable(
-//            route = "detalle_prenda/{prendaId}",
-//            arguments = listOf(navArgument("prendaId") { type = NavType.IntType })
-//        ) { backStackEntry ->
-//            val prendaId = backStackEntry.arguments?.getInt("prendaId") ?: 0
-//
-//            val detalleViewModel: DetallePrendaViewModel = viewModel(
-//                factory = DetallePrendaViewModel.Factory(repository)
-//            )
-//
-//            DetallePrendaScreen(
-//                prendaId = prendaId,
-//                viewModel = detalleViewModel,
-//                onNavigateBack = { navController.popBackStack() },
-//                onEditClick = { id ->
-//                    navController.navigate("gestion_prenda/$id")
-//                }
-//            )
-//        }
-//
-//        // Resto de pantallas...
-//    }
-//}
+@Composable
+fun ClosetVirtualNavHost() {
+    val navController = rememberNavController()
+    val context = LocalContext.current
+
+    val database = remember { AppDatabase.getDatabase(context) }
+    val prendaRepository = remember { PrendaRepository(database.prendaDao()) }
+    val usuarioRepository = remember { UsuarioRepository(database.usuarioDao()) }
+
+    val usuarioViewModel: UsuarioViewModel = viewModel(
+        factory = UsuarioViewModel.Factory(usuarioRepository)
+    )
+
+    NavHost(
+        navController = navController,
+        startDestination = "login" // empezamos  en login
+    ) {
+
+        // rutas del usuario
+
+        composable("login") {
+            LoginScreen(
+                onNavigateToRegister = { navController.navigate("register") },
+                onLoginSuccess = { navController.navigate("gestion_prenda") },
+                viewModel = usuarioViewModel
+            )
+        }
+
+        composable("register") {
+            RegisterScreen(
+                onNavigateToLogin = { navController.popBackStack() },
+                onRegisterSuccess = { navController.navigate("gestion_prenda") },
+                viewModel = usuarioViewModel
+            )
+        }
+
+        composable("perfil") {
+            PerfilScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onLogoutClick = {
+                    usuarioViewModel.logout()
+                    navController.navigate("login") {
+                        popUpTo(0) // Limpia el backstack al cerrar sesión
+                    }
+                },
+                viewModel = usuarioViewModel
+            )
+        }
+
+        // GESTIÓN DE PRENDAS - MODO REGISTRO NUEVO
+        composable("gestion_prenda") {
+            val gestionViewModel: GestionPrendaViewModel = viewModel(
+                factory = GestionPrendaViewModel.Factory(prendaRepository, context)
+            )
+
+            GestionPrendaScreen(
+                viewModel = gestionViewModel,
+                isEditMode = false,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // GESTIÓN DE PRENDAS - MODO EDICION
+        composable(
+            route = "gestion_prenda/{prendaId}",
+            arguments = listOf(navArgument("prendaId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val prendaId = backStackEntry.arguments?.getString("prendaId")
+
+            val gestionViewModel: GestionPrendaViewModel = viewModel(
+                factory = GestionPrendaViewModel.Factory(prendaRepository, context)
+            )
+
+            LaunchedEffect(prendaId) {
+                prendaId?.let { gestionViewModel.cargarPrendaParaEdicion(it) }
+            }
+
+            GestionPrendaScreen(
+                viewModel = gestionViewModel,
+                isEditMode = true,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // DETALLE DE PRENDA
+        composable("detalle_prenda/{prendaId}") { backStackEntry ->
+            val prendaId = backStackEntry.arguments?.getString("prendaId") ?: return@composable
+
+            val detalleViewModel: DetallePrendaViewModel = viewModel(
+                factory = DetallePrendaViewModel.Factory(prendaRepository)
+            )
+
+            DetallePrendaScreen(
+                prendaId = prendaId,
+                viewModel = detalleViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onEditClick = { id ->
+                    navController.navigate("gestion_prenda/$id")
+                }
+            )
+        }
+
+    }
+}

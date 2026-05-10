@@ -1,4 +1,4 @@
-package ramirez.ruben.closetvirtual.data
+package ramirez.ruben.closetvirtual.data.mocks
 
 object DummyData {
     val prendasDePrueba = listOf(

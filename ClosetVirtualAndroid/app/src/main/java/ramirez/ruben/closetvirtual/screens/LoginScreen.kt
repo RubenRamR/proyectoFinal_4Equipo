@@ -23,29 +23,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.R
-
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import ramirez.ruben.closetvirtual.viewmodel.LoginViewModel
+import ramirez.ruben.closetvirtual.viewmodel.UsuarioViewModel
 import ramirez.ruben.closetvirtual.data.database.dao.UsuarioDao
 import ramirez.ruben.closetvirtual.data.database.entity.UsuarioEntity
 import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
-import ramirez.ruben.closetvirtual.data.datastore.DataStoreManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     onNavigateToRegister: () -> Unit = {},
     onLoginSuccess: () -> Unit = {},
-    viewModel: LoginViewModel = viewModel(),
-    dataStoreManager: DataStoreManager? = null
+    viewModel: UsuarioViewModel
 ){
-    val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     // Esto es para poder mostrar y ocultar la contrasena a gusto
     var isPasswordVisible by remember { mutableStateOf(false) }
+
+    val uiStateMessage by viewModel.uiStateMessage.collectAsState()
 
     // Pantalla principal
     Column(
@@ -71,7 +66,11 @@ fun LoginScreen(
         // Campos de texto de email y la contraseña
         TextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange =
+                {
+                    email = it
+                    viewModel.clearMessage()
+                },
             label = { Text("Correo Electrónico", color = Color.Gray) },
             leadingIcon = {
                 Image(
@@ -97,7 +96,11 @@ fun LoginScreen(
 
         TextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange =
+                {
+                    password = it
+                    viewModel.clearMessage()
+                },
             label = { Text("Contraseña", color = Color.Gray) },
             leadingIcon = {
                 Image(
@@ -155,21 +158,28 @@ fun LoginScreen(
                 .clickable { println("Usuario Contraseña olvidada") }
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(45.dp))
+
+        // se muestran debajo los mensajes de error (si existen)
+        uiStateMessage?.let { mensaje ->
+            Text(
+                text = mensaje,
+                color = MaterialTheme.colorScheme.error,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
 
         Button(
             onClick = {
-                viewModel.login(
-                    correo = email,
-                    password = password,
-                    onLoginSuccess = {
-                        Toast.makeText(context, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
-                        onLoginSuccess()
-                    },
-                    onLoginError = { error ->
-                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                    }
-                )
+                // Hacemos el llamado a la BD a través del ViewModel
+                if (email.isNotEmpty() && password.isNotEmpty()) {
+                    viewModel.login(
+                        correo = email,
+                        contrasena = password,
+                        onSuccess = onLoginSuccess
+                    )
+                }
             },
             modifier = Modifier.width(270.dp),
             shape = RoundedCornerShape(8.dp),
@@ -187,7 +197,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "-------------------------- or --------------------------",
+            text = "-------------------- or --------------------",
             color = Color.Gray,
             fontSize = 16.sp
         )
@@ -217,7 +227,7 @@ fun LoginScreen(
             Image(
                 painter = painterResource(id = R.mipmap.fingerprint),
                 contentDescription = "Iniciar sesión con huella",
-                alpha = 0.5f,
+                alpha = 0.2f,
                 modifier = Modifier
                     .size(100.dp)
                     .clickable { println("Inicio de sesion fon Fingerprint") }
@@ -229,17 +239,28 @@ fun LoginScreen(
     }
 }
 
+// viewmodel mock para la preview
+private fun provideDummyUsuarioViewModel(): UsuarioViewModel {
+    val mockDao = object : UsuarioDao {
+        override suspend fun insertarUsuario(usuario: UsuarioEntity) = 0L
+        override suspend fun actualizarUsuario(usuario: UsuarioEntity) = 0
+        override suspend fun login(correo: String, contrasena: String): UsuarioEntity? = null
+        override suspend fun obtenerUsuarioPorCorreo(correo: String): UsuarioEntity? = null
+        override suspend fun obtenerUsuarioPorId(id: String): UsuarioEntity? = null
+    }
+    val repository = UsuarioRepository(mockDao)
+    return UsuarioViewModel(repository)
+}
+
 @Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
 @Composable
 private fun PreviewModoClaro() {
-    val fakeDao = object : UsuarioDao {
-        override suspend fun registrarUsuario(usuario: UsuarioEntity): Long = 0
-        override suspend fun login(correo: String, password: String): UsuarioEntity? = null
-    }
-    val fakeRepo = UsuarioRepository(fakeDao)
-    val fakeViewModel = LoginViewModel(fakeRepo, DataStoreManager(LocalContext.current))
     ClosetVirtualTheme(darkTheme = false) {
-        LoginScreen(viewModel = fakeViewModel)
+        LoginScreen(
+            onNavigateToRegister = {},
+            onLoginSuccess = {},
+            viewModel = provideDummyUsuarioViewModel() // mock
+        )
     }
 }
 
@@ -251,13 +272,11 @@ private fun PreviewModoClaro() {
 )
 @Composable
 private fun PreviewModoOscuro() {
-    val fakeDao = object : UsuarioDao {
-        override suspend fun registrarUsuario(usuario: UsuarioEntity): Long = 0
-        override suspend fun login(correo: String, password: String): UsuarioEntity? = null
-    }
-    val fakeRepo = UsuarioRepository(fakeDao)
-    val fakeViewModel = LoginViewModel(fakeRepo, DataStoreManager(LocalContext.current))
     ClosetVirtualTheme(darkTheme = true) {
-        LoginScreen(viewModel = fakeViewModel)
+        LoginScreen(
+            onNavigateToRegister = {},
+            onLoginSuccess = {},
+            viewModel = provideDummyUsuarioViewModel() // mock
+        )
     }
 }

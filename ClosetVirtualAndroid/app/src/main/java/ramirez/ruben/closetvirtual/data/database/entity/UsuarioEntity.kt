@@ -2,14 +2,19 @@ package ramirez.ruben.closetvirtual.data.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.UUID
 
-@Entity(tableName = "usuario")
+@Entity(tableName = "usuarios")
 data class UsuarioEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
     val nombre: String,
     val correo: String,
-    val password: String,
-    val nacimiento: Long,
-    val genero: String
+    val contrasena: String,
+    val fechaNacimiento: String,
+    val genero: String,
+    // Preferencias del perfil
+    val isBiometricsEnabled: Boolean = true,
+    val isDarkThemeEnabled: Boolean = false,
+    val fechaRegistro: Long = System.currentTimeMillis()
 )
