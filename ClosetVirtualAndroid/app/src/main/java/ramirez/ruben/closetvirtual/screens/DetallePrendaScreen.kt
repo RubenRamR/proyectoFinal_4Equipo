@@ -315,57 +315,57 @@ private fun SeccionTagsLectura(tags: List<String>) {
 }
 
 // FUNCIONES AUXILIARES PARA PREVIEWS
-private fun provideDummyDetalleViewModel(): DetallePrendaViewModel {
-    val mockDao = object : PrendaDao {
-        override suspend fun insertarPrenda(prenda: PrendaEntity) = 0L
-        override suspend fun actualizarPrenda(prenda: PrendaEntity) = 0
-        override suspend fun eliminarPrenda(prenda: PrendaEntity) = 0
-        override fun obtenerTodasLasPrendas() = flowOf(emptyList<PrendaEntity>())
-        override fun obtenerPrendasPorUsuario(idUsuario: Int) = flowOf(emptyList<PrendaEntity>())
-
-        override suspend fun obtenerPrendaPorId(id: Int) = PrendaEntity(
-            id = 1,
-            idUsuario = 1,
-            nombre = "Camisa Vintage",
-            marca = "Levis",
-            imagen = null,
-            categoria = "Top",
-            color = "Azul",
-            estampada = false,
-            talla = "M",
-            temporada = "Primavera",
-            formalidad = "Casual",
-            tags = listOf("Vintage", "Favorito", "Uso Diario")
-        )
-    }
-    val repository = PrendaRepository(mockDao)
-    return DetallePrendaViewModel(repository)
-}
-
-// PREVIEWS
-@Preview(name = "1. Detalle (Claro)", showBackground = true, showSystemUi = true)
-@Composable
-private fun PreviewDetalleClaro() {
-    ClosetVirtualTheme(darkTheme = false) {
-        DetallePrendaScreen(
-            prendaId = 1,
-            viewModel = provideDummyDetalleViewModel()
-        )
-    }
-}
-
-@Preview(
-    name = "2. Detalle (Oscuro)",
-    showBackground = true,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Composable
-private fun PreviewDetalleOscuro() {
-    ClosetVirtualTheme(darkTheme = true) {
-        DetallePrendaScreen(
-            prendaId = 1,
-            viewModel = provideDummyDetalleViewModel()
-        )
-    }
-}
+//private fun provideDummyDetalleViewModel(): DetallePrendaViewModel {
+//    val mockDao = object : PrendaDao {
+//        override suspend fun insertarPrenda(prenda: PrendaEntity) = 0L
+//        override suspend fun actualizarPrenda(prenda: PrendaEntity) = 0
+//        override suspend fun eliminarPrenda(prenda: PrendaEntity) = 0
+//        override fun obtenerTodasLasPrendas() = flowOf(emptyList<PrendaEntity>())
+//        override fun obtenerPrendasPorUsuario(idUsuario: Int) = flowOf(emptyList<PrendaEntity>())
+//
+//        override suspend fun obtenerPrendaPorId(id: Int) = PrendaEntity(
+//            id = 1,
+//            idUsuario = 1,
+//            nombre = "Camisa Vintage",
+//            marca = "Levis",
+//            imagen = null,
+//            categoria = "Top",
+//            color = "Azul",
+//            estampada = false,
+//            talla = "M",
+//            temporada = "Primavera",
+//            formalidad = "Casual",
+//            tags = listOf("Vintage", "Favorito", "Uso Diario")
+//        )
+//    }
+//    val repository = PrendaRepository(mockDao)
+//    return DetallePrendaViewModel(repository)
+//}
+//
+//// PREVIEWS
+//@Preview(name = "1. Detalle (Claro)", showBackground = true, showSystemUi = true)
+//@Composable
+//private fun PreviewDetalleClaro() {
+//    ClosetVirtualTheme(darkTheme = false) {
+//        DetallePrendaScreen(
+//            prendaId = 1,
+//            viewModel = provideDummyDetalleViewModel()
+//        )
+//    }
+//}
+//
+//@Preview(
+//    name = "2. Detalle (Oscuro)",
+//    showBackground = true,
+//    showSystemUi = true,
+//    uiMode = Configuration.UI_MODE_NIGHT_YES
+//)
+//@Composable
+//private fun PreviewDetalleOscuro() {
+//    ClosetVirtualTheme(darkTheme = true) {
+//        DetallePrendaScreen(
+//            prendaId = 1,
+//            viewModel = provideDummyDetalleViewModel()
+//        )
+//    }
+//}

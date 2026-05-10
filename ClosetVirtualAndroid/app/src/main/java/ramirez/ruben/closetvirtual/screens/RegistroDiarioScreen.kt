@@ -1,6 +1,7 @@
 package ramirez.ruben.closetvirtual.screens
 
 import android.content.res.Configuration
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,8 +16,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -24,14 +28,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ramirez.ruben.closetvirtual.R
+import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
 import ramirez.ruben.closetvirtual.data.mocks.PrendaMock
 import ramirez.ruben.closetvirtual.data.mocks.prendasMock
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
+import ramirez.ruben.closetvirtual.viewmodel.RegistroDiarioViewModel
 
 @Composable
-fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
-    // Usare prendasSeleccionadas para guardar las prendas como mock (duh) que el usuario seleccione
-    val prendasSeleccionadas = remember { mutableStateListOf<Int>() }
+fun RegistroDiarioScreen(
+    viewModel: RegistroDiarioViewModel,
+    onNavigateBack: () -> Unit = {}
+) {
+    // Ya no usamos mocks, llamamos al viewmodel inyectado
+    val prendasDisponibles by viewModel.prendasDisponibles.collectAsState()
+    val prendasSeleccionadas by viewModel.prendasSeleccionadas.collectAsState()
 
     // Estructura principal de registro
     Column(
@@ -56,8 +66,8 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
                 Icon(
                     painter = painterResource(id = R.mipmap.left),
                     contentDescription = "Icono de atrás",
-                    tint = Color(0xFF26657A),
-                    modifier = Modifier.size(22.dp)
+                    tint = Color(0xFF000000),
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
@@ -106,10 +116,13 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
             )
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(
             text = "¡Registra tu outfit dirariamente para continuar con tu racha!",
             fontSize = 14.sp,
             textAlign = TextAlign.Center,
+            lineHeight = 16.sp,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 16.dp)
         )
@@ -141,35 +154,22 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
                 )
 
                 // Mostrar las prendas en dos columnas juntas cuadricula
-                val filas = prendasMock.chunked(2)
+                val filas = prendasDisponibles.chunked(2)
                 filas.forEach { fila ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        // Llama a la prendamockitem que es la que dibuja los cuadritos/tarjetitas de las prendas
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         fila.forEach { prenda ->
-                            PrendaMockItem(
+                            PrendaItem(
                                 prenda = prenda,
                                 isSelected = prendasSeleccionadas.contains(prenda.id),
-                                onClick = {
-                                    if (prendasSeleccionadas.contains(prenda.id)) {
-                                        prendasSeleccionadas.remove(prenda.id)
-                                    } else {
-                                        prendasSeleccionadas.add(prenda.id)
-                                    }
-                                },
+                                onClick = { viewModel.togglePrenda(prenda.id) },
+                                onFavoriteClick = { viewModel.toggleFavorito(prenda) },
                                 modifier = Modifier.weight(1f)
                             )
                         }
-                        if (fila.size == 1) {
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
+                        if (fila.size == 1) Spacer(modifier = Modifier.weight(1f))
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
             }
         }
 
@@ -198,97 +198,66 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
     }
 }
 
-// Componentes visuales de las prendas en columnas (Crea las tarjetitas de las prendas)
 @Composable
-fun PrendaMockItem(
-    prenda: PrendaMock,
+fun PrendaItem(
+    prenda: PrendaEntity,
     isSelected: Boolean,
     onClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-    // Colorsitos
     val highlightColor = Color(0xFF26657A)
     val bgColor = if (isSelected) highlightColor.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant
     val borderColor = if (isSelected) highlightColor else Color.Transparent
 
-    // Mock de prendas favoritas
-    var isFavorite by remember { mutableStateOf(false) }
+    // Decodificar ByteArray a ImageBitmap
+    val imageBitmap = remember(prenda.imagen) {
+        prenda.imagen?.let { bytes ->
+            BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.asImageBitmap()
+        }
+    }
 
     Box(
         modifier = modifier
             .background(bgColor, RoundedCornerShape(12.dp))
             .border(2.dp, borderColor, RoundedCornerShape(12.dp))
             .clickable { onClick() }
-            .padding(12.dp),
-        contentAlignment = Alignment.TopStart
+            .padding(12.dp)
     ) {
-
-        Column(
-            horizontalAlignment = Alignment.Start,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-
-            // Textos superiores
-            Text(
-                text = prenda.nombre,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(end = 24.dp)
-            )
-
-            Text(
-                text = prenda.marca,
-                fontSize = 10.sp,
-                maxLines = 1,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
+            Text(prenda.nombre, fontSize = 12.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+            prenda.marca?.let { Text(it, fontSize = 10.sp, maxLines = 1) }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Image(
-                painter = painterResource(id = R.mipmap.no_image),
-                contentDescription = "Imagen de la prenda",
-                modifier = Modifier
-                    .size(48.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
+            if (imageBitmap != null) {
+                Image(
+                    bitmap = imageBitmap,
+                    contentDescription = prenda.nombre,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(8.dp))
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.mipmap.no_image),
+                    contentDescription = "Sin imagen",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(8.dp))
+                )
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = prenda.temporada,
-                        fontSize = 10.sp,
-                        maxLines = 1,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    Text(
-                        text = prenda.categoria,
-                        fontSize = 10.sp,
-                        maxLines = 1,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Text(prenda.temporada, fontSize = 10.sp, maxLines = 1)
+                    Text(prenda.categoria, fontSize = 10.sp, maxLines = 1)
                 }
 
-                // Boton de fav (mock)
                 Image(
-                    painter = painterResource(
-                        id = if (isFavorite) R.mipmap.favorite_icon else R.mipmap.unfavorite_icon
-                    ),
+                    painter = painterResource(id = if (prenda.favorito) R.mipmap.favorite_icon else R.mipmap.unfavorite_icon),
                     contentDescription = "Favorito",
-                    modifier = Modifier
-                        .size(12.dp)
-                        .clickable { isFavorite = !isFavorite }
+                    modifier = Modifier.size(16.dp).clickable { onFavoriteClick() }
                 )
             }
         }
@@ -296,23 +265,25 @@ fun PrendaMockItem(
 }
 
 
-@Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
-@Composable
-private fun PreviewModoClaro() {
-    ClosetVirtualTheme(darkTheme = false) {
-        RegistroDiarioScreen()
-    }
-}
 
-@Preview(
-    name = "Modo Oscuro",
-    showBackground = true,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Composable
-private fun PreviewModoOscuro() {
-    ClosetVirtualTheme(darkTheme = true) {
-        RegistroDiarioScreen()
-    }
-}
+
+//@Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
+//@Composable
+//private fun PreviewModoClaro() {
+//    ClosetVirtualTheme(darkTheme = false) {
+//        RegistroDiarioScreen()
+//    }
+//}
+//
+//@Preview(
+//    name = "Modo Oscuro",
+//    showBackground = true,
+//    showSystemUi = true,
+//    uiMode = Configuration.UI_MODE_NIGHT_YES
+//)
+//@Composable
+//private fun PreviewModoOscuro() {
+//    ClosetVirtualTheme(darkTheme = true) {
+//        RegistroDiarioScreen()
+//    }
+//}

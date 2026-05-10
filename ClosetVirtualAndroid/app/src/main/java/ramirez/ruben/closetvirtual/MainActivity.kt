@@ -46,8 +46,10 @@ import ramirez.ruben.closetvirtual.data.database.repository.OutfitRepository
 import ramirez.ruben.closetvirtual.viewmodel.AgregarOutfitViewModel
 import ramirez.ruben.closetvirtual.viewmodel.OutfitsViewModel
 import ramirez.ruben.closetvirtual.utils.ImageExport
+import ramirez.ruben.closetvirtual.viewmodel.CalendarioViewModel
 import ramirez.ruben.closetvirtual.viewmodel.UsuarioViewModel
 import ramirez.ruben.closetvirtual.viewmodel.LoginViewModel
+import ramirez.ruben.closetvirtual.viewmodel.RegistroDiarioViewModel
 
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -282,13 +284,23 @@ fun MainAppScreen(dataStoreManager: DataStoreManager) {
             }
 
             composable("calendario_route") {
+                // Instanciamos el ViewModel
+                val calendarioViewModel: CalendarioViewModel = viewModel(
+                    factory = CalendarioViewModel.Factory(outfitRepository, dataStoreManager)
+                )
                 CalendarioScreen(
+                    viewModel = calendarioViewModel, // Se lo pasamos a la pantalla
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
 
             composable("registro_diario_route") {
+                // Instanciamos el ViewModel
+                val registroDiarioViewModel: RegistroDiarioViewModel = viewModel(
+                    factory = RegistroDiarioViewModel.Factory(prendaRepository, outfitRepository, dataStoreManager)
+                )
                 RegistroDiarioScreen(
+                    viewModel = registroDiarioViewModel, // Se lo pasamos a la pantalla
                     onNavigateBack = { navController.popBackStack() }
                 )
             }

@@ -29,4 +29,7 @@ interface PrendaDao {
 
     @Query("SELECT * FROM prenda WHERE id = :id")
     suspend fun obtenerPrendaPorId(id: Int): PrendaEntity?
+
+    @Query("UPDATE prenda SET favorito = :isFav WHERE id = :id")
+    suspend fun actualizarFavorito(id: Int, isFav: Boolean): Int
 }

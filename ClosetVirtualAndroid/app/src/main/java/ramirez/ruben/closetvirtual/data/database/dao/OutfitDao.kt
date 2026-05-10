@@ -18,6 +18,9 @@ interface OutfitDao {
     @Query("SELECT * FROM outfit WHERE idUsuario = :idUsuario")
     fun obtenerOutfitsPorUsuario(idUsuario: Int): Flow<List<OutfitEntity>>
 
+    @Query("SELECT * FROM outfit WHERE idUsuario = :idUsuario AND fecha = :fecha")
+    fun obtenerOutfitsPorFecha(idUsuario: Int, fecha: String): Flow<List<OutfitEntity>>
+
     @Query("""
         SELECT p.* FROM prenda p
         INNER JOIN prenda_outfit po ON p.id = po.idPrenda

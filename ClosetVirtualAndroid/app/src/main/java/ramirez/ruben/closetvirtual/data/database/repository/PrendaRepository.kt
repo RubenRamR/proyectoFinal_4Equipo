@@ -24,6 +24,10 @@ class PrendaRepository(private val prendaDao: PrendaDao) {
         prendaDao.eliminarPrenda(prenda)
     }
 
+    suspend fun actualizarFavorito(id: Int, isFav: Boolean) {
+        prendaDao.actualizarFavorito(id, isFav)
+    }
+
     suspend fun obtenerPrendaPorId(id: Int): PrendaEntity? {
         return prendaDao.obtenerPrendaPorId(id)
     }

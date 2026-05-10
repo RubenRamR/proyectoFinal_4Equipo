@@ -30,5 +30,6 @@ data class PrendaEntity(
     val talla: String?,
     val temporada: String,
     val formalidad: String,
-    val tags: List<String>
+    val tags: List<String>,
+    val favorito: Boolean = false
 )

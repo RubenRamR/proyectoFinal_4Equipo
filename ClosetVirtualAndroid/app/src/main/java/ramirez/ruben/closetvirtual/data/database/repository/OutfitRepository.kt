@@ -19,6 +19,10 @@ class OutfitRepository(private val outfitDao: OutfitDao) {
         return outfitDao.obtenerOutfitsPorUsuario(idUsuario)
     }
 
+    fun obtenerOutfitsPorFecha(idUsuario: Int, fecha: String): Flow<List<OutfitEntity>> {
+        return outfitDao.obtenerOutfitsPorFecha(idUsuario, fecha)
+    }
+
     fun obtenerPrendasDeOutfit(idOutfit: Int): Flow<List<PrendaEntity>> {
         return outfitDao.obtenerPrendasDeOutfit(idOutfit)
     }
