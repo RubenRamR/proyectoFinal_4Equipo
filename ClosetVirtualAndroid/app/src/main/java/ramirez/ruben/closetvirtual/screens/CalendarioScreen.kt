@@ -64,10 +64,10 @@ fun CalendarioScreen(onNavigateBack: () -> Unit = {}) {
         ) {
             IconButton(
                 onClick = onNavigateBack,
-                modifier = Modifier.offset(x = (-24).dp)
+                modifier = Modifier.offset(x = (-22).dp)
             ) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowBack,
+                    painter = painterResource(id = R.mipmap.left),
                     contentDescription = "Icono de atrás",
                     tint = Color(0xFF26657A),
                     modifier = Modifier.size(22.dp)

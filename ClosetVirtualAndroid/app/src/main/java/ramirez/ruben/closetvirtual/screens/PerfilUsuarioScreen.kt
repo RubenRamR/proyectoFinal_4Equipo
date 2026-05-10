@@ -85,11 +85,15 @@ fun PerfilScreen(
             TopAppBar(
                 title = { },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(
+                        onClick = onNavigateBack,
+                        modifier = Modifier.offset(x = (-8).dp)
+                    ) {
                         Icon(
-                            Icons.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.cd_back),
-                            tint = Color(0xFF26657A)
+                            painter = painterResource(id = R.mipmap.left),
+                            contentDescription = "Icono de atrás",
+                            tint = Color(0xFF26657A),
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 },

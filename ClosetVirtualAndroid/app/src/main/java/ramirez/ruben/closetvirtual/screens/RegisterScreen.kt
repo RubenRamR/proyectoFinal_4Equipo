@@ -68,7 +68,7 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(modifier = Modifier.height(35.dp))
+        Spacer(modifier = Modifier.height(25.dp))
 
         Text(
             text = "Registrarse",
@@ -78,7 +78,7 @@ fun RegisterScreen(
             modifier = Modifier.padding(top = 16.dp)
         )
 
-        Spacer(modifier = Modifier.height(64.dp))
+        Spacer(modifier = Modifier.height(54.dp))
 
         // Campos de texto del registro
         TextField(

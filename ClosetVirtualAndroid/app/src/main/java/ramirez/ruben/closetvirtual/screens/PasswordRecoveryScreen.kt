@@ -48,7 +48,7 @@ fun PasswordRecoveryScreen(
 
         Text(
             text = "Recuperar Contraseña",
-            fontSize = 32.sp,
+            fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 16.dp)
@@ -65,7 +65,7 @@ fun PasswordRecoveryScreen(
             lineHeight = 14.sp
         )
 
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(60.dp))
 
         TextField(
             value = email,

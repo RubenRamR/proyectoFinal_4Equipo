@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -90,11 +91,15 @@ fun GestionPrendaScreen(
             TopAppBar(
                 title = { },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(
+                        onClick = onNavigateBack,
+                        modifier = Modifier.offset(x = (-10).dp)
+                    ) {
                         Icon(
-                            Icons.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.cd_back),
-                            tint = Color(0xFF26657A)
+                            painter = painterResource(id = R.mipmap.left),
+                            contentDescription = "Icono de atrás",
+                            tint = Color(0xFF26657A),
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 },

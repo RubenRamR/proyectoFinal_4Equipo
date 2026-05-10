@@ -63,6 +63,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.biometric.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.biometric)
