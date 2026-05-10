@@ -10,6 +10,7 @@ import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
 import ramirez.ruben.closetvirtual.data.database.repository.OutfitRepository
 import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
 import ramirez.ruben.closetvirtual.data.datastore.DataStoreManager
+import java.time.LocalDate
 
 class AgregarOutfitViewModel(
     private val prendaRepository: PrendaRepository,
@@ -76,7 +77,8 @@ class AgregarOutfitViewModel(
                     nombre = nombre,
                     estilo = estilo,
                     temporada = temporada,
-                    tags = tags
+                    tags = tags,
+                    fecha = LocalDate.now().toString()
                 )
                 outfitRepository.guardarOutfitConPrendas(outfit, _prendasSeleccionadas.value.toList())
                 onSuccess()
