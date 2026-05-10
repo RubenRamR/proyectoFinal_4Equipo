@@ -65,7 +65,7 @@ fun GestionPrendaScreen(
     var temporada by remember { mutableStateOf("") }
     var talla by remember { mutableStateOf("") }
     var formalidad by remember { mutableStateOf("") }
-    
+
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var imagenActualBytes by remember { mutableStateOf<ByteArray?>(null) }
 
@@ -129,7 +129,7 @@ fun GestionPrendaScreen(
             SeccionFotoYTextos(
                 nombre = nombre, onNombreChange = { nombre = it },
                 marca = marca, onMarcaChange = { marca = it },
-                imageUri = imageUri, 
+                imageUri = imageUri,
                 imagenActual = imagenActualBytes,
                 onImageSelected = { imageUri = it },
                 isEditMode = isEditMode
@@ -254,7 +254,7 @@ fun GestionPrendaScreen(
 private fun SeccionFotoYTextos(
     nombre: String, onNombreChange: (String) -> Unit,
     marca: String, onMarcaChange: (String) -> Unit,
-    imageUri: Uri?, 
+    imageUri: Uri?,
     imagenActual: ByteArray?,
     onImageSelected: (Uri?) -> Unit,
     isEditMode: Boolean
@@ -603,60 +603,69 @@ fun InteractiveDropdown(
     }
 }
 
-//private fun provideDummyViewModel(context: android.content.Context): GestionPrendaViewModel {
-//    val mockDao = object : PrendaDao {
-//        override suspend fun insertarPrenda(prenda: PrendaEntity) = 0L
-//        override suspend fun actualizarPrenda(prenda: PrendaEntity) = 0
-//        override suspend fun eliminarPrenda(prenda: PrendaEntity) = 0
-//        override fun obtenerTodasLasPrendas() = flowOf(emptyList<PrendaEntity>())
-//        override fun obtenerPrendasPorUsuario(idUsuario: Int) = flowOf(emptyList<PrendaEntity>())
-//        override suspend fun obtenerPrendaPorId(id: Int) = null
-//    }
-//    val repository = PrendaRepository(mockDao)
-//    val dataStoreManager = DataStoreManager(context)
-//    return GestionPrendaViewModel(repository, dataStoreManager, context)
-//}
-//
-//@Preview(name = "1. Registrar (Claro)", showBackground = true, showSystemUi = true)
-//@Composable
-//private fun PreviewRegistrarClaro() {
-//    ClosetVirtualTheme(darkTheme = false) {
-//        GestionPrendaScreen(
-//            viewModel = provideDummyViewModel(LocalContext.current),
-//            isEditMode = false
-//        )
-//    }
-//}
-//
-//@Preview(name = "2. Registrar (Oscuro)", showBackground = true, showSystemUi = true)
-//@Composable
-//private fun PreviewRegistrarOscuro() {
-//    ClosetVirtualTheme(darkTheme = true) {
-//        GestionPrendaScreen(
-//            viewModel = provideDummyViewModel(LocalContext.current),
-//            isEditMode = false
-//        )
-//    }
-//}
-//
-//@Preview(name = "3. Editar (Claro)", showBackground = true, showSystemUi = true)
-//@Composable
-//private fun PreviewEditarClaro() {
-//    ClosetVirtualTheme(darkTheme = false) {
-//        GestionPrendaScreen(
-//            viewModel = provideDummyViewModel(LocalContext.current),
-//            isEditMode = true
-//        )
-//    }
-//}
-//
-//@Preview(name = "4. Editar (Oscuro)", showBackground = true, showSystemUi = true)
-//@Composable
-//private fun PreviewEditarOscuro() {
-//    ClosetVirtualTheme(darkTheme = true) {
-//        GestionPrendaScreen(
-//            viewModel = provideDummyViewModel(LocalContext.current),
-//            isEditMode = true
-//        )
-//    }
-//}
+private fun provideDummyViewModel(context: android.content.Context): GestionPrendaViewModel {
+
+    val safeContext = object : android.content.ContextWrapper(context) {
+        override fun getApplicationContext(): android.content.Context = this
+        override fun getFilesDir(): java.io.File = java.io.File(System.getProperty("java.io.tmpdir") ?: "/tmp")
+        override fun getDataDir(): java.io.File = java.io.File(System.getProperty("java.io.tmpdir") ?: "/tmp")
+    }
+
+    val mockDao = object : PrendaDao {
+        override suspend fun insertarPrenda(prenda: PrendaEntity) = 0L
+        override suspend fun actualizarPrenda(prenda: PrendaEntity) = 0
+        override suspend fun eliminarPrenda(prenda: PrendaEntity) = 0
+        override fun obtenerTodasLasPrendas() = flowOf(emptyList<PrendaEntity>())
+        override fun obtenerPrendasPorUsuario(idUsuario: Int) = flowOf(emptyList<PrendaEntity>())
+        override suspend fun obtenerPrendaPorId(id: Int) = null
+    }
+
+    val repository = PrendaRepository(mockDao)
+    val dataStoreManager = DataStoreManager(safeContext)
+
+    return GestionPrendaViewModel(repository, dataStoreManager, safeContext)
+}
+
+@Preview(name = "1. Registrar (Claro)", showBackground = true, showSystemUi = true)
+@Composable
+private fun PreviewRegistrarClaro() {
+    ClosetVirtualTheme(darkTheme = false) {
+        GestionPrendaScreen(
+            viewModel = provideDummyViewModel(LocalContext.current),
+            isEditMode = false
+        )
+    }
+}
+
+@Preview(name = "2. Registrar (Oscuro)", showBackground = true, showSystemUi = true)
+@Composable
+private fun PreviewRegistrarOscuro() {
+    ClosetVirtualTheme(darkTheme = true) {
+        GestionPrendaScreen(
+            viewModel = provideDummyViewModel(LocalContext.current),
+            isEditMode = false
+        )
+    }
+}
+
+@Preview(name = "3. Editar (Claro)", showBackground = true, showSystemUi = true)
+@Composable
+private fun PreviewEditarClaro() {
+    ClosetVirtualTheme(darkTheme = false) {
+        GestionPrendaScreen(
+            viewModel = provideDummyViewModel(LocalContext.current),
+            isEditMode = true
+        )
+    }
+}
+
+@Preview(name = "4. Editar (Oscuro)", showBackground = true, showSystemUi = true)
+@Composable
+private fun PreviewEditarOscuro() {
+    ClosetVirtualTheme(darkTheme = true) {
+        GestionPrendaScreen(
+            viewModel = provideDummyViewModel(LocalContext.current),
+            isEditMode = true
+        )
+    }
+}
