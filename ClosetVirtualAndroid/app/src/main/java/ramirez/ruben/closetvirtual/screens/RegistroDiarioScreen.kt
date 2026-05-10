@@ -15,8 +15,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -51,13 +53,13 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
 
             IconButton(
                 onClick = onNavigateBack,
-                modifier = Modifier.offset(x = (-24).dp)
+                modifier = Modifier.offset(x = (-26).dp)
             ) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowBack,
+                    painter = painterResource(id = R.mipmap.left),
                     contentDescription = "Icono de atrás",
-                    tint = Color(0xFF26657A),
-                    modifier = Modifier.size(22.dp)
+                    tint = Color(0xFF000000),
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
@@ -105,6 +107,8 @@ fun RegistroDiarioScreen(onNavigateBack: () -> Unit = {}) {
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground)
             )
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = "¡Registra tu outfit dirariamente para continuar con tu racha!",
@@ -251,8 +255,11 @@ fun PrendaMockItem(
             Image(
                 painter = painterResource(id = R.mipmap.no_image),
                 contentDescription = "Imagen de la prenda",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(48.dp)
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(8.dp))
                     .align(Alignment.CenterHorizontally)
             )
 

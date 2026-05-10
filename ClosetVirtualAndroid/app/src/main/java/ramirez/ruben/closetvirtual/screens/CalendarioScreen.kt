@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import ramirez.ruben.closetvirtual.R
@@ -64,13 +65,13 @@ fun CalendarioScreen(onNavigateBack: () -> Unit = {}) {
         ) {
             IconButton(
                 onClick = onNavigateBack,
-                modifier = Modifier.offset(x = (-24).dp)
+                modifier = Modifier.offset(x = (-26).dp)
             ) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowBack,
+                    painter = painterResource(id = R.mipmap.left),
                     contentDescription = "Icono de atrás",
-                    tint = Color(0xFF26657A),
-                    modifier = Modifier.size(22.dp)
+                    tint = Color(0xFF000000),
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
@@ -410,8 +411,11 @@ fun OutfitCard(outfit: Outfit) {
                 Image(
                     painter = painterResource(id = outfit.imagenRes),
                     contentDescription = "Imagen del outfit",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(110.dp)
+                        .clip(RoundedCornerShape(8.dp))
                 )
             }
 
