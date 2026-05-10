@@ -57,6 +57,7 @@ fun OutfitsScreenDarkPreview() {
 fun OutfitsScreen(
     onNavigateToRegistroDiario: () -> Unit = {},
     onNavigateToAgregarOutfit: () -> Unit = {},
+    onNavigateToDetalleOutfit: (Int) -> Unit = {},
     viewModel: OutfitsViewModel = viewModel()
 ) {
     val outfitsConPrendas by viewModel.outfits.collectAsState()
@@ -65,11 +66,7 @@ fun OutfitsScreen(
         bottomBar = { },
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 FloatingActionButton(onClick = { onNavigateToRegistroDiario() }) {
                     Icon(
@@ -88,7 +85,7 @@ fun OutfitsScreen(
             FiltrosOutfits()
 
             Box(modifier = Modifier.weight(1f)) {
-                OutfitsGrid(outfitsConPrendas)
+                OutfitsGrid(outfitsConPrendas, onNavigateToDetalleOutfit)
             }
         }
     }
@@ -120,7 +117,7 @@ fun FiltrosOutfits() {
 }
 
 @Composable
-fun OutfitsGrid(outfits: List<OutfitConPrendas>) {
+fun OutfitsGrid(outfits: List<OutfitConPrendas>, onNavigateToDetalle: (Int) -> Unit = {}) {
     if (outfits.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("No tienes outfits guardados", fontFamily = Montserrat)
@@ -133,14 +130,14 @@ fun OutfitsGrid(outfits: List<OutfitConPrendas>) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(outfits) { outfitConPrendas ->
-                OutfitCard(outfitConPrendas)
+                OutfitCard(outfitConPrendas, onNavigateToDetalle)
             }
         }
     }
 }
 
 @Composable
-fun OutfitCard(outfitConPrendas: OutfitConPrendas) {
+fun OutfitCard(outfitConPrendas: OutfitConPrendas, onNavigateToDetalle: (Int) -> Unit = {}) {
     val outfit = outfitConPrendas.outfit
     val prendas = outfitConPrendas.prendas
 
@@ -168,7 +165,11 @@ fun OutfitCard(outfitConPrendas: OutfitConPrendas) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // botón de detalle
-                Button(onClick = {}, modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(vertical = 4.dp)) {
+                Button(
+                    onClick = { onNavigateToDetalle(outfit.id) },
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(vertical = 4.dp)
+                ) {
                     Text(text = "Detalle", fontSize = 13.sp, fontFamily = Montserrat, color = Color.White)
                 }
             }

@@ -45,6 +45,8 @@ import ramirez.ruben.closetvirtual.viewmodel.ClosetViewModel
 import ramirez.ruben.closetvirtual.data.database.repository.OutfitRepository
 import ramirez.ruben.closetvirtual.viewmodel.AgregarOutfitViewModel
 import ramirez.ruben.closetvirtual.viewmodel.OutfitsViewModel
+import ramirez.ruben.closetvirtual.viewmodel.DetalleOutfitViewModel
+import ramirez.ruben.closetvirtual.screens.PantallaDetalleOutfit
 import ramirez.ruben.closetvirtual.utils.ImageExport
 import ramirez.ruben.closetvirtual.viewmodel.CalendarioViewModel
 import ramirez.ruben.closetvirtual.viewmodel.UsuarioViewModel
@@ -279,7 +281,26 @@ fun MainAppScreen(dataStoreManager: DataStoreManager) {
                 OutfitsScreen(
                     onNavigateToRegistroDiario = { navController.navigate("registro_diario_route") },
                     onNavigateToAgregarOutfit = { navController.navigate("agregar_outfit_route") },
+                    onNavigateToDetalleOutfit = { id -> navController.navigate("detalle_outfit_route/$id") },
                     viewModel = outfitsViewModel
+                )
+            }
+
+            composable(
+                route = "detalle_outfit_route/{outfitId}",
+                arguments = listOf(navArgument("outfitId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val outfitId = backStackEntry.arguments?.getInt("outfitId") ?: 0
+                val detalleOutfitViewModel: DetalleOutfitViewModel = viewModel(
+                    factory = DetalleOutfitViewModel.Factory(outfitRepository, outfitId)
+                )
+
+                PantallaDetalleOutfit(
+                    viewModel = detalleOutfitViewModel,
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToDetallePrenda = { prendaId ->
+                        navController.navigate("detalle_prenda_route/$prendaId")
+                    }
                 )
             }
 

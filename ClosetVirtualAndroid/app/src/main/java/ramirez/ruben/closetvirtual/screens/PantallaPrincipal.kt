@@ -200,7 +200,7 @@ fun PrendasCard(prenda: PrendaEntity, onNavigateToDetalle: (Int) -> Unit) {
                         Text("Hoy la usé", fontSize = 10.sp, maxLines = 1, fontFamily = Montserrat)
                     }
                     Button(onClick = { onNavigateToDetalle(prenda.id) }, modifier = Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 4.dp)) {
-                        Text(text = "Detalle", fontSize = 10.sp, maxLines = 1, fontFamily = Montserrat)
+                        Text(text = "Detalle", fontSize = 10.sp, maxLines = 1, fontFamily = Montserrat, color = Color.White)
                     }
                 }
             }
