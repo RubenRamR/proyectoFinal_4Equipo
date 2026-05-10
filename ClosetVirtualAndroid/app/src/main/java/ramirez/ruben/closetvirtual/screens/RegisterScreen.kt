@@ -26,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import ramirez.ruben.closetvirtual.data.database.dao.PrendaDao
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.viewmodel.UsuarioViewModel
+import ramirez.ruben.closetvirtual.viewmodel.LoginViewModel
 import ramirez.ruben.closetvirtual.data.database.dao.UsuarioDao
 import ramirez.ruben.closetvirtual.data.database.entity.UsuarioEntity
 import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
@@ -36,7 +37,8 @@ import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
 fun RegisterScreen(
     onNavigateToLogin: () -> Unit = {},
     onRegisterSuccess: () -> Unit = {},
-    viewModel: UsuarioViewModel
+    viewModel: UsuarioViewModel,
+    loginViewModel: LoginViewModel? = null
 ){
 
     var username by remember { mutableStateOf("") }
@@ -303,7 +305,9 @@ fun RegisterScreen(
                         contrasena = password,
                         fechaNacimiento = dateOfBirth,
                         genero = selectedGender,
-                        onSuccess = onRegisterSuccess // manda al usuario a la app si todo sale bien
+                        onSuccess = { userId ->
+                            loginViewModel?.login(email, password, onRegisterSuccess, {})
+                        }
                     )
                 }
             },
@@ -356,7 +360,7 @@ private fun provideDummyUsuarioViewModel(): UsuarioViewModel {
         override suspend fun actualizarUsuario(usuario: UsuarioEntity) = 0
         override suspend fun login(correo: String, contrasena: String): UsuarioEntity? = null
         override suspend fun obtenerUsuarioPorCorreo(correo: String): UsuarioEntity? = null
-        override suspend fun obtenerUsuarioPorId(id: String): UsuarioEntity? = null
+        override suspend fun obtenerUsuarioPorId(id: Int): UsuarioEntity? = null
     }
     val repository = UsuarioRepository(mockDao)
     return UsuarioViewModel(repository)
@@ -369,7 +373,8 @@ private fun PreviewModoClaro() {
         RegisterScreen(
             onNavigateToLogin = {},
             onRegisterSuccess = {},
-            viewModel = provideDummyUsuarioViewModel() //mock djfrbgkj
+            viewModel = provideDummyUsuarioViewModel(), //mock djfrbgkj
+            loginViewModel = null
         )
     }
 }

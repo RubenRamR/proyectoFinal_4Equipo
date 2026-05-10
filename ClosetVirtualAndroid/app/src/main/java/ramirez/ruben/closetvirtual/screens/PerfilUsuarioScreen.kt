@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import ramirez.ruben.closetvirtual.viewmodel.UsuarioViewModel
+import ramirez.ruben.closetvirtual.viewmodel.LoginViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.material.icons.Icons
 import ramirez.ruben.closetvirtual.data.database.dao.UsuarioDao
@@ -45,7 +46,8 @@ import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 fun PerfilScreen(
     onNavigateBack: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
-    viewModel: UsuarioViewModel
+    viewModel: UsuarioViewModel,
+    loginViewModel: LoginViewModel? = null
 ) {
 
     val usuarioActual by viewModel.usuarioActual.collectAsState()
@@ -335,7 +337,10 @@ fun PerfilScreen(
                 Spacer(modifier = Modifier.width(12.dp))
                 Checkbox(
                     checked = isBiometricsEnabled,
-                    onCheckedChange = { isBiometricsEnabled = it },
+                    onCheckedChange = { 
+                        isBiometricsEnabled = it
+                        loginViewModel?.toggleBiometrics(it)
+                    },
                     colors = CheckboxDefaults.colors(
                         checkedColor = Color(0xFF6750A4),
                         checkmarkColor = Color.White,
@@ -360,6 +365,7 @@ fun PerfilScreen(
                         )
                         // Lo mandamos al ViewModel para que Room lo guarde
                         viewModel.actualizarPerfil(usuarioActualizado)
+                        loginViewModel?.toggleBiometrics(isBiometricsEnabled)
                     }
                 },
                 modifier = Modifier
@@ -379,7 +385,10 @@ fun PerfilScreen(
 
             // Botón Logout
             TextButton(
-                onClick = onLogoutClick,
+                onClick = {
+                    loginViewModel?.logout()
+                    onLogoutClick()
+                },
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(50.dp),
@@ -475,7 +484,7 @@ private fun provideDummyUsuarioViewModel(): UsuarioViewModel {
         override suspend fun actualizarUsuario(usuario: UsuarioEntity) = 0
         override suspend fun login(correo: String, contrasena: String): UsuarioEntity? = null
         override suspend fun obtenerUsuarioPorCorreo(correo: String): UsuarioEntity? = null
-        override suspend fun obtenerUsuarioPorId(id: String): UsuarioEntity? = null
+        override suspend fun obtenerUsuarioPorId(id: Int): UsuarioEntity? = null
     }
     val repository = UsuarioRepository(mockDao)
     return UsuarioViewModel(repository)
@@ -488,7 +497,8 @@ private fun PreviewPerfilClaro() {
         PerfilScreen(
             onNavigateBack = {},
             onLogoutClick = {},
-            viewModel = provideDummyUsuarioViewModel() // mock
+            viewModel = provideDummyUsuarioViewModel(), // mock
+            loginViewModel = null
         )
     }
 }
@@ -505,7 +515,8 @@ private fun PreviewPerfilOscuro() {
         PerfilScreen(
             onNavigateBack = {},
             onLogoutClick = {},
-            viewModel = provideDummyUsuarioViewModel() // mock
+            viewModel = provideDummyUsuarioViewModel(), // mock
+            loginViewModel = null
         )
     }
 }

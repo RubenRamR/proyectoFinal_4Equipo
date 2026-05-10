@@ -23,6 +23,6 @@ interface UsuarioDao {
     suspend fun obtenerUsuarioPorCorreo(correo: String): @JvmSuppressWildcards UsuarioEntity?
 
     @Query("SELECT * FROM usuarios WHERE id = :id LIMIT 1")
-    suspend fun obtenerUsuarioPorId(id: String): @JvmSuppressWildcards UsuarioEntity?
+    suspend fun obtenerUsuarioPorId(id: Int): @JvmSuppressWildcards UsuarioEntity?
 
 }

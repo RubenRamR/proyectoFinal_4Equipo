@@ -35,8 +35,8 @@ class RegisterViewModel(private val repository: UsuarioRepository, private val d
                 val user = UsuarioEntity(
                     nombre = nombre,
                     correo = correo,
-                    password = password,
-                    nacimiento = nacimientoLong,
+                    contrasena = password,
+                    fechaNacimiento = fechaNacimiento,
                     genero = genero
                 )
                 val newUserId = repository.registrarUsuario(user)

@@ -138,7 +138,7 @@ private fun provideDummyUsuarioViewModel(): UsuarioViewModel {
         override suspend fun actualizarUsuario(usuario: UsuarioEntity) = 0
         override suspend fun login(correo: String, contrasena: String): UsuarioEntity? = null
         override suspend fun obtenerUsuarioPorCorreo(correo: String): UsuarioEntity? = null
-        override suspend fun obtenerUsuarioPorId(id: String): UsuarioEntity? = null
+        override suspend fun obtenerUsuarioPorId(id: Int): UsuarioEntity? = null
     }
     val repository = UsuarioRepository(mockDao)
     return UsuarioViewModel(repository)

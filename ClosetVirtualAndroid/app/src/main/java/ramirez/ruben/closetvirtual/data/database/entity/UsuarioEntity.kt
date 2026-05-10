@@ -6,15 +6,13 @@ import java.util.UUID
 
 @Entity(tableName = "usuarios")
 data class UsuarioEntity(
-    @PrimaryKey
-    val id: String = UUID.randomUUID().toString(),
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     val nombre: String,
     val correo: String,
     val contrasena: String,
     val fechaNacimiento: String,
     val genero: String,
-    // Preferencias del perfil
-    val isBiometricsEnabled: Boolean = true,
-    val isDarkThemeEnabled: Boolean = false,
-    val fechaRegistro: Long = System.currentTimeMillis()
+    val isBiometricsEnabled: Boolean = false,
+    val isDarkThemeEnabled: Boolean = false
 )

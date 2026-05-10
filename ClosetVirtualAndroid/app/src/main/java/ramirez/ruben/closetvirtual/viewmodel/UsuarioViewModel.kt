@@ -29,7 +29,7 @@ class UsuarioViewModel(
         contrasena: String,
         fechaNacimiento: String,
         genero: String,
-        onSuccess: () -> Unit
+        onSuccess: (Int) -> Unit
     ) {
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -45,9 +45,10 @@ class UsuarioViewModel(
                 fechaNacimiento = fechaNacimiento,
                 genero = genero
             )
-            repository.registrarUsuario(nuevoUsuario)
-            _usuarioActual.value = nuevoUsuario
-            viewModelScope.launch(Dispatchers.Main) { onSuccess() }
+            val id = repository.registrarUsuario(nuevoUsuario)
+            val usuarioConId = nuevoUsuario.copy(id = id.toInt())
+            _usuarioActual.value = usuarioConId
+            viewModelScope.launch(Dispatchers.Main) { onSuccess(id.toInt()) }
         }
     }
 

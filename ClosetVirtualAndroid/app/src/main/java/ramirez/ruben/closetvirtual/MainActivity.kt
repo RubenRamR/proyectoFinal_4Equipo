@@ -1,9 +1,9 @@
 package ramirez.ruben.closetvirtual
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.fragment.app.FragmentActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -47,8 +47,9 @@ import ramirez.ruben.closetvirtual.viewmodel.AgregarOutfitViewModel
 import ramirez.ruben.closetvirtual.viewmodel.OutfitsViewModel
 import ramirez.ruben.closetvirtual.utils.ImageExport
 import ramirez.ruben.closetvirtual.viewmodel.UsuarioViewModel
+import ramirez.ruben.closetvirtual.viewmodel.LoginViewModel
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -83,20 +84,24 @@ fun MainAppScreen() {
     val dataStoreManager = remember { DataStoreManager(context) }
 
     //para el autologin en caso de que ya este logeado con el usuario
-    val userId by dataStoreManager.getUserId.collectAsState(initial = null)
-    LaunchedEffect(userId) {
-        if (userId != null) {
-            // si hay un usuario guardado, vamos directamente a la pantalla principal
-            // Usamos popUpTo para limpiar el stack y que no se pueda volver al login con atrás
-            navController.navigate("main_route") {
-                popUpTo("login_route") { inclusive = true }
-            }
-        }
-    }
+//    val userId by dataStoreManager.getUserId.collectAsState(initial = null)
+//    LaunchedEffect(userId) {
+//        if (userId != null) {
+//            // si hay un usuario guardado, vamos directamente a la pantalla principal
+//            // Usamos popUpTo para limpiar el stack y que no se pueda volver al login con atrás
+//            navController.navigate("main_route") {
+//                popUpTo("login_route") { inclusive = true }
+//            }
+//        }
+//    }
 
 
     val usuarioViewModel: UsuarioViewModel = viewModel(
         factory = UsuarioViewModel.Factory(usuarioRepository)
+    )
+
+    val loginViewModel: LoginViewModel = viewModel(
+        factory = LoginViewModel.Factory(usuarioRepository, dataStoreManager)
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -136,7 +141,8 @@ fun MainAppScreen() {
                             popUpTo("login_route") { inclusive = true } // Limpiamos el registro del historial
                         }
                     },
-                    viewModel = usuarioViewModel
+                    viewModel = usuarioViewModel,
+                    loginViewModel = loginViewModel
                 )
             }
 
@@ -148,7 +154,8 @@ fun MainAppScreen() {
                             popUpTo("register_route") { inclusive = true } // Limpiamos el registro del historial
                         }
                     },
-                    viewModel = usuarioViewModel
+                    viewModel = usuarioViewModel,
+                    loginViewModel = loginViewModel
                 )
             }
 
@@ -168,7 +175,8 @@ fun MainAppScreen() {
                             popUpTo(navController.graph.id) { inclusive = true }
                         }
                     },
-                    viewModel = usuarioViewModel
+                    viewModel = usuarioViewModel,
+                    loginViewModel = loginViewModel
                 )
             }
 
