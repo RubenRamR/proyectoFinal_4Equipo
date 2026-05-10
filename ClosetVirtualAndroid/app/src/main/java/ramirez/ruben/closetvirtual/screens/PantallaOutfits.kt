@@ -27,7 +27,7 @@ import coil.compose.AsyncImage
 import ramirez.ruben.closetvirtual.data.mocks.Prenda
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.R
-import ramirez.ruben.closetvirtual.data.database.entity.Outfit
+import ramirez.ruben.closetvirtual.components.Outfit
 
 @Preview(showBackground = true, name = "Light Mode")
 @Composable
