@@ -1,4 +1,4 @@
-package ramirez.ruben.closetvirtual.data.database.entity
+package ramirez.ruben.closetvirtual.components
 
 import ramirez.ruben.closetvirtual.data.mocks.Prenda
 

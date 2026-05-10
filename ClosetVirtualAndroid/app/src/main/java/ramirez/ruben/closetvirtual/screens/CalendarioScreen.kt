@@ -31,6 +31,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import ramirez.ruben.closetvirtual.R
@@ -437,14 +438,28 @@ fun OutfitRealCard(outfitConPrendas: OutfitConPrendas) {
         color = cardBackgroundColor,
         shadowElevation = 2.dp
     ) {
-        Row(modifier = Modifier
-            .padding(12.dp)
-            .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Surface(shape = RoundedCornerShape(8.dp), modifier = Modifier.size(80.dp)) {
+        Row(
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.size(80.dp)
+            ) {
                 if (imageBitmap != null) {
-                    Image(bitmap = imageBitmap, contentDescription = null, contentScale = ContentScale.Crop)
+                    Image(
+                        bitmap = imageBitmap,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop
+                    )
                 } else {
-                    Image(painter = painterResource(id = R.mipmap.no_image), contentDescription = null, contentScale = ContentScale.Crop)
+                    Image(
+                        painter = painterResource(id = R.mipmap.no_image),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop
+                    )
                 }
             }
 
@@ -466,105 +481,8 @@ fun OutfitRealCard(outfitConPrendas: OutfitConPrendas) {
 
 // componente visual para las tarjetitas de los outfits de la fecha (mock)
 //@Composable
-//fun OutfitCard(outfit: Outfit) {
-//    val isDark = isSystemInDarkTheme()
-//    val cardBackgroundColor = if (isDark) Color(0xFF44344E) else Color(0xFFECE6F0)
-//
-//    Surface(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(vertical = 8.dp),
-//        shape = RoundedCornerShape(12.dp),
-//        color = cardBackgroundColor,
-//        shadowElevation = 2.dp
-//    ) {
-//        Row(
-//            modifier = Modifier
-//                .padding(12.dp)
-//                .fillMaxWidth(),
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            Surface(
-//                shape = RoundedCornerShape(8.dp),
-//                modifier = Modifier.size(80.dp)
-//            ) {
-//                Image(
-//                    painter = painterResource(id = outfit.imagenRes),
-//                    contentDescription = "Imagen del outfit",
-//                    modifier = Modifier.fillMaxSize(),
-//                    contentScale = ContentScale.Crop
-//                )
-//            }
-//
-//            Spacer(modifier = Modifier.width(16.dp))
-//
-//            Column(
-//                modifier = Modifier.weight(1f),
-//                verticalArrangement = Arrangement.spacedBy(4.dp)
-//            ) {
-//                Text(
-//                    text = "Outfit ${outfit.nombre}",
-//                    fontSize = 16.sp,
-//                    fontWeight = FontWeight.Bold,
-//                    color = MaterialTheme.colorScheme.onSurface
-//                )
-//
-//                Text(
-//                    text = outfit.descripcion,
-//                    fontSize = 14.sp,
-//                    color = if (isDark) Color(0xFFD3D3D3) else Color(0xFF808080),
-//                    maxLines = 2
-//                )
-//
-//                Spacer(modifier = Modifier.height(8.dp))
-//
-//                Row(
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-//                ) {
-//                    Icon(
-//                        painter = painterResource(id = R.mipmap.calendario_icon),
-//                        contentDescription = null,
-//                        modifier = Modifier.size(12.dp),
-//                        tint = if (isDark) Color(0x4DFFFFFF) else Color(0x4D808080)
-//                    )
-//                    Text(
-//                        text = outfit.fecha,
-//                        fontSize = 11.sp,
-//                        color = if (isDark) Color(0x33FFFFFF) else Color(0x33000000)
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
-
-
-
-
+//fun OutfitCard(outfit: Outfit) { ... }
 
 //@Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
 //@Composable
-//private fun PreviewModoClaro() {
-//    ClosetVirtualTheme(darkTheme = false) {
-//        CalendarioScreen(
-//            viewModel = {},
-//            onNavigateBack = {}
-//        )
-//    }
-//}
-//
-//@Preview(
-//    name = "Modo Oscuro",
-//    showBackground = true,
-//    showSystemUi = true,
-//    uiMode = Configuration.UI_MODE_NIGHT_YES
-//)
-//@Composable
-//private fun PreviewModoOscuro() {
-//    ClosetVirtualTheme(darkTheme = true) {
-//        CalendarioScreen(viewModel = {},
-//            onNavigateBack = {})
-//    }
-//}
-
+//private fun PreviewModoClaro() { ... }

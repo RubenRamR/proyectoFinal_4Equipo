@@ -264,9 +264,6 @@ fun PrendaItem(
     }
 }
 
-
-
-
 //@Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
 //@Composable
 //private fun PreviewModoClaro() {

@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ramirez.ruben.closetvirtual.R
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.draw.clip
 import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import ramirez.ruben.closetvirtual.ui.theme.Montserrat
