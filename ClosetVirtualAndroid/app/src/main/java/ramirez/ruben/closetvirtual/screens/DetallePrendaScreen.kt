@@ -78,37 +78,42 @@ fun DetallePrendaScreen(
                     .padding(paddingValues)
                     .padding(horizontal = 24.dp)
                     .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(20.dp))
+
                 SeccionCabeceraDetalle(prendaActual)
 
                 HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 24.dp),
+                    modifier = Modifier.padding(vertical = 28.dp),
                     color = MaterialTheme.colorScheme.outlineVariant
                 )
 
                 SeccionEstadisticas(prendaActual)
 
                 HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 24.dp),
+                    modifier = Modifier.padding(vertical = 28.dp),
                     color = MaterialTheme.colorScheme.outlineVariant
                 )
 
                 SeccionAtributosEstaticos(prendaActual)
 
                 HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 24.dp),
+                    modifier = Modifier.padding(vertical = 28.dp),
                     color = MaterialTheme.colorScheme.outlineVariant
                 )
 
                 SeccionTagsLectura(prendaActual.tags)
 
                 HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 24.dp),
+                    modifier = Modifier.padding(vertical = 28.dp),
                     color = MaterialTheme.colorScheme.outlineVariant
                 )
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Button(
@@ -140,7 +145,8 @@ fun DetallePrendaScreen(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(32.dp))
+
+                Spacer(modifier = Modifier.height(48.dp))
             }
         }
     }
@@ -271,7 +277,7 @@ private fun SeccionTagsLectura(tags: List<String>) {
     Row(modifier = Modifier
         .fillMaxWidth()
         .horizontalScroll(rememberScrollState())) {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             listOf(filaSuperior, filaInferior).forEach { fila ->
                 if (fila.isNotEmpty()) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
