@@ -603,6 +603,7 @@ fun InteractiveDropdown(
     }
 }
 
+/*
 private fun provideDummyViewModel(context: android.content.Context): GestionPrendaViewModel {
 
     val safeContext = object : android.content.ContextWrapper(context) {
@@ -668,4 +669,4 @@ private fun PreviewEditarOscuro() {
             isEditMode = true
         )
     }
-}
+}*/

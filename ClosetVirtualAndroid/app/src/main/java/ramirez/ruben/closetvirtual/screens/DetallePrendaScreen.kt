@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.ImageNotSupported
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -83,42 +84,28 @@ fun DetallePrendaScreen(
                     .padding(paddingValues)
                     .padding(horizontal = 24.dp)
                     .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(35.dp)
             ) {
-                Spacer(modifier = Modifier.height(20.dp))
 
                 SeccionCabeceraDetalle(prendaActual)
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 28.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant
-                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
                 SeccionEstadisticas(prendaActual)
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 28.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant
-                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
                 SeccionAtributosEstaticos(prendaActual)
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 28.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant
-                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
                 SeccionTagsLectura(prendaActual.tags)
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 28.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant
-                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Button(
@@ -151,7 +138,7 @@ fun DetallePrendaScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }
@@ -184,7 +171,7 @@ private fun SeccionCabeceraDetalle(prenda: PrendaEntity) {
                 )
             } else {
                 Icon(
-                    imageVector = Icons.Outlined.Add,
+                    imageVector = Icons.Outlined.ImageNotSupported,
                     contentDescription = stringResource(R.string.cd_no_photo),
                     modifier = Modifier.size(32.dp),
                     tint = MaterialTheme.colorScheme.onSurface
@@ -192,7 +179,7 @@ private fun SeccionCabeceraDetalle(prenda: PrendaEntity) {
             }
         }
 
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(26.dp)) {
             Text(
                 text = prenda.nombre,
                 style = MaterialTheme.typography.titleLarge,
@@ -321,57 +308,61 @@ private fun SeccionTagsLectura(tags: List<String>) {
 }
 
 // FUNCIONES AUXILIARES PARA PREVIEWS
-//private fun provideDummyDetalleViewModel(): DetallePrendaViewModel {
-//    val mockDao = object : PrendaDao {
-//        override suspend fun insertarPrenda(prenda: PrendaEntity) = 0L
-//        override suspend fun actualizarPrenda(prenda: PrendaEntity) = 0
-//        override suspend fun eliminarPrenda(prenda: PrendaEntity) = 0
-//        override fun obtenerTodasLasPrendas() = flowOf(emptyList<PrendaEntity>())
-//        override fun obtenerPrendasPorUsuario(idUsuario: Int) = flowOf(emptyList<PrendaEntity>())
-//
-//        override suspend fun obtenerPrendaPorId(id: Int) = PrendaEntity(
-//            id = 1,
-//            idUsuario = 1,
-//            nombre = "Camisa Vintage",
-//            marca = "Levis",
-//            imagen = null,
-//            categoria = "Top",
-//            color = "Azul",
-//            estampada = false,
-//            talla = "M",
-//            temporada = "Primavera",
-//            formalidad = "Casual",
-//            tags = listOf("Vintage", "Favorito", "Uso Diario")
-//        )
-//    }
-//    val repository = PrendaRepository(mockDao)
-//    return DetallePrendaViewModel(repository)
-//}
-//
-//// PREVIEWS
-//@Preview(name = "1. Detalle (Claro)", showBackground = true, showSystemUi = true)
-//@Composable
-//private fun PreviewDetalleClaro() {
-//    ClosetVirtualTheme(darkTheme = false) {
-//        DetallePrendaScreen(
-//            prendaId = 1,
-//            viewModel = provideDummyDetalleViewModel()
-//        )
-//    }
-//}
-//
-//@Preview(
-//    name = "2. Detalle (Oscuro)",
-//    showBackground = true,
-//    showSystemUi = true,
-//    uiMode = Configuration.UI_MODE_NIGHT_YES
-//)
-//@Composable
-//private fun PreviewDetalleOscuro() {
-//    ClosetVirtualTheme(darkTheme = true) {
-//        DetallePrendaScreen(
-//            prendaId = 1,
-//            viewModel = provideDummyDetalleViewModel()
-//        )
-//    }
-//}
+private fun provideDummyDetalleViewModel(): DetallePrendaViewModel {
+    val mockDao = object : PrendaDao {
+        override suspend fun insertarPrenda(prenda: PrendaEntity) = 0L
+        override suspend fun actualizarPrenda(prenda: PrendaEntity) = 0
+        override suspend fun eliminarPrenda(prenda: PrendaEntity) = 0
+        override fun obtenerTodasLasPrendas() = flowOf(emptyList<PrendaEntity>())
+        override fun obtenerPrendasPorUsuario(idUsuario: Int) = flowOf(emptyList<PrendaEntity>())
+
+        override suspend fun obtenerPrendaPorId(id: Int) = PrendaEntity(
+            id = 1,
+            idUsuario = 1,
+            nombre = "Camisa Vintage",
+            marca = "Levis",
+      imagen = null,
+            categoria = "Top",
+            color = "Azul",
+            estampada = false,
+            talla = "M",
+            temporada = "Primavera",
+            formalidad = "Casual",
+            tags = listOf("Vintage", "Favorito", "Uso Diario")
+        )
+
+        override suspend fun actualizarFavorito(id: Int, isFav: Boolean): Int {
+            TODO("Not yet implemented")
+        }
+    }
+    val repository = PrendaRepository(mockDao)
+    return DetallePrendaViewModel(repository)
+}
+
+// PREVIEWS
+@Preview(name = "1. Detalle (Claro)", showBackground = true, showSystemUi = true)
+@Composable
+private fun PreviewDetalleClaro() {
+    ClosetVirtualTheme(darkTheme = false) {
+        DetallePrendaScreen(
+            prendaId = 1,
+            viewModel = provideDummyDetalleViewModel()
+        )
+    }
+}
+
+@Preview(
+    name = "2. Detalle (Oscuro)",
+    showBackground = true,
+    showSystemUi = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun PreviewDetalleOscuro() {
+    ClosetVirtualTheme(darkTheme = true) {
+        DetallePrendaScreen(
+            prendaId = 1,
+            viewModel = provideDummyDetalleViewModel()
+        )
+    }
+ }
