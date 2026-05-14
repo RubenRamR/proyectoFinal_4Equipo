@@ -3,6 +3,7 @@ package ramirez.ruben.closetvirtual.screens
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,6 +32,9 @@ import ramirez.ruben.closetvirtual.data.database.dao.UsuarioDao
 import ramirez.ruben.closetvirtual.data.database.entity.UsuarioEntity
 import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
 import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +48,9 @@ fun RegisterScreen(
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
     var dateOfBirth by remember { mutableStateOf("") }
+    var showDatePicker by remember { mutableStateOf(false) }
 
     var isPasswordVisible by remember { mutableStateOf(false) }
     var confirmPassword by remember { mutableStateOf("") }
@@ -230,28 +236,81 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        TextField(
-            value = dateOfBirth,
-            onValueChange = { dateOfBirth = it },
-            label = { Text("(DD/MM/AAAA)", color = Color.Gray) },
-            leadingIcon = {
-                Image(
-                    painter = painterResource(id = R.mipmap.calendar_icon),
-                    contentDescription = "Icono de calendario",
-                    modifier = Modifier.size(20.dp),
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
+        Box(modifier = Modifier.width(270.dp)) {
+            TextField(
+                value = dateOfBirth,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Fecha de Nacimiento", color = Color.Gray) },
+                placeholder = { Text("(DD/MM/AAAA)", color = Color.LightGray) },
+                leadingIcon = {
+                    IconButton(onClick = { showDatePicker = true }) {
+                        Image(
+                            painter = painterResource(id = R.mipmap.calendar_icon),
+                            contentDescription = "Seleccionar fecha",
+                            modifier = Modifier.size(20.dp),
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.LightGray,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.primary
                 )
-            },
-            modifier = Modifier.width(270.dp),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.LightGray,
-                focusedIndicatorColor = MaterialTheme.colorScheme.primary
             )
-        )
+            Spacer(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Transparent)
+                    .clickable { showDatePicker = true }
+            )
+        }
+
+        if (showDatePicker) {
+            val initialDateMillis = remember(dateOfBirth) {
+                if (dateOfBirth.isNotEmpty()) {
+                    try {
+                        val formatter = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+                        formatter.timeZone = java.util.TimeZone.getTimeZone("UTC")
+                        formatter.parse(dateOfBirth)?.time // Obtenemos los milisegundos
+                    } catch (e: Exception) {
+                        null
+                    }
+                } else {
+                    null
+                }
+            }
+
+            val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialDateMillis)
+
+            DatePickerDialog(
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        val selectedDateMillis = datePickerState.selectedDateMillis
+                        if (selectedDateMillis != null) {
+                            val formatter = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+                            formatter.timeZone = java.util.TimeZone.getTimeZone("UTC")
+                            dateOfBirth = formatter.format(java.util.Date(selectedDateMillis))
+                        }
+                        showDatePicker = false
+                    }) {
+                        Text("Aceptar")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDatePicker = false }) {
+                        Text("Cancelar")
+                    }
+                }
+            ) {
+                DatePicker(state = datePickerState)
+            }
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 

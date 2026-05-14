@@ -54,7 +54,9 @@ fun PerfilScreen(
 
     var name by remember(usuarioActual) { mutableStateOf(usuarioActual?.nombre ?: "") }
     val email by remember(usuarioActual) { mutableStateOf(usuarioActual?.correo ?: "") }
+
     var dateOfBirth by remember(usuarioActual) { mutableStateOf(usuarioActual?.fechaNacimiento ?: "") }
+    var showDatePicker by remember { mutableStateOf(false) }
 
     var expandedGender by remember { mutableStateOf(false) }
     val genderOptions = listOf(
@@ -66,7 +68,6 @@ fun PerfilScreen(
     var selectedGender by remember(usuarioActual) {
         mutableStateOf(usuarioActual?.genero ?: genderOptions[0])
     }
-
 
     // preferencias del usuario
     var isBiometricsEnabled by remember(usuarioActual) {
@@ -104,7 +105,7 @@ fun PerfilScreen(
                     ) {
                         CustomThemeSwitch(
                             checked = isDarkThemeEnabled,
-                            onCheckedChange = { 
+                            onCheckedChange = {
                                 isDarkThemeEnabled = it
                                 loginViewModel?.toggleDarkMode(it)
                             }
@@ -128,7 +129,7 @@ fun PerfilScreen(
                 text = stringResource(R.string.perfil_title),
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(bottom = 24.dp)
+                modifier = Modifier.padding(bottom = 20.dp)
             )
 
             Box(modifier = Modifier
@@ -168,7 +169,7 @@ fun PerfilScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Nombre
             TextField(
@@ -206,7 +207,7 @@ fun PerfilScreen(
                 )
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Email (Solo lectura)
             TextField(
@@ -241,46 +242,97 @@ fun PerfilScreen(
                 )
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Fecha de Nacimiento
-            TextField(
-                value = dateOfBirth,
-                onValueChange = { dateOfBirth = it },
-                label = {
-                    Text(
-                        stringResource(R.string.label_birth_date),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
+            Box(modifier = Modifier.fillMaxWidth()) {
+                TextField(
+                    value = dateOfBirth,
+                    onValueChange = { },
+                    readOnly = true,
+                    label = {
+                        Text(
+                            stringResource(R.string.label_birth_date),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Gray
+                        )
+                    },
+                    leadingIcon = {
+                        IconButton(onClick = { showDatePicker = true }) {
+                            Image(
+                                painter = painterResource(id = R.mipmap.calendar_icon),
+                                contentDescription = stringResource(R.string.cd_calendar_icon),
+                                modifier = Modifier.size(20.dp),
+                                colorFilter = ColorFilter.tint(Color.Gray)
+                            )
+                        }
+                    },
+                    trailingIcon = {
+                        Icon(
+                            Icons.Filled.Edit,
+                            contentDescription = stringResource(R.string.cd_edit_date),
+                            tint = Color.Gray,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.bodyLarge,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent
                     )
-                },
-                leadingIcon = {
-                    Image(
-                        painter = painterResource(id = R.mipmap.calendar_icon),
-                        contentDescription = stringResource(R.string.cd_calendar_icon),
-                        modifier = Modifier.size(20.dp),
-                        colorFilter = ColorFilter.tint(Color.Gray)
-                    )
-                },
-                trailingIcon = {
-                    Icon(
-                        Icons.Filled.Edit,
-                        contentDescription = stringResource(R.string.cd_edit_date),
-                        tint = Color.Gray,
-                        modifier = Modifier.size(20.dp)
-                    )
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                textStyle = MaterialTheme.typography.bodyLarge,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent
                 )
-            )
+                Spacer(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(Color.Transparent)
+                        .clickable { showDatePicker = true }
+                )
+            }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            if (showDatePicker) {
+                val initialDateMillis = remember(dateOfBirth) {
+                    if (dateOfBirth.isNotEmpty()) {
+                        try {
+                            val formatter = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+                            formatter.timeZone = java.util.TimeZone.getTimeZone("UTC")
+                            formatter.parse(dateOfBirth)?.time // Obtenemos los milisegundos
+                        } catch (e: Exception) {
+                            null
+                        }
+                    } else {
+                        null
+                    }
+                }
+
+                val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialDateMillis)
+
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            val selectedDateMillis = datePickerState.selectedDateMillis
+                            if (selectedDateMillis != null) {
+                                val formatter = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+                                formatter.timeZone = java.util.TimeZone.getTimeZone("UTC")
+                                dateOfBirth = formatter.format(java.util.Date(selectedDateMillis))
+                            }
+                            showDatePicker = false
+                        }) {
+                            Text("Aceptar")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDatePicker = false }) {
+                            Text("Cancelar")
+                        }
+                    }
+                ) {
+                    DatePicker(state = datePickerState)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Género
             ExposedDropdownMenuBox(
@@ -348,7 +400,7 @@ fun PerfilScreen(
                 Spacer(modifier = Modifier.width(12.dp))
                 Checkbox(
                     checked = isBiometricsEnabled,
-                    onCheckedChange = { 
+                    onCheckedChange = {
                         isBiometricsEnabled = it
                         loginViewModel?.toggleBiometrics(it)
                     },
@@ -360,13 +412,12 @@ fun PerfilScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(26.dp))
 
             // Botón Guardar
             Button(
                 onClick = {
                     usuarioActual?.let { usuarioViejo ->
-                        // copia del usuario con los datos que el usuario editó
                         val usuarioActualizado = usuarioViejo.copy(
                             nombre = name,
                             fechaNacimiento = dateOfBirth,
@@ -374,7 +425,6 @@ fun PerfilScreen(
                             isBiometricsEnabled = isBiometricsEnabled,
                             isDarkThemeEnabled = isDarkThemeEnabled
                         )
-                        // Lo mandamos al ViewModel para que Room lo guarde
                         viewModel.actualizarPerfil(usuarioActualizado)
                         loginViewModel?.toggleBiometrics(isBiometricsEnabled)
                     }
@@ -415,7 +465,7 @@ fun PerfilScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
