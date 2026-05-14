@@ -13,7 +13,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import ramirez.ruben.closetvirtual.viewmodel.UsuarioViewModel
+import ramirez.ruben.closetvirtual.viewmodel.LoginViewModel
+import androidx.compose.runtime.collectAsState
 import androidx.compose.material.icons.Icons
+import ramirez.ruben.closetvirtual.data.database.dao.UsuarioDao
+import ramirez.ruben.closetvirtual.data.database.entity.UsuarioEntity
+import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
@@ -39,35 +45,55 @@ import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 @Composable
 fun PerfilScreen(
     onNavigateBack: () -> Unit = {},
-    onLogoutClick: () -> Unit = {}
+    onLogoutClick: () -> Unit = {},
+    viewModel: UsuarioViewModel,
+    loginViewModel: LoginViewModel? = null
 ) {
-    var name by remember { mutableStateOf("Rubén Ramírez") }
-    val email by remember { mutableStateOf("ruben@ejemplo.com") }
-    var dateOfBirth by remember { mutableStateOf("15/08/2000") }
+
+    val usuarioActual by viewModel.usuarioActual.collectAsState()
+
+    var name by remember(usuarioActual) { mutableStateOf(usuarioActual?.nombre ?: "") }
+    val email by remember(usuarioActual) { mutableStateOf(usuarioActual?.correo ?: "") }
+    var dateOfBirth by remember(usuarioActual) { mutableStateOf(usuarioActual?.fechaNacimiento ?: "") }
 
     var expandedGender by remember { mutableStateOf(false) }
-
-    // Recursos para las opciones de género
     val genderOptions = listOf(
         stringResource(R.string.gender_male),
         stringResource(R.string.gender_female),
         stringResource(R.string.gender_other)
     )
-    var selectedGender by remember { mutableStateOf(genderOptions[0]) }
 
-    var isBiometricsEnabled by remember { mutableStateOf(true) }
-    var isDarkThemeEnabled by remember { mutableStateOf(false) }
+    var selectedGender by remember(usuarioActual) {
+        mutableStateOf(usuarioActual?.genero ?: genderOptions[0])
+    }
+
+
+    // preferencias del usuario
+    var isBiometricsEnabled by remember(usuarioActual) {
+        mutableStateOf(usuarioActual?.isBiometricsEnabled ?: false)
+    }
+
+    // Observar el modo oscuro desde DataStore
+    val isDarkThemeDataStore by loginViewModel?.isDarkThemeEnabled?.collectAsState(initial = false) ?: remember { mutableStateOf(false) }
+
+    var isDarkThemeEnabled by remember(isDarkThemeDataStore) {
+        mutableStateOf(isDarkThemeDataStore)
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(
+                        onClick = onNavigateBack,
+                        modifier = Modifier.offset(x = (-8).dp)
+                    ) {
                         Icon(
-                            Icons.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.cd_back),
-                            tint = Color(0xFF26657A)
+                            painter = painterResource(id = R.mipmap.left),
+                            contentDescription = "Icono de atrás",
+                            tint = Color(0xFF26657A),
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 },
@@ -78,7 +104,10 @@ fun PerfilScreen(
                     ) {
                         CustomThemeSwitch(
                             checked = isDarkThemeEnabled,
-                            onCheckedChange = { isDarkThemeEnabled = it }
+                            onCheckedChange = { 
+                                isDarkThemeEnabled = it
+                                loginViewModel?.toggleDarkMode(it)
+                            }
                         )
                     }
                 },
@@ -319,7 +348,10 @@ fun PerfilScreen(
                 Spacer(modifier = Modifier.width(12.dp))
                 Checkbox(
                     checked = isBiometricsEnabled,
-                    onCheckedChange = { isBiometricsEnabled = it },
+                    onCheckedChange = { 
+                        isBiometricsEnabled = it
+                        loginViewModel?.toggleBiometrics(it)
+                    },
                     colors = CheckboxDefaults.colors(
                         checkedColor = Color(0xFF6750A4),
                         checkmarkColor = Color.White,
@@ -332,7 +364,21 @@ fun PerfilScreen(
 
             // Botón Guardar
             Button(
-                onClick = { /* Guardar */ },
+                onClick = {
+                    usuarioActual?.let { usuarioViejo ->
+                        // copia del usuario con los datos que el usuario editó
+                        val usuarioActualizado = usuarioViejo.copy(
+                            nombre = name,
+                            fechaNacimiento = dateOfBirth,
+                            genero = selectedGender,
+                            isBiometricsEnabled = isBiometricsEnabled,
+                            isDarkThemeEnabled = isDarkThemeEnabled
+                        )
+                        // Lo mandamos al ViewModel para que Room lo guarde
+                        viewModel.actualizarPerfil(usuarioActualizado)
+                        loginViewModel?.toggleBiometrics(isBiometricsEnabled)
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(50.dp),
@@ -348,9 +394,12 @@ fun PerfilScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón Logout (Link Style)
+            // Botón Logout
             TextButton(
-                onClick = onLogoutClick,
+                onClick = {
+                    loginViewModel?.logout()
+                    onLogoutClick()
+                },
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .height(50.dp),
@@ -439,14 +488,29 @@ fun CustomThemeSwitch(
     }
 }
 
+// hacer viewmodel falso para mocks pa las preview
+private fun provideDummyUsuarioViewModel(): UsuarioViewModel {
+    val mockDao = object : UsuarioDao {
+        override suspend fun insertarUsuario(usuario: UsuarioEntity) = 0L
+        override suspend fun actualizarUsuario(usuario: UsuarioEntity) = 0
+        override suspend fun login(correo: String, contrasena: String): UsuarioEntity? = null
+        override suspend fun obtenerUsuarioPorCorreo(correo: String): UsuarioEntity? = null
+        override suspend fun obtenerUsuarioPorId(id: Int): UsuarioEntity? = null
+    }
+    val repository = UsuarioRepository(mockDao)
+    return UsuarioViewModel(repository)
+}
+
 @Preview(name = "1. Perfil (Claro)", showBackground = true, showSystemUi = true)
 @Composable
 private fun PreviewPerfilClaro() {
     ClosetVirtualTheme(darkTheme = false) {
-        val isDarkThemeEnabled = remember {
-            mutableStateOf(false)
-        }
-        PerfilScreen()
+        PerfilScreen(
+            onNavigateBack = {},
+            onLogoutClick = {},
+            viewModel = provideDummyUsuarioViewModel(), // mock
+            loginViewModel = null
+        )
     }
 }
 
@@ -459,6 +523,11 @@ private fun PreviewPerfilClaro() {
 @Composable
 private fun PreviewPerfilOscuro() {
     ClosetVirtualTheme(darkTheme = true) {
-        PerfilScreen()
+        PerfilScreen(
+            onNavigateBack = {},
+            onLogoutClick = {},
+            viewModel = provideDummyUsuarioViewModel(), // mock
+            loginViewModel = null
+        )
     }
 }

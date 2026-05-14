@@ -1,11 +1,13 @@
 package ramirez.ruben.closetvirtual.screens
 
 import android.content.res.Configuration
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -28,23 +30,30 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import ramirez.ruben.closetvirtual.R
-import ramirez.ruben.closetvirtual.data.mockOutfits
+import ramirez.ruben.closetvirtual.data.mocks.mockOutfits
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
-import java.util.Locale
-import ramirez.ruben.closetvirtual.data.Outfit
+import ramirez.ruben.closetvirtual.data.mocks.Outfit
+import androidx.compose.ui.platform.LocalLocale
+import ramirez.ruben.closetvirtual.viewmodel.CalendarioViewModel
+import ramirez.ruben.closetvirtual.viewmodel.OutfitConPrendas
 
 @Composable
-fun CalendarioScreen(onNavigateBack: () -> Unit = {}) {
-    // para tener el mes y el anio del calendario y la seleccion
+fun CalendarioScreen(
+    viewModel: CalendarioViewModel,
+    onNavigateBack: () -> Unit = {}
+) {
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    val selectedDate by viewModel.selectedDate.collectAsState()
+    val outfitsDelDia by viewModel.outfitsDelDia.collectAsState()
 
     // estructura principal
     Column(
@@ -64,13 +73,13 @@ fun CalendarioScreen(onNavigateBack: () -> Unit = {}) {
         ) {
             IconButton(
                 onClick = onNavigateBack,
-                modifier = Modifier.offset(x = (-24).dp)
+                modifier = Modifier.offset(x = (-22).dp)
             ) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowBack,
+                    painter = painterResource(id = R.mipmap.left),
                     contentDescription = "Icono de atrás",
-                    tint = Color(0xFF26657A),
-                    modifier = Modifier.size(22.dp)
+                    tint = Color(0xFF000000),
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
@@ -113,7 +122,11 @@ fun CalendarioScreen(onNavigateBack: () -> Unit = {}) {
                 CalendarioGrid(
                     currentMonth = currentMonth,
                     selectedDate = selectedDate,
-                    onDateSelected = { selectedDate = it }
+                    onDateSelected = {
+                        viewModel.updateSelectedDate(it)
+                        if (it.month != currentMonth.month)
+                            currentMonth = YearMonth.of(it.year, it.month)
+                    }
                 )
             }
         }
@@ -127,14 +140,23 @@ fun CalendarioScreen(onNavigateBack: () -> Unit = {}) {
                 .padding(bottom = 32.dp)
         )
 
-        // outfits mock
-        mockOutfits.forEach { outfit ->
-            OutfitCard(outfit = outfit)
+        if (outfitsDelDia.isEmpty()) {
+            Text(
+                "No hay outfits registrados en esta fecha.",
+                color = Color.Gray,
+                modifier = Modifier.padding(16.dp)
+            )
+        } else {
+            outfitsDelDia.forEach { outfitConPrendas ->
+                OutfitRealCard(outfitConPrendas = outfitConPrendas)
+            }
         }
-
         Spacer(modifier = Modifier.height(32.dp))
     }
+
+    Spacer(modifier = Modifier.height(32.dp))
 }
+
 
 // header del calendario
 @Composable
@@ -159,7 +181,8 @@ fun CalendarioHeader(
             Icon(
                 Icons.Filled.KeyboardArrowLeft,
                 contentDescription = "Mes anterior",
-                tint = Color(0xFF26657A))
+                tint = Color(0xFF26657A)
+            )
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -167,7 +190,7 @@ fun CalendarioHeader(
                 shape = RoundedCornerShape(8.dp),
                 color = MaterialTheme.colorScheme.surface,
                 modifier = Modifier
-                    .border(1.dp, Color(0xFFB0C4DE),RoundedCornerShape(8.dp))
+                    .border(1.dp, Color(0xFFB0C4DE), RoundedCornerShape(8.dp))
                     .clickable { onMonthSelected() }
             ) {
 
@@ -177,7 +200,8 @@ fun CalendarioHeader(
                 ) {
                     val monthName = currentMonth.month.getDisplayName(
                         TextStyle.SHORT,
-                        Locale.getDefault()).replaceFirstChar { it.uppercase() }
+                        LocalLocale.current.platformLocale
+                    ).replaceFirstChar { it.uppercase() }
 
                     Text(
                         text = monthName,
@@ -223,7 +247,11 @@ fun CalendarioHeader(
         }
 
         IconButton(onClick = onNextMonth) {
-            Icon(Icons.Filled.KeyboardArrowRight, contentDescription = "Mes siguiente", tint = Color(0xFF26657A))
+            Icon(
+                Icons.Filled.KeyboardArrowRight,
+                contentDescription = "Mes siguiente",
+                tint = Color(0xFF26657A)
+            )
         }
     }
 }
@@ -288,7 +316,8 @@ fun CalendarioGrid(
     val daysInMonth = currentMonth.lengthOfMonth()
 
     // lo pongo que empiece desde el domingo como sale en el storyboard
-    val firstDayOfWeek = if (firstDayOfMonth.dayOfWeek == DayOfWeek.SUNDAY) 0 else firstDayOfMonth.dayOfWeek.value
+    val firstDayOfWeek =
+        if (firstDayOfMonth.dayOfWeek == DayOfWeek.SUNDAY) 0 else firstDayOfMonth.dayOfWeek.value
 
     val totalDaysGrid = firstDayOfWeek + daysInMonth
     val weeks = Math.ceil(totalDaysGrid / 7.0).toInt()
@@ -358,7 +387,10 @@ fun CalendarioGrid(
                         // si los dias no son del mes actual es un color mas fuerte
                         val textColor = when {
                             isSelected -> Color.White
-                            isCurrentMonth -> if (isDarkTheme) Color(0xFF81B2B4) else Color(0xFF26657A)
+                            isCurrentMonth -> if (isDarkTheme) Color(0xFF81B2B4) else Color(
+                                0xFF26657A
+                            )
+
                             else -> if (isDarkTheme) Color(0xFF26657A) else Color(0xFF81B2B4)
                         }
 
@@ -383,11 +415,20 @@ fun CalendarioGrid(
     }
 }
 
-// componente visual para las tarjetitas de los outfits de la fecha (mock)
 @Composable
-fun OutfitCard(outfit: Outfit) {
+fun OutfitRealCard(outfitConPrendas: OutfitConPrendas) {
     val isDark = isSystemInDarkTheme()
     val cardBackgroundColor = if (isDark) Color(0xFF44344E) else Color(0xFFECE6F0)
+
+    // Obtenemos la imagen de la primera prenda como portada
+    val primeraPrenda = outfitConPrendas.prendas.firstOrNull()
+
+    // Convertimos el ByteArray de la BD a ImageBitmap para Compose
+    val imageBitmap = remember(primeraPrenda?.imagen) {
+        primeraPrenda?.imagen?.let { bytes ->
+            BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.asImageBitmap()
+        }
+    }
 
     Surface(
         modifier = Modifier
@@ -407,75 +448,41 @@ fun OutfitCard(outfit: Outfit) {
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.size(80.dp)
             ) {
-                Image(
-                    painter = painterResource(id = outfit.imagenRes),
-                    contentDescription = "Imagen del outfit",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+                if (imageBitmap != null) {
+                    Image(
+                        bitmap = imageBitmap,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.mipmap.no_image),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = "Outfit ${outfit.nombre}",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Text(
-                    text = outfit.descripcion,
-                    fontSize = 14.sp,
-                    color = if (isDark) Color(0xFFD3D3D3) else Color(0xFF808080),
-                    maxLines = 2
-                )
-
+            Column(modifier = Modifier.weight(1f)) {
+                Text(outfitConPrendas.outfit.nombre, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text("${outfitConPrendas.prendas.size} prendas", fontSize = 14.sp)
                 Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.mipmap.calendario_icon),
-                        contentDescription = null,
-                        modifier = Modifier.size(12.dp),
-                        tint = if (isDark) Color(0x4DFFFFFF) else Color(0x4D808080)
-                    )
-                    Text(
-                        text = outfit.fecha,
-                        fontSize = 11.sp,
-                        color = if (isDark) Color(0x33FFFFFF) else Color(0x33000000)
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(painterResource(id = R.mipmap.calendario_icon), contentDescription = null, modifier = Modifier.size(12.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(outfitConPrendas.outfit.fecha ?: "", fontSize = 11.sp)
                 }
             }
         }
     }
 }
 
-@Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
-@Composable
-private fun PreviewModoClaro() {
-    ClosetVirtualTheme(darkTheme = false) {
-        CalendarioScreen()
-    }
-}
+// componente visual para las tarjetitas de los outfits de la fecha (mock)
+//@Composable
+//fun OutfitCard(outfit: Outfit) { ... }
 
-@Preview(
-    name = "Modo Oscuro",
-    showBackground = true,
-    showSystemUi = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Composable
-private fun PreviewModoOscuro() {
-    ClosetVirtualTheme(darkTheme = true) {
-        CalendarioScreen()
-    }
-}
-
+//@Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
+//@Composable
+//private fun PreviewModoClaro() { ... }

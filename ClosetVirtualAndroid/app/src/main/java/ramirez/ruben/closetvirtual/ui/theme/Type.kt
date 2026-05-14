@@ -1,7 +1,6 @@
 package ramirez.ruben.closetvirtual.ui.theme
 
 import androidx.compose.material3.Typography
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -12,23 +11,27 @@ import ramirez.ruben.closetvirtual.R
 val Montserrat = FontFamily(
     Font(R.font.montserrat_regular, FontWeight.Normal),
     Font(R.font.montserrat_medium, FontWeight.Medium),
-    Font(R.font.montserrat_bold, FontWeight.Bold)
+    Font(R.font.montserrat_bold, FontWeight.Bold),
+    Font(R.font.montserrat_semi_bold, FontWeight.SemiBold),
+    Font(R.font.montserrat_extrabold, FontWeight.ExtraBold)
 )
 
+private val defaultTypography = Typography()
+
 val Typography = Typography(
-    headlineLarge = TextStyle(
-        fontFamily = Montserrat,
-        fontWeight = FontWeight.Bold,
-        fontSize = 32.sp
-    ),
-    bodyLarge = TextStyle(
-        fontFamily = Montserrat,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp
-    ),
-    labelMedium = TextStyle(
-        fontFamily = Montserrat,
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp
-    )
+    displayLarge = defaultTypography.displayLarge.copy(fontFamily = Montserrat),
+    displayMedium = defaultTypography.displayMedium.copy(fontFamily = Montserrat),
+    displaySmall = defaultTypography.displaySmall.copy(fontFamily = Montserrat),
+    headlineLarge = defaultTypography.headlineLarge.copy(fontFamily = Montserrat, fontWeight = FontWeight.Bold, fontSize = 32.sp),
+    headlineMedium = defaultTypography.headlineMedium.copy(fontFamily = Montserrat),
+    headlineSmall = defaultTypography.headlineSmall.copy(fontFamily = Montserrat),
+    titleLarge = defaultTypography.titleLarge.copy(fontFamily = Montserrat),
+    titleMedium = defaultTypography.titleMedium.copy(fontFamily = Montserrat),
+    titleSmall = defaultTypography.titleSmall.copy(fontFamily = Montserrat),
+    bodyLarge = defaultTypography.bodyLarge.copy(fontFamily = Montserrat, fontSize = 16.sp),
+    bodyMedium = defaultTypography.bodyMedium.copy(fontFamily = Montserrat),
+    bodySmall = defaultTypography.bodySmall.copy(fontFamily = Montserrat),
+    labelLarge = defaultTypography.labelLarge.copy(fontFamily = Montserrat),
+    labelMedium = defaultTypography.labelMedium.copy(fontFamily = Montserrat, fontSize = 14.sp),
+    labelSmall = defaultTypography.labelSmall.copy(fontFamily = Montserrat)
 )

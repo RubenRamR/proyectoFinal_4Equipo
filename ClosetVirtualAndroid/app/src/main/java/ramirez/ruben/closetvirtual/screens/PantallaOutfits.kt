@@ -1,6 +1,8 @@
 package ramirez.ruben.closetvirtual.screens
 
 import android.content.res.Configuration
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -12,22 +14,30 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.FabPosition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import ramirez.ruben.closetvirtual.data.OutfitRepository
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import coil.compose.AsyncImage
-import ramirez.ruben.closetvirtual.data.Prenda
-import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ramirez.ruben.closetvirtual.R
-import ramirez.ruben.closetvirtual.components.Outfit
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.draw.clip
+import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
+import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
+import ramirez.ruben.closetvirtual.ui.theme.Montserrat
+import ramirez.ruben.closetvirtual.viewmodel.OutfitConPrendas
+import ramirez.ruben.closetvirtual.viewmodel.OutfitsViewModel
 
 @Preview(showBackground = true, name = "Light Mode")
 @Composable
@@ -47,18 +57,18 @@ fun OutfitsScreenDarkPreview() {
 
 @Composable
 fun OutfitsScreen(
-    onNavigateToRegistroDiario: () -> Unit = {}
+    onNavigateToRegistroDiario: () -> Unit = {},
+    onNavigateToAgregarOutfit: () -> Unit = {},
+    onNavigateToDetalleOutfit: (Int) -> Unit = {},
+    viewModel: OutfitsViewModel = viewModel()
 ) {
-    val outfits = OutfitRepository.todosLosOutfits
+    val outfitsConPrendas by viewModel.outfits.collectAsState()
 
     Scaffold(
         bottomBar = { },
+        floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 FloatingActionButton(onClick = { onNavigateToRegistroDiario() }) {
                     Icon(
@@ -68,16 +78,16 @@ fun OutfitsScreen(
                     )
                 }
 
-                AddFab()
+                AddFab(onClick = onNavigateToAgregarOutfit)
             }
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+        Column(modifier = Modifier.padding(12.dp).fillMaxSize()) {
             BarraDeBusquedaOutfits()
             FiltrosOutfits()
 
             Box(modifier = Modifier.weight(1f)) {
-                OutfitsGrid(outfits)
+                OutfitsGrid(outfitsConPrendas, onNavigateToDetalleOutfit)
             }
         }
     }
@@ -85,59 +95,70 @@ fun OutfitsScreen(
 
 @Composable
 fun BarraDeBusquedaOutfits() {
-    OutlinedTextField(value = "", onValueChange = {}, placeholder = { Text("Búsqueda de outfits") }, leadingIcon = { Icon(Icons.Default.Menu, contentDescription = null) }, trailingIcon = { Icon(Icons.Default.Search, contentDescription = null) }, modifier = Modifier.fillMaxWidth().padding(12.dp), shape = RoundedCornerShape(24.dp))
+    OutlinedTextField(value = "",
+        onValueChange = {},
+        placeholder = { Text("Búsqueda de outfits", fontFamily = Montserrat) },
+        leadingIcon = { },
+        trailingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+        modifier = Modifier.fillMaxWidth().padding(12.dp),
+        shape = RoundedCornerShape(24.dp))
 }
 
 @Composable
 fun FiltrosOutfits() {
-    val filters = listOf("Estilo", "Formalidad", "Temporada", "Color")
+    val filters = listOf("Estilo", "Formalidad", "Temporada", "Mios")
     LazyRow(
         contentPadding = PaddingValues(horizontal = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        item { Icon(Icons.Default.Tune, contentDescription = null) }
         items(filters) { text ->
-            AssistChip(onClick = {}, label = { Text(text) })
+            AssistChip(onClick = {}, label = { Text(text, fontFamily = Montserrat) })
         }
     }
 }
 
 @Composable
-fun OutfitsGrid(outfits: List<Outfit>) {
-    // grid para ejecutar la card de cada outfit
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(outfits) { outfit ->
-            OutfitCard(outfit)
+fun OutfitsGrid(outfits: List<OutfitConPrendas>, onNavigateToDetalle: (Int) -> Unit = {}) {
+    if (outfits.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("No tienes outfits guardados", fontFamily = Montserrat)
+        }
+    } else {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(outfits) { outfitConPrendas ->
+                OutfitCard(outfitConPrendas, onNavigateToDetalle)
+            }
         }
     }
 }
 
 @Composable
-fun OutfitCard(outfit: Outfit) {
-    // Card usa por defecto MaterialTheme.colorScheme.surface
+fun OutfitCard(outfitConPrendas: OutfitConPrendas, onNavigateToDetalle: (Int) -> Unit = {}) {
+    val outfit = outfitConPrendas.outfit
+    val prendas = outfitConPrendas.prendas
+
     Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
         Column {
             // Header
             Column(modifier = Modifier.padding(8.dp)) {
-                Text(outfit.nombre, fontWeight = FontWeight.Bold)
+                Text(outfit.nombre, fontWeight = FontWeight.Bold, fontFamily = Montserrat, maxLines = 1)
                 Text(outfit.estilo.ifEmpty { "Sin estilo" }, style = MaterialTheme.typography.bodySmall)
             }
 
-            // Imagen del outfit
-            OutfitImage(outfit.prendas)
+            // Imagen del outfit (compuesta por sus prendas)
+            OutfitImage(prendas)
 
-            // Info temporada y formalidad
+            // Info temporada
             Column(modifier = Modifier.padding(8.dp)) {
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     Column {
-                        Text(outfit.temporada, fontSize = 12.sp)
-                        Text(outfit.formalidad, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                        Text(outfit.temporada, fontSize = 12.sp, fontFamily = Montserrat)
                     }
                     // Icono de corazon
                     Icon(Icons.Default.FavoriteBorder, contentDescription = null)
@@ -146,17 +167,20 @@ fun OutfitCard(outfit: Outfit) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // botón de detalle
-                Button(onClick = {}, modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(vertical = 4.dp)) {
-                    Text(text = "Detalle", fontSize = 13.sp)
+                Button(
+                    onClick = { onNavigateToDetalle(outfit.id) },
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(vertical = 4.dp)
+                ) {
+                    Text(text = "Detalle", fontSize = 13.sp, fontFamily = Montserrat, color = Color.White)
                 }
             }
         }
     }
 }
 
-//este metodo es para renderizar la imagen del outfit dependiendo de la cantidad de prnedas que tenga
 @Composable
-fun OutfitImage(prendas: List<Prenda>) {
+fun OutfitImage(prendas: List<PrendaEntity>) {
     Box(
         modifier = Modifier.fillMaxWidth().height(140.dp).background(MaterialTheme.colorScheme.surfaceVariant), contentAlignment = Alignment.Center) {
         when (prendas.size) {
@@ -201,7 +225,7 @@ fun OutfitImage(prendas: List<Prenda>) {
                     }
                 }
             }
-            else -> { // 5 prendas o más
+            else -> { // 5 prendas
                 Column(Modifier.fillMaxSize()) {
                     Row(Modifier.weight(1f)) {
                         PrendaItemImage(prendas[0], Modifier.weight(1f).fillMaxHeight())
@@ -222,15 +246,23 @@ fun OutfitImage(prendas: List<Prenda>) {
     }
 }
 
-
 @Composable
-fun PrendaItemImage(prenda: Prenda, modifier: Modifier) {
+fun PrendaItemImage(prenda: PrendaEntity, modifier: Modifier) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        AsyncImage(
-            model = prenda.imagenUri,
-            contentDescription = prenda.nombre,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+        if (prenda.imagen != null) {
+            val bitmap = remember(prenda.imagen) {
+                BitmapFactory.decodeByteArray(prenda.imagen, 0, prenda.imagen.size)
+            }
+            if (bitmap != null) {
+                Image(
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = prenda.nombre,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        } else {
+            Icon(Icons.Default.Checkroom, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
 }

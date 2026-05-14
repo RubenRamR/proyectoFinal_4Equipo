@@ -1,4 +1,4 @@
-package ramirez.ruben.closetvirtual.data
+package ramirez.ruben.closetvirtual.data.mocks
 
 
 // Clase mock para que funcione el resto del registro, por ahora (pues no tenemos backend aun)

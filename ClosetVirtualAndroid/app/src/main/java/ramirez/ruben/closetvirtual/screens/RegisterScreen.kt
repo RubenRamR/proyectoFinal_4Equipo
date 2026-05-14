@@ -23,13 +23,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ramirez.ruben.closetvirtual.R
 import androidx.compose.foundation.verticalScroll
+import ramirez.ruben.closetvirtual.data.database.dao.PrendaDao
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
+import ramirez.ruben.closetvirtual.viewmodel.UsuarioViewModel
+import ramirez.ruben.closetvirtual.viewmodel.LoginViewModel
+import ramirez.ruben.closetvirtual.data.database.dao.UsuarioDao
+import ramirez.ruben.closetvirtual.data.database.entity.UsuarioEntity
+import ramirez.ruben.closetvirtual.data.database.repository.UsuarioRepository
+import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     onNavigateToLogin: () -> Unit = {},
-    onRegisterSuccess: () -> Unit = {}
+    onRegisterSuccess: () -> Unit = {},
+    viewModel: UsuarioViewModel,
+    loginViewModel: LoginViewModel? = null
 ){
 
     var username by remember { mutableStateOf("") }
@@ -47,6 +56,8 @@ fun RegisterScreen(
     var customGender by remember { mutableStateOf("") }
     val genderOptions = listOf("Mujer", "Hombre", "Personalizado")
 
+    val uiStateMessage by viewModel.uiStateMessage.collectAsState()
+
     // Pantalla principal
     Column(
         modifier = Modifier
@@ -57,7 +68,7 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Spacer(modifier = Modifier.height(35.dp))
+        Spacer(modifier = Modifier.height(25.dp))
 
         Text(
             text = "Registrarse",
@@ -67,7 +78,7 @@ fun RegisterScreen(
             modifier = Modifier.padding(top = 16.dp)
         )
 
-        Spacer(modifier = Modifier.height(64.dp))
+        Spacer(modifier = Modifier.height(54.dp))
 
         // Campos de texto del registro
         TextField(
@@ -285,7 +296,21 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { onRegisterSuccess() },
+            onClick = {
+                // hay que validar la contrasena antes de mandarla
+                if (password == confirmPassword) {
+                    viewModel.registrar(
+                        nombre = username,
+                        correo = email,
+                        contrasena = password,
+                        fechaNacimiento = dateOfBirth,
+                        genero = selectedGender,
+                        onSuccess = { userId ->
+                            loginViewModel?.login(email, password, onRegisterSuccess, {})
+                        }
+                    )
+                }
+            },
             modifier = Modifier.width(270.dp),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors
@@ -302,7 +327,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = "--------------------------- or ---------------------------",
+            text = "--------------------- or ---------------------",
             color = Color.Gray,
             fontSize = 16.sp
         )
@@ -328,11 +353,29 @@ fun RegisterScreen(
     }
 }
 
+// mock de un usuario porque quier la preview si o si
+private fun provideDummyUsuarioViewModel(): UsuarioViewModel {
+    val mockDao = object : UsuarioDao {
+        override suspend fun insertarUsuario(usuario: UsuarioEntity) = 0L
+        override suspend fun actualizarUsuario(usuario: UsuarioEntity) = 0
+        override suspend fun login(correo: String, contrasena: String): UsuarioEntity? = null
+        override suspend fun obtenerUsuarioPorCorreo(correo: String): UsuarioEntity? = null
+        override suspend fun obtenerUsuarioPorId(id: Int): UsuarioEntity? = null
+    }
+    val repository = UsuarioRepository(mockDao)
+    return UsuarioViewModel(repository)
+}
+
 @Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
 @Composable
 private fun PreviewModoClaro() {
     ClosetVirtualTheme(darkTheme = false) {
-        RegisterScreen()
+        RegisterScreen(
+            onNavigateToLogin = {},
+            onRegisterSuccess = {},
+            viewModel = provideDummyUsuarioViewModel(), //mock djfrbgkj
+            loginViewModel = null
+        )
     }
 }
 
@@ -345,6 +388,10 @@ private fun PreviewModoClaro() {
 @Composable
 private fun PreviewModoOscuro() {
     ClosetVirtualTheme(darkTheme = true) {
-        RegisterScreen()
+        RegisterScreen(
+            onNavigateToLogin = {},
+            onRegisterSuccess = {},
+            viewModel = provideDummyUsuarioViewModel() // mock
+        )
     }
 }

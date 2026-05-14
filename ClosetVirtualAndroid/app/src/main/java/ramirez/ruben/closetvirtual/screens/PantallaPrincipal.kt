@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -35,6 +36,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,12 +47,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
-import ramirez.ruben.closetvirtual.data.Prenda
+import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
+import ramirez.ruben.closetvirtual.data.datastore.DataStoreManager
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
+import ramirez.ruben.closetvirtual.ui.theme.Montserrat
 import androidx.compose.material3.FabPosition
 import androidx.compose.ui.res.painterResource
 import ramirez.ruben.closetvirtual.R
-import ramirez.ruben.closetvirtual.data.PrendaRepository
+import ramirez.ruben.closetvirtual.viewmodel.ClosetViewModel
 
 @Preview(showBackground = true)
 @Composable
@@ -69,9 +74,13 @@ fun ClosetScreenDarkPreview() {
 
 @Composable
 fun ClosetScreen(
-    onNavigateToRegistroDiario: () -> Unit = {}
+    viewModel: ClosetViewModel? = null,
+    onNavigateToRegistroDiario: () -> Unit = {},
+    onNavigateToGestionPrenda: () -> Unit = {},
+    onNavigateToDetalle: (Int) -> Unit = {},
+    dataStoreManager: DataStoreManager? = null
 ) {
-    val prendas = PrendaRepository.todasLasPrendas
+    val prendas by viewModel?.prendas?.collectAsState() ?: androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(emptyList<PrendaEntity>()) }
 
     Scaffold(
         bottomBar = { },
@@ -92,15 +101,15 @@ fun ClosetScreen(
                     )
                 }
 
-                AddFab()
-            }
+                AddFab(onClick = onNavigateToGestionPrenda)            }
+
         },
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+        Column(modifier = Modifier.padding(12.dp).fillMaxSize()) {
             BarraDeBusqueda()
             Filtros()
             Box(modifier = Modifier.weight(1f)) {
-                PrendasGrid(prendas)
+                PrendasGrid(prendas, onNavigateToDetalle)
             }
         }
     }
@@ -109,9 +118,7 @@ fun ClosetScreen(
 //@Preview(showBackground = true)
 @Composable
 fun BarraDeBusqueda() {
-    OutlinedTextField(value = "", onValueChange = {}, placeholder = { Text("Busqueda de prendas") }, leadingIcon = {
-            Icon(Icons.Default.Menu, contentDescription = null)
-        },
+    OutlinedTextField(value = "", onValueChange = {}, placeholder = { Text("Busqueda de prendas", fontFamily = Montserrat) }, leadingIcon = {},
         trailingIcon = {
             Icon(Icons.Default.Search, contentDescription = null)
         },
@@ -121,19 +128,16 @@ fun BarraDeBusqueda() {
 //@Preview(showBackground = true)
 @Composable
 fun Filtros() {
-    val filters = listOf("Marca", "Categoria", "Temporada", "Usos", "Label")
+    val filters = listOf("Marca", "Categoria", "Temporada", "Usos")
     LazyRow(contentPadding = PaddingValues(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        item {
-            Icon(Icons.Default.Tune, contentDescription = null)
-        }
         items(filters) { text ->
-            AssistChip(onClick = {}, label = { Text(text) })
+            AssistChip(onClick = {}, label = { Text(text, fontFamily = Montserrat) })
         }
     }
 }
 
 @Composable
-fun PrendasGrid(prendas: List<Prenda>) {
+fun PrendasGrid(prendas: List<PrendaEntity>, onNavigateToDetalle: (Int) -> Unit) {
     // grid para ejecutar le card d cada prenda
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -142,23 +146,23 @@ fun PrendasGrid(prendas: List<Prenda>) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(prendas) { item ->
-            PrendasCard(item)
+            PrendasCard(item, onNavigateToDetalle)
         }
     }
 }
 
 @Composable
-fun PrendasCard(prenda: Prenda) {
+fun PrendasCard(prenda: PrendaEntity, onNavigateToDetalle: (Int) -> Unit) {
     // Card usa por defecto MaterialTheme.colorScheme.surface
     Card(
-        shape = RoundedCornerShape(16.dp), 
+        shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column {
             // Header
             Column(modifier = Modifier.padding(8.dp)) {
-                Text(prenda.nombre, fontWeight = FontWeight.Bold)
-                Text(prenda.marca ?: "nada", style = MaterialTheme.typography.bodySmall)
+                Text(prenda.nombre, fontWeight = FontWeight.Bold, fontFamily = Montserrat, maxLines = 1)
+                Text(prenda.marca ?: "", style = MaterialTheme.typography.bodySmall, maxLines = 1)
             }
 
             // Imagen de la prenda
@@ -170,11 +174,10 @@ fun PrendasCard(prenda: Prenda) {
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
-                    model = prenda.imagenUri,
+                    model = prenda.imagen,
                     contentDescription = prenda.nombre,
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop,
-                    error = null // Aquí podrías poner un icono de error si gustas
+                    contentScale = ContentScale.Crop
                 )
             }
 
@@ -182,11 +185,11 @@ fun PrendasCard(prenda: Prenda) {
             Column(modifier = Modifier.padding(8.dp)) {
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     Column {
-                        Text(prenda.temporada)
-                        Text(prenda.categoria, style = MaterialTheme.typography.bodySmall)
+                        Text(prenda.temporada, fontFamily = Montserrat, fontSize = 12.sp)
+                        Text(prenda.categoria, style = MaterialTheme.typography.bodySmall, fontSize = 10.sp)
                     }
                     //Icono de corazon
-                    Icon(Icons.Default.FavoriteBorder, contentDescription = null)
+                    Icon(Icons.Default.FavoriteBorder, contentDescription = null, modifier = Modifier.size(20.dp))
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -194,10 +197,10 @@ fun PrendasCard(prenda: Prenda) {
                 // botones
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     OutlinedButton(onClick = {}, modifier = Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 4.dp)) {
-                        Text("Hoy la usé", fontSize = 11.sp, maxLines = 1)
+                        Text("Hoy la usé", fontSize = 10.sp, maxLines = 1, fontFamily = Montserrat)
                     }
-                    Button(onClick = {}, modifier = Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 4.dp)) {
-                        Text(text = "Detalle", fontSize = 11.sp, maxLines = 1)
+                    Button(onClick = { onNavigateToDetalle(prenda.id) }, modifier = Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 4.dp)) {
+                        Text(text = "Detalle", fontSize = 10.sp, maxLines = 1, fontFamily = Montserrat, color = Color.White)
                     }
                 }
             }
@@ -208,10 +211,8 @@ fun PrendasCard(prenda: Prenda) {
 //@Preview(showBackground = true)
 
 @Composable
-fun AddFab() { //botoncito de + para agregar prendas
-    FloatingActionButton(onClick = {}) {
+fun AddFab(onClick: () -> Unit) { // Ahora recibe el evento click
+    FloatingActionButton(onClick = onClick) {
         Icon(Icons.Default.Add, contentDescription = null)
     }
 }
-
-

@@ -26,21 +26,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import kotlinx.coroutines.flow.flowOf
 import ramirez.ruben.closetvirtual.R
+import ramirez.ruben.closetvirtual.data.database.repository.PrendaRepository
+import ramirez.ruben.closetvirtual.data.database.dao.PrendaDao
+import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
 import ramirez.ruben.closetvirtual.ui.theme.ClosetVirtualTheme
+import ramirez.ruben.closetvirtual.data.datastore.DataStoreManager
 import ramirez.ruben.closetvirtual.utils.OpcionColor
 import ramirez.ruben.closetvirtual.utils.PrendaConstants
+import ramirez.ruben.closetvirtual.viewmodel.GestionPrendaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GestionPrendaScreen(
+    viewModel: GestionPrendaViewModel,
     isEditMode: Boolean = false,
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    dataStoreManager: DataStoreManager? = null
 ) {
     var nombre by remember { mutableStateOf("") }
     var marca by remember { mutableStateOf("") }
@@ -55,18 +65,41 @@ fun GestionPrendaScreen(
     var temporada by remember { mutableStateOf("") }
     var talla by remember { mutableStateOf("") }
     var formalidad by remember { mutableStateOf("") }
+
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var imagenActualBytes by remember { mutableStateOf<ByteArray?>(null) }
+
+    val prendaParaEditar by viewModel.prendaCargada.collectAsState()
+
+    LaunchedEffect(prendaParaEditar) {
+        prendaParaEditar?.let { prenda ->
+            nombre = prenda.nombre
+            marca = prenda.marca ?: ""
+            esEstampada = prenda.estampada
+            categoria = prenda.categoria
+            colorPrenda = prenda.color
+            temporada = prenda.temporada
+            talla = prenda.talla ?: ""
+            formalidad = prenda.formalidad
+            tagsList = prenda.tags
+            imagenActualBytes = prenda.imagen
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(
+                        onClick = onNavigateBack,
+                        modifier = Modifier.offset(x = (-10).dp)
+                    ) {
                         Icon(
-                            Icons.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.cd_back),
-                            tint = Color(0xFF26657A)
+                            painter = painterResource(id = R.mipmap.left),
+                            contentDescription = "Icono de atrás",
+                            tint = Color(0xFF26657A),
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 },
@@ -85,7 +118,7 @@ fun GestionPrendaScreen(
             Text(
                 text = if (isEditMode) stringResource(R.string.title_edit_prenda)
                 else stringResource(R.string.title_register_prenda),
-                style = MaterialTheme.typography.headlineLarge, // Montserrat 32sp Bold desde Type.kt
+                style = MaterialTheme.typography.headlineLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
@@ -96,7 +129,9 @@ fun GestionPrendaScreen(
             SeccionFotoYTextos(
                 nombre = nombre, onNombreChange = { nombre = it },
                 marca = marca, onMarcaChange = { marca = it },
-                imageUri = imageUri, onImageSelected = { imageUri = it },
+                imageUri = imageUri,
+                imagenActual = imagenActualBytes,
+                onImageSelected = { imageUri = it },
                 isEditMode = isEditMode
             )
 
@@ -133,7 +168,25 @@ fun GestionPrendaScreen(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Button(
-                        onClick = { /* Guardar */ },
+                        onClick = {
+                            if (nombre.isNotBlank() && categoria.isNotBlank() && colorPrenda.isNotBlank()) {
+                                viewModel.guardarOActualizarPrenda(
+                                    idExistente = prendaParaEditar?.id,
+                                    nombre = nombre.trim(),
+                                    marca = marca.trim(),
+                                    uriImagenTemporal = imageUri,
+                                    imagenActual = imagenActualBytes,
+                                    categoria = categoria,
+                                    color = colorPrenda,
+                                    esEstampada = esEstampada,
+                                    talla = talla,
+                                    temporada = temporada,
+                                    formalidad = formalidad,
+                                    tags = tagsList
+                                )
+                                onNavigateBack()
+                            }
+                        },
                         modifier = Modifier.weight(1f).height(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp)
@@ -145,7 +198,10 @@ fun GestionPrendaScreen(
                         )
                     }
                     Button(
-                        onClick = { /* Eliminar */ },
+                        onClick = {
+                            viewModel.eliminarPrendaCargada()
+                            onNavigateBack()
+                        },
                         modifier = Modifier.weight(1f).height(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                         shape = RoundedCornerShape(8.dp)
@@ -159,7 +215,25 @@ fun GestionPrendaScreen(
                 }
             } else {
                 Button(
-                    onClick = { /* Registrar */ },
+                    onClick = {
+                        if (nombre.isNotBlank() && categoria.isNotBlank() && colorPrenda.isNotBlank()) {
+                            viewModel.guardarOActualizarPrenda(
+                                idExistente = null,
+                                nombre = nombre.trim(),
+                                marca = marca.trim(),
+                                uriImagenTemporal = imageUri,
+                                imagenActual = null,
+                                categoria = categoria,
+                                color = colorPrenda,
+                                esEstampada = esEstampada,
+                                talla = talla,
+                                temporada = temporada,
+                                formalidad = formalidad,
+                                tags = tagsList
+                            )
+                            onNavigateBack()
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(0.6f).height(50.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(8.dp)
@@ -180,7 +254,9 @@ fun GestionPrendaScreen(
 private fun SeccionFotoYTextos(
     nombre: String, onNombreChange: (String) -> Unit,
     marca: String, onMarcaChange: (String) -> Unit,
-    imageUri: Uri?, onImageSelected: (Uri?) -> Unit,
+    imageUri: Uri?,
+    imagenActual: ByteArray?,
+    onImageSelected: (Uri?) -> Unit,
     isEditMode: Boolean
 ) {
     val photoPickerLauncher = rememberLauncherForActivityResult(
@@ -198,9 +274,10 @@ private fun SeccionFotoYTextos(
                 },
             contentAlignment = Alignment.Center
         ) {
-            if (imageUri != null) {
+            val modelToDisplay = imageUri ?: imagenActual
+            if (modelToDisplay != null) {
                 AsyncImage(
-                    model = imageUri,
+                    model = modelToDisplay,
                     contentDescription = stringResource(R.string.cd_prenda_photo),
                     modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
@@ -526,12 +603,37 @@ fun InteractiveDropdown(
     }
 }
 
-// PREVIEWS
+private fun provideDummyViewModel(context: android.content.Context): GestionPrendaViewModel {
+
+    val safeContext = object : android.content.ContextWrapper(context) {
+        override fun getApplicationContext(): android.content.Context = this
+        override fun getFilesDir(): java.io.File = java.io.File(System.getProperty("java.io.tmpdir") ?: "/tmp")
+        override fun getDataDir(): java.io.File = java.io.File(System.getProperty("java.io.tmpdir") ?: "/tmp")
+    }
+
+    val mockDao = object : PrendaDao {
+        override suspend fun insertarPrenda(prenda: PrendaEntity) = 0L
+        override suspend fun actualizarPrenda(prenda: PrendaEntity) = 0
+        override suspend fun eliminarPrenda(prenda: PrendaEntity) = 0
+        override fun obtenerTodasLasPrendas() = flowOf(emptyList<PrendaEntity>())
+        override fun obtenerPrendasPorUsuario(idUsuario: Int) = flowOf(emptyList<PrendaEntity>())
+        override suspend fun obtenerPrendaPorId(id: Int) = null
+    }
+
+    val repository = PrendaRepository(mockDao)
+    val dataStoreManager = DataStoreManager(safeContext)
+
+    return GestionPrendaViewModel(repository, dataStoreManager, safeContext)
+}
+
 @Preview(name = "1. Registrar (Claro)", showBackground = true, showSystemUi = true)
 @Composable
 private fun PreviewRegistrarClaro() {
     ClosetVirtualTheme(darkTheme = false) {
-        GestionPrendaScreen(isEditMode = false)
+        GestionPrendaScreen(
+            viewModel = provideDummyViewModel(LocalContext.current),
+            isEditMode = false
+        )
     }
 }
 
@@ -539,7 +641,10 @@ private fun PreviewRegistrarClaro() {
 @Composable
 private fun PreviewRegistrarOscuro() {
     ClosetVirtualTheme(darkTheme = true) {
-        GestionPrendaScreen(isEditMode = false)
+        GestionPrendaScreen(
+            viewModel = provideDummyViewModel(LocalContext.current),
+            isEditMode = false
+        )
     }
 }
 
@@ -547,7 +652,10 @@ private fun PreviewRegistrarOscuro() {
 @Composable
 private fun PreviewEditarClaro() {
     ClosetVirtualTheme(darkTheme = false) {
-        GestionPrendaScreen(isEditMode = true)
+        GestionPrendaScreen(
+            viewModel = provideDummyViewModel(LocalContext.current),
+            isEditMode = true
+        )
     }
 }
 
@@ -555,6 +663,9 @@ private fun PreviewEditarClaro() {
 @Composable
 private fun PreviewEditarOscuro() {
     ClosetVirtualTheme(darkTheme = true) {
-        GestionPrendaScreen(isEditMode = true)
+        GestionPrendaScreen(
+            viewModel = provideDummyViewModel(LocalContext.current),
+            isEditMode = true
+        )
     }
 }
