@@ -77,8 +77,7 @@ class AgregarOutfitViewModel(
                     nombre = nombre,
                     estilo = estilo,
                     temporada = temporada,
-                    tags = tags,
-                    fecha = LocalDate.now().toString()
+                    tags = tags
                 )
                 outfitRepository.guardarOutfitConPrendas(outfit, _prendasSeleccionadas.value.toList())
                 onSuccess()

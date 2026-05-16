@@ -13,15 +13,17 @@ import ramirez.ruben.closetvirtual.data.database.entity.OutfitEntity
 import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
 import ramirez.ruben.closetvirtual.data.database.entity.PrendaOutfitEntity
 import ramirez.ruben.closetvirtual.data.database.entity.UsuarioEntity
+import ramirez.ruben.closetvirtual.data.database.entity.HistorialUsoOutfitEntity
 
 @Database(
     entities = [
         UsuarioEntity::class,
         PrendaEntity::class,
         OutfitEntity::class,
-        PrendaOutfitEntity::class
+        PrendaOutfitEntity::class,
+        HistorialUsoOutfitEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(StringListConverter::class)

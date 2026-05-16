@@ -2,6 +2,7 @@ package ramirez.ruben.closetvirtual.data.database.dao
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import ramirez.ruben.closetvirtual.data.database.entity.HistorialUsoOutfitEntity
 import ramirez.ruben.closetvirtual.data.database.entity.OutfitEntity
 import ramirez.ruben.closetvirtual.data.database.entity.PrendaOutfitEntity
 import ramirez.ruben.closetvirtual.data.database.entity.PrendaEntity
@@ -18,8 +19,15 @@ interface OutfitDao {
     @Query("SELECT * FROM outfit WHERE idUsuario = :idUsuario")
     fun obtenerOutfitsPorUsuario(idUsuario: Int): Flow<List<OutfitEntity>>
 
-    @Query("SELECT * FROM outfit WHERE idUsuario = :idUsuario AND fecha = :fecha")
-    fun obtenerOutfitsPorFecha(idUsuario: Int, fecha: String): Flow<List<OutfitEntity>>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertarHistorialUso(historial: HistorialUsoOutfitEntity): Long
+
+    @Query("""
+        SELECT o.* FROM outfit o
+        INNER JOIN historial_uso_outfit h ON o.id = h.idOutfit
+        WHERE o.idUsuario = :idUsuario AND h.fechaUso = :fecha
+    """)
+    fun obtenerOutfitsUsadosEnFecha(idUsuario: Int, fecha: String): Flow<List<OutfitEntity>>
 
     @Query("""
         SELECT p.* FROM prenda p

@@ -43,6 +43,10 @@ fun RegistroDiarioScreen(
     val prendasDisponibles by viewModel.prendasDisponibles.collectAsState()
     val prendasSeleccionadas by viewModel.prendasSeleccionadas.collectAsState()
 
+    // Obtenemos el estado de la racha
+    val streakCount by viewModel.streakCount.collectAsState()
+    val hasLoggedToday by viewModel.hasLoggedToday.collectAsState()
+
     // Estructura principal de registro
     Column(
         modifier = Modifier
@@ -80,41 +84,36 @@ fun RegistroDiarioScreen(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Rachita, la del inicio esta "encendida" como ejemplo (mockeado)
+        // Racha en fila
+        // Si el streak es 1, enciende 1. Si es 5, enciende 5. Si es 6, vuelve a encender 1 visualmente
+        val maxVisualIcons = 5
+        val filledIcons = if (streakCount == 0) 0 else ((streakCount - 1) % maxVisualIcons) + 1
+
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(bottom = 8.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.mipmap.streak_icon),
-                contentDescription = "Racha activa",
-                modifier = Modifier.size(40.dp)
-            )
-            Image(
-                painter = painterResource(id = R.mipmap.coldstreak_icon),
-                contentDescription = "Racha inactiva",
-                modifier = Modifier.size(40.dp),
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground)
-            )
-            Image(
-                painter = painterResource(id = R.mipmap.coldstreak_icon),
-                contentDescription = "Racha inactiva",
-                modifier = Modifier.size(40.dp),
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground)
-            )
-            Image(
-                painter = painterResource(id = R.mipmap.coldstreak_icon),
-                contentDescription = "Racha inactiva",
-                modifier = Modifier.size(40.dp),
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground)
-            )
-            Image(
-                painter = painterResource(id = R.mipmap.coldstreak_icon),
-                contentDescription = "Racha inactiva",
-                modifier = Modifier.size(40.dp),
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground)
-            )
+            for (i in 0 until maxVisualIcons) {
+                val isFilled = i < filledIcons
+                Image(
+                    painter = painterResource(id = if (isFilled) R.mipmap.streak_icon else R.mipmap.coldstreak_icon),
+                    contentDescription = if (isFilled) "Racha activa" else "Racha inactiva",
+                    modifier = Modifier.size(40.dp),
+
+                    // Solo aplica el filtro si está inactiva para que el coldstreak combine con el tema
+                    colorFilter = if (!isFilled) ColorFilter.tint(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)) else null
+                )
+            }
         }
+
+        // Texto de cuántos días llevas
+        Text(
+            text = "🔥 $streakCount días 🔥",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = if (streakCount > 0) Color(0xFFE07A5F) else MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -177,18 +176,22 @@ fun RegistroDiarioScreen(
 
         // Boton para guardar el outfit/prendas del dia (mock)
         Button(
-            onClick = {},
+            onClick = {
+                viewModel.guardarRegistroDiario(onSuccess = { onNavigateBack() })
+            },
+            enabled = !hasLoggedToday && prendasSeleccionadas.isNotEmpty(),
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .height(50.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF264653)
+                containerColor = Color(0xFF264653),
+                disabledContainerColor = Color.Gray // Se pone gris si ya registró
             ),
             shape = RoundedCornerShape(24.dp)
         ) {
             Text(
-                "GUARDAR REGISTRO",
-                fontSize = 16.sp,
+                text = if (hasLoggedToday) "REGISTRO COMPLETADO HOY" else "GUARDAR REGISTRO",
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
@@ -263,24 +266,3 @@ fun PrendaItem(
         }
     }
 }
-
-//@Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
-//@Composable
-//private fun PreviewModoClaro() {
-//    ClosetVirtualTheme(darkTheme = false) {
-//        RegistroDiarioScreen()
-//    }
-//}
-//
-//@Preview(
-//    name = "Modo Oscuro",
-//    showBackground = true,
-//    showSystemUi = true,
-//    uiMode = Configuration.UI_MODE_NIGHT_YES
-//)
-//@Composable
-//private fun PreviewModoOscuro() {
-//    ClosetVirtualTheme(darkTheme = true) {
-//        RegistroDiarioScreen()
-//    }
-//}

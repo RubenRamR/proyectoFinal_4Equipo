@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,6 +19,10 @@ class DataStoreManager(private val context: Context) {
         val IS_LOGGED_IN_KEY = booleanPreferencesKey("is_logged_in")
         val BIOMETRICS_ENABLED_KEY = booleanPreferencesKey("biometrics_enabled")
         val DARK_MODE_KEY = booleanPreferencesKey("dark_mode")
+
+        // Cosos para el streak del registroDiario
+        val STREAK_COUNT_KEY = intPreferencesKey("streak_count")
+        val LAST_LOGGED_DATE_KEY = stringPreferencesKey("last_logged_date")
     }
 
     val getUserId: Flow<Int?> = context.dataStore.data
@@ -59,6 +64,11 @@ class DataStoreManager(private val context: Context) {
         }
     }
 
+    // Flows para el RegistroDiario streaks
+    val getStreakCount: Flow<Int> = context.dataStore.data.map { it[STREAK_COUNT_KEY] ?: 0 }
+
+    val getLastLoggedDate: Flow<String?> = context.dataStore.data.map { it[LAST_LOGGED_DATE_KEY] }
+
     suspend fun loginWithBiometrics() {
         context.dataStore.edit { preferences ->
             preferences[IS_LOGGED_IN_KEY] = true
@@ -81,4 +91,19 @@ class DataStoreManager(private val context: Context) {
             }
         }
     }
+
+    // Funciones del Streak
+    suspend fun updateStreak(count: Int, date: String) {
+        context.dataStore.edit {
+            it[STREAK_COUNT_KEY] = count
+            it[LAST_LOGGED_DATE_KEY] = date
+        }
+    }
+
+    suspend fun resetStreak() {
+        context.dataStore.edit {
+            it[STREAK_COUNT_KEY] = 0
+        }
+    }
+
 }

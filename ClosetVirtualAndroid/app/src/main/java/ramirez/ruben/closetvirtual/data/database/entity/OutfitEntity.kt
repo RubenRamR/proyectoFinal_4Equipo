@@ -22,6 +22,5 @@ data class OutfitEntity(
     val nombre: String,
     val estilo: String,
     val temporada: String,
-    val tags: List<String>,
-    val fecha: String
+    val tags: List<String>
 )

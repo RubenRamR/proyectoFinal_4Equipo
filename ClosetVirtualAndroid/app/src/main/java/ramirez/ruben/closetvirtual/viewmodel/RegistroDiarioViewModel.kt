@@ -27,6 +27,31 @@ class RegistroDiarioViewModel(
     private val _prendasSeleccionadas = MutableStateFlow<Set<Int>>(emptySet())
     val prendasSeleccionadas: StateFlow<Set<Int>> = _prendasSeleccionadas.asStateFlow()
 
+    val streakCount: StateFlow<Int> = dataStoreManager.getStreakCount
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+
+    val hasLoggedToday: StateFlow<Boolean> = dataStoreManager.getLastLoggedDate
+        .map { it == LocalDate.now().toString() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    init {
+        verificarRachaPerdida()
+    }
+
+    private fun verificarRachaPerdida() {
+        viewModelScope.launch {
+            val lastDateStr = dataStoreManager.getLastLoggedDate.first()
+            if (lastDateStr != null) {
+                val lastDate = LocalDate.parse(lastDateStr)
+                val today = LocalDate.now()
+                // Si la última fecha es anterior a ayer, se perdió la racha
+                if (lastDate.isBefore(today.minusDays(1))) {
+                    dataStoreManager.resetStreak()
+                }
+            }
+        }
+    }
+
     fun togglePrenda(id: Int) {
         val actuales = _prendasSeleccionadas.value
         _prendasSeleccionadas.value = if (actuales.contains(id)) actuales - id else actuales + id
@@ -51,11 +76,21 @@ class RegistroDiarioViewModel(
                 nombre = "Registro Diario",
                 estilo = "Diario",
                 temporada = "Actual",
-                tags = listOf("Diario"),
-                fecha = fechaHoy
+                tags = listOf("Diario")
             )
 
             outfitRepository.guardarOutfitConPrendas(registro, seleccionadas)
+
+            val currentStreak = dataStoreManager.getStreakCount.first()
+            val lastDateStr = dataStoreManager.getLastLoggedDate.first()
+
+            val newStreak = when (lastDateStr) {
+                LocalDate.now().minusDays(1).toString() -> currentStreak + 1 // Se registró ayer
+                LocalDate.now().toString() -> currentStreak // Ya se registro
+                else -> 1 // Racha reiniciada, nooo
+            }
+
+            dataStoreManager.updateStreak(newStreak, fechaHoy)
             onSuccess()
         }
     }

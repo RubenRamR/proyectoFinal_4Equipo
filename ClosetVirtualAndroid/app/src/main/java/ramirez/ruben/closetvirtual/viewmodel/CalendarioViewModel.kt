@@ -22,21 +22,36 @@ class CalendarioViewModel(
         dataStoreManager.getUserId,
         _selectedDate
     ) { userId, date -> Pair(userId, date.toString()) }
+
         .flatMapLatest { (userId, fechaStr) ->
             if (userId != null) {
-                outfitRepository.obtenerOutfitsPorFecha(userId, fechaStr).flatMapLatest { list ->
-                    if (list.isEmpty()) flowOf(emptyList())
-                    else {
-                        val flows = list.map { outfit ->
-                            outfitRepository.obtenerPrendasDeOutfit(outfit.id).map { prendas ->
-                                OutfitConPrendas(outfit, prendas)
+
+                _selectedDate.flatMapLatest { date ->
+                    val fechaString = date.toString()
+
+                    // Al retornar el Flow del repositorio, Room notificará automáticamente el cambio
+                    outfitRepository.obtenerOutfitsPorFecha(userId, fechaString).flatMapLatest { list ->
+                        if (list.isEmpty()) {
+                            flowOf(emptyList())
+                        } else {
+                            val flows = list.map { outfit ->
+                                outfitRepository.obtenerPrendasDeOutfit(outfit.id).map { prendas ->
+                                    OutfitConPrendas(outfit, prendas)
+                                }
                             }
+                            combine(flows) { it.toList() }
                         }
-                        combine(flows) { it.toList() }
                     }
                 }
-            } else flowOf(emptyList())
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+            } else {
+                flowOf(emptyList())
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     fun updateSelectedDate(date: LocalDate) {
         _selectedDate.value = date

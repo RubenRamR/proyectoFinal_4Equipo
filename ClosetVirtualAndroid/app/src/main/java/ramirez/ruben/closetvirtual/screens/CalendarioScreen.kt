@@ -49,7 +49,8 @@ import ramirez.ruben.closetvirtual.viewmodel.OutfitConPrendas
 @Composable
 fun CalendarioScreen(
     viewModel: CalendarioViewModel,
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onNavigateToDetalleOutfit: (Int) -> Unit = {}
 ) {
     var currentMonth by remember { mutableStateOf(YearMonth.now()) }
     val selectedDate by viewModel.selectedDate.collectAsState()
@@ -148,7 +149,11 @@ fun CalendarioScreen(
             )
         } else {
             outfitsDelDia.forEach { outfitConPrendas ->
-                OutfitRealCard(outfitConPrendas = outfitConPrendas)
+                OutfitRealCard(
+                    outfitConPrendas = outfitConPrendas,
+                    fechaUso = selectedDate.toString(), // <- Pasas la fecha actual del calendario
+                    onOutfitClick = onNavigateToDetalleOutfit
+                )
             }
         }
         Spacer(modifier = Modifier.height(32.dp))
@@ -416,7 +421,12 @@ fun CalendarioGrid(
 }
 
 @Composable
-fun OutfitRealCard(outfitConPrendas: OutfitConPrendas) {
+fun OutfitRealCard(
+    outfitConPrendas: OutfitConPrendas,
+    fechaUso: String,
+    onOutfitClick: (Int) -> Unit
+) {
+
     val isDark = isSystemInDarkTheme()
     val cardBackgroundColor = if (isDark) Color(0xFF44344E) else Color(0xFFECE6F0)
 
@@ -431,6 +441,7 @@ fun OutfitRealCard(outfitConPrendas: OutfitConPrendas) {
     }
 
     Surface(
+        onClick = { onOutfitClick(outfitConPrendas.outfit.id) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
@@ -472,17 +483,11 @@ fun OutfitRealCard(outfitConPrendas: OutfitConPrendas) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(painterResource(id = R.mipmap.calendario_icon), contentDescription = null, modifier = Modifier.size(12.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(outfitConPrendas.outfit.fecha ?: "", fontSize = 11.sp)
+
+                    Text(fechaUso, fontSize = 11.sp)
                 }
             }
         }
     }
 }
 
-// componente visual para las tarjetitas de los outfits de la fecha (mock)
-//@Composable
-//fun OutfitCard(outfit: Outfit) { ... }
-
-//@Preview(name = "Modo Claro", showBackground = true, showSystemUi = true)
-//@Composable
-//private fun PreviewModoClaro() { ... }
