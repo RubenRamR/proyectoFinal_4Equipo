@@ -23,7 +23,7 @@ import ramirez.ruben.closetvirtual.data.database.entity.HistorialUsoOutfitEntity
         PrendaOutfitEntity::class,
         HistorialUsoOutfitEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(StringListConverter::class)

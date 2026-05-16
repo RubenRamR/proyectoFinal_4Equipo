@@ -1,5 +1,6 @@
 package ramirez.ruben.closetvirtual.data.database.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.UUID
@@ -13,6 +14,11 @@ data class UsuarioEntity(
     val contrasena: String,
     val fechaNacimiento: String,
     val genero: String,
+
+    // Ocupamos esto para guardar la foto de perfil, guardando la imagen como un arreglo de bytes en la BD
+    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
+    val fotoPerfil: ByteArray? = null,
+
     val isBiometricsEnabled: Boolean = false,
     val isDarkThemeEnabled: Boolean = false
 )

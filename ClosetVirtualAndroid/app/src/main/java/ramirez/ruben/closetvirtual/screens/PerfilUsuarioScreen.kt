@@ -1,12 +1,18 @@
 package ramirez.ruben.closetvirtual.screens
 
 import android.content.res.Configuration
+import android.graphics.BitmapFactory
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -31,6 +37,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +58,8 @@ fun PerfilScreen(
     loginViewModel: LoginViewModel? = null
 ) {
 
+    val context = LocalContext.current
+
     val usuarioActual by viewModel.usuarioActual.collectAsState()
 
     var name by remember(usuarioActual) { mutableStateOf(usuarioActual?.nombre ?: "") }
@@ -68,6 +78,25 @@ fun PerfilScreen(
     var selectedGender by remember(usuarioActual) {
         mutableStateOf(usuarioActual?.genero ?: genderOptions[0])
     }
+
+    // Estados para la foto de perfil
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var fotoPerfilBytes by remember(usuarioActual) { mutableStateOf(usuarioActual?.fotoPerfil) }
+
+    // Lanza la galeria de fotos
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            if (uri != null) {
+                imageUri = uri
+
+                // Convertir la Uri a ByteArray para guardarlo en Room
+                val inputStream = context.contentResolver.openInputStream(uri)
+                fotoPerfilBytes = inputStream?.readBytes()
+                inputStream?.close()
+            }
+        }
+    )
 
     // preferencias del usuario
     var isBiometricsEnabled by remember(usuarioActual) {
@@ -143,12 +172,29 @@ fun PerfilScreen(
                         .align(Alignment.Center),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Person,
-                        contentDescription = stringResource(R.string.cd_profile_avatar),
-                        modifier = Modifier.size(80.dp),
-                        tint = Color(0xFFE2E6E9)
-                    )
+                    if (fotoPerfilBytes != null) {
+
+                        val bitmap = remember(fotoPerfilBytes) {
+                            BitmapFactory.decodeByteArray(
+                                fotoPerfilBytes, 0, fotoPerfilBytes!!.size)?.asImageBitmap()
+                        }
+                        if (bitmap != null) {
+                            Image(
+                                bitmap = bitmap,
+                                contentDescription = "Foto de perfil",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    } else {
+                        // Icono por defecto
+                        Icon(
+                            imageVector = Icons.Filled.Person,
+                            contentDescription = stringResource(R.string.cd_profile_avatar),
+                            modifier = Modifier.size(80.dp),
+                            tint = Color(0xFFE2E6E9)
+                        )
+                    }
                 }
 
                 Box(
@@ -157,7 +203,10 @@ fun PerfilScreen(
                         .align(Alignment.BottomEnd)
                         .background(MaterialTheme.colorScheme.background, CircleShape)
                         .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
-                        .clickable { /* Cambio de foto */ },
+                        .clickable {
+                            // Abrir galería al presionar el botón de editar foto
+                            photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -422,6 +471,7 @@ fun PerfilScreen(
                             nombre = name,
                             fechaNacimiento = dateOfBirth,
                             genero = selectedGender,
+                            fotoPerfil = fotoPerfilBytes, // <- ¡AGREGA ESTA LÍNEA!
                             isBiometricsEnabled = isBiometricsEnabled,
                             isDarkThemeEnabled = isDarkThemeEnabled
                         )

@@ -314,7 +314,7 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Genero desplegable y personalizable (Se muestra textfield si el genero es "personalizado")
+        // Genero desplegable y personalizable
         ExposedDropdownMenuBox(
             expanded = expandedGender,
             onExpandedChange = { expandedGender = !expandedGender }
@@ -324,7 +324,7 @@ fun RegisterScreen(
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Genero", color = Color.Gray) },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedGender) }, // La flechita que gira
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedGender) },
                 modifier = Modifier
                     .menuAnchor()
                     .width(270.dp),
@@ -352,18 +352,37 @@ fun RegisterScreen(
             }
         }
 
+        // Se muestra un TextField extra al elegir personalizado
+        if (selectedGender == "Personalizado") {
+            Spacer(modifier = Modifier.height(16.dp))
+            TextField(
+                value = customGender,
+                onValueChange = { customGender = it },
+                label = { Text("Especifique su género", color = Color.Gray) },
+                modifier = Modifier.width(270.dp),
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.LightGray,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.primary
+                )
+            )
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
                 // hay que validar la contrasena antes de mandarla
                 if (password == confirmPassword) {
+                    val generoFinal = if (selectedGender == "Personalizado") customGender else selectedGender
                     viewModel.registrar(
                         nombre = username,
                         correo = email,
                         contrasena = password,
                         fechaNacimiento = dateOfBirth,
-                        genero = selectedGender,
+                        genero = generoFinal,
                         onSuccess = { userId ->
                             loginViewModel?.login(email, password, onRegisterSuccess, {})
                         }
